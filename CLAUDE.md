@@ -1,39 +1,64 @@
-# B2B Starter - Architecture Guide
+# Claude Code Context
 
-## Structure
-- `site/` - Next.js 15 App Router storefront
-- `tools/` - Admin scripts for project setup
+## Project Overview
+B2B ecommerce storefront using Next.js 15 App Router, React 19, TypeScript, Tailwind CSS v4, and commercetools (CT) as the headless commerce backend. Demonstrates B2B-specific features: business units, associate roles, approval workflows, quotes, and purchase lists.
 
-## Tech Stack
-- Next.js 15, React 19, TypeScript
-- Tailwind CSS v4
-- commercetools Platform SDK
-- JWT sessions (jose)
+## Directory Layout
+- `site/` — Next.js storefront (all source code here)
+- `tools/` — Admin scripts for CT data setup and exploration
+- `FEATURES.md` — Complete feature inventory (keep updated when adding/removing features)
 
-## Patterns
-- All CT API calls go through Next.js API routes (BFF pattern)
-- Session stored as HTTP-only JWT cookie
-- Context providers: Auth > BusinessUnit > Cart
-- Permissions checked via associate roles on business units
-- Store-scoped carts and orders
+## Dev Server
+```bash
+cd site && npm run dev
+```
+Port 8888. The `.claude/launch.json` config is pre-set for this.
 
-## Product Search
-- **Uses the Product Search API** (`POST /{projectKey}/products/search` via `apiRoot.products().search().post()`) — NOT the older Product Projections Search endpoint
-- **IMPORTANT**: The Product Search API must be activated on the commercetools project before use. Activate it via the Merchant Center (Project Settings) or via the API. If not activated, product listing and detail pages will fail with a 404/ObjectNotFound error.
-- `productProjectionParameters` is passed in the request body to get full product projection data (name, images, prices, etc.) inline with search results
-- When a user has a store in their session, `storeProjection` and `priceChannel` are set in `productProjectionParameters` to get store-specific product selections and pricing
-- Store distribution channels are cached in memory to avoid repeated lookups
+## Key Architecture Decisions
 
-## Key Concepts (B2B)
-- Users are "associates" of business units
-- Associates have roles (admin, buyer, approver) with granular permissions
-- Business units can be Companies or Divisions (hierarchical)
-- Each BU has assigned stores; carts/orders are store-scoped
-- **Different stores see different products and different prices** — this is a core B2B demo feature
-- Quotes allow price negotiation between buyer and seller
-- Approval rules define conditions that trigger approval flows
-- Approval flows require designated approvers to approve/reject orders
-- Purchase lists are shared shopping lists within a business unit
+### Tailwind CSS v4
+Uses `@import "tailwindcss"` and `@theme` block in CSS. There is NO `tailwind.config.ts` file — all theme customization is in the CSS file.
+
+### API Routes as BFF
+All CT API calls go through Next.js API routes in `site/app/api/`. The browser never talks to commercetools directly. Secrets (`CTP_CLIENT_SECRET`) are server-only — never prefixed with `NEXT_PUBLIC_`.
+
+### Session Management
+JWT-based sessions using the `jose` library. Sessions are stored in an HTTP-only cookie. Session contains: customerId, customerEmail, customerFirstName, customerLastName, businessUnitKey, storeKey, cartId, supplyChannelId. No server-side session store.
+
+### Context Providers
+Three React context providers wrap the app in this order: Auth > BusinessUnit > Cart. Each provides a hook (`useAuth()`, `useBusinessUnit()`, `useCart()`). BusinessUnit context auto-selects the first BU and store on login. Cart context watches BU changes and auto-fetches.
+
+### CT Product Search
+Uses the **Product Search API** (`POST /products/search` via `apiRoot.products().search().post()`) — NOT the older Product Projections Search endpoint. The Product Search API must be activated on the CT project before use.
+
+`productProjectionParameters` is passed in the request body to get full product projection data inline with search results. When a user has a store in their session, `storeProjection` and `priceChannel` are set for store-specific pricing.
+
+### Store-Scoped Commerce
+Carts, orders, quotes, and purchase lists are all scoped to a business unit and store. Different stores see different products and different prices — this is a core B2B demo feature.
+
+### Pricing & Channels
+Prices are tied to distribution channels, not embedded on products. Each store has a distribution channel for pricing and a supply channel for inventory. Channel mappings are cached in memory to avoid repeated lookups. The supply channel ID is stored in the session for inventory queries.
+
+### Permissions
+Associates have roles (admin, buyer, approver) with 30+ granular permissions. The storefront checks permissions to show/hide UI elements and enforce access at the API level. Permission groups: Business Unit, Carts, Orders, Quotes, Approvals, Shopping Lists.
+
+## Environment Files
+
+**CRITICAL: `site/.env` and `tools/.env` are completely separate API clients with different permission scopes. NEVER copy, share, or reuse credentials between them.**
+
+- `site/.env` — **Storefront** API client (limited scope). Used by the Next.js app.
+- `tools/.env` — **Admin** API client (`manage_project` scope — can modify or delete anything). Used ONLY by scripts in `tools/`.
+
+If `site/.env` is missing, tell the user to create a new API client in Merchant Center. **NEVER copy `tools/.env` to `site/.env`** — this would give the public-facing storefront full admin access.
+
+Both files are gitignored. Never commit them.
+
+## Adding or Changing Features
+
+Before making changes, read `FEATURES.md` to understand what already exists. After completing a feature change:
+
+1. **Update `FEATURES.md`** — add, modify, or remove entries so it stays accurate.
+2. Verify the change works by running the dev server.
 
 ## Existing CT Project Data (DO NOT recreate — use what exists)
 
@@ -78,8 +103,8 @@
 - 10 root categories, 30+ subcategories
 - All products share one product selection but pricing varies by channel
 
-## API Routes
-All in `site/app/api/`. Session-authenticated except products/categories.
+## Tools Pattern
+All tools import from `tools/ct-admin.mjs` which reads `tools/.env`. To create a new tool, follow the existing pattern — create a standalone `.mjs` file in `tools/`.
 
 ## Running
 1. **Activate the Product Search API** on your commercetools project (Merchant Center → Project Settings, or via the API)
