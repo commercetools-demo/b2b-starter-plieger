@@ -1,0 +1,30 @@
+ when signing in with demo accounts, when I click on the demo account name, automatically click the sign in button as well
+
+ On the dashboard, before allowing the user to click any button or perform any action, do a check to make sure that their current user associate role allows them to perform that action. If not, gray out the button or otherwise prevent them from performing the action and in small text under the grout button say insufficient permissions.
+
+ I'm logged in as Michael Williams right now and I'm not seeing any orders under the orders list doublecheck that dysfunctionality is working
+
+ Same with quotes
+
+ The create purchase list function fails. No purchase list is created.
+
+ On the PDP add an option to add the current product to a purchase list, giving the user a selection of the available purchase list
+
+ Make sure to use the associate permissions, to allow the associate to add items to their own purchase list, as well as to others if they have that permissions
+
+ when listing purchased lists, make sure to put the owners name next to the purchase list in the list
+
+ Review all the permissions listed here:
+ https://docs.commercetools.com/api/projects/associate-roles#ctp:api:type:Permission
+For any permissions that include the ability to view or manage "Others" entities, such as carts, quotes orders quote requests, purchase lists make sure the application supports the ability for the user to perform those actions on other peoples entities if they have that Permission
+
+Create a quick order button in the header, allowing a user to type in a SKU and quickly look it up and add it to the order, or upload a CSV file with SKUs and quantities in it, then show a review screen, allowing the user to check or uncheck any SKUs in that list and then add them all to the order at once
+
+When a user creates a new business unit as a child of the current business unit, give them the option to add themselves as an associate to this business unit with the same role that they have in the current business unit
+
+Make the website logo and buffet icon, a red anvil
+
+Add a little pizzazz to the look & feel of the site
+
+Put a deployment timestamp in the footer, showing the users local time zone
+

@@ -1,0 +1,11 @@
+{
+  "name": "b2b-starter-tools",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@commercetools/platform-sdk": "^8.25.0",
+    "@commercetools/sdk-client-v2": "^3.4.0",
+    "dotenv": "^16.4.0"
+  }
+}

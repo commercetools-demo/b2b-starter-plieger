@@ -1,0 +1,201 @@
+import { apiRoot } from './client';
+
+/**
+ * Helper to build the as-associate cart API root.
+ * All cart operations in a B2B context must go through this chain
+ * so that associate permissions are enforced by commercetools.
+ */
+function asAssociateInStore(
+  associateId: string,
+  businessUnitKey: string,
+  storeKey: string
+) {
+  return (apiRoot
+    .asAssociate()
+    .withAssociateIdValue({ associateId })
+    .inBusinessUnitKeyWithBusinessUnitKeyValue({ businessUnitKey }) as any)
+    .inStoreKeyWithStoreKeyValue({ storeKey })
+    .carts();
+}
+
+export async function createCart(
+  customerId: string,
+  associateId: string,
+  businessUnitKey: string,
+  storeKey: string,
+  currency = 'USD',
+  country = 'US'
+) {
+  const response = await asAssociateInStore(associateId, businessUnitKey, storeKey)
+    .post({
+      body: {
+        currency,
+        country,
+        customerId,
+        businessUnit: {
+          key: businessUnitKey,
+          typeId: 'business-unit',
+        },
+      },
+    })
+    .execute();
+  return response.body;
+}
+
+export async function getCartById(
+  cartId: string,
+  associateId: string,
+  businessUnitKey: string,
+  storeKey: string
+) {
+  const response = await asAssociateInStore(associateId, businessUnitKey, storeKey)
+    .withId({ ID: cartId })
+    .get()
+    .execute();
+  return response.body;
+}
+
+export async function updateCart(
+  cartId: string,
+  version: number,
+  actions: Array<{ action: string; [key: string]: unknown }>,
+  associateId: string,
+  businessUnitKey: string,
+  storeKey: string
+) {
+  const response = await asAssociateInStore(associateId, businessUnitKey, storeKey)
+    .withId({ ID: cartId })
+    .post({ body: { version, actions: actions as any } })
+    .execute();
+  return response.body;
+}
+
+export async function addLineItem(
+  cartId: string,
+  version: number,
+  productId: string,
+  variantId: number,
+  quantity: number,
+  associateId: string,
+  businessUnitKey: string,
+  storeKey: string,
+  distributionChannelId?: string
+) {
+  const lineAction: { action: string; [key: string]: unknown } = {
+    action: 'addLineItem',
+    productId,
+    variantId,
+    quantity,
+  };
+  if (distributionChannelId) {
+    lineAction.distributionChannel = {
+      typeId: 'channel',
+      id: distributionChannelId,
+    };
+  }
+  return updateCart(cartId, version, [lineAction], associateId, businessUnitKey, storeKey);
+}
+
+export async function changeLineItemQuantity(
+  cartId: string,
+  version: number,
+  lineItemId: string,
+  quantity: number,
+  associateId: string,
+  businessUnitKey: string,
+  storeKey: string
+) {
+  return updateCart(
+    cartId,
+    version,
+    [{ action: 'changeLineItemQuantity', lineItemId, quantity }],
+    associateId,
+    businessUnitKey,
+    storeKey
+  );
+}
+
+export async function removeLineItem(
+  cartId: string,
+  version: number,
+  lineItemId: string,
+  associateId: string,
+  businessUnitKey: string,
+  storeKey: string
+) {
+  return updateCart(
+    cartId,
+    version,
+    [{ action: 'removeLineItem', lineItemId }],
+    associateId,
+    businessUnitKey,
+    storeKey
+  );
+}
+
+export async function setShippingAddress(
+  cartId: string,
+  version: number,
+  address: Record<string, string>,
+  associateId: string,
+  businessUnitKey: string,
+  storeKey: string
+) {
+  return updateCart(
+    cartId,
+    version,
+    [{ action: 'setShippingAddress', address }],
+    associateId,
+    businessUnitKey,
+    storeKey
+  );
+}
+
+export async function setBillingAddress(
+  cartId: string,
+  version: number,
+  address: Record<string, string>,
+  associateId: string,
+  businessUnitKey: string,
+  storeKey: string
+) {
+  return updateCart(
+    cartId,
+    version,
+    [{ action: 'setBillingAddress', address }],
+    associateId,
+    businessUnitKey,
+    storeKey
+  );
+}
+
+export async function addDiscountCode(
+  cartId: string,
+  version: number,
+  code: string,
+  associateId: string,
+  businessUnitKey: string,
+  storeKey: string
+) {
+  return updateCart(
+    cartId,
+    version,
+    [{ action: 'addDiscountCode', code }],
+    associateId,
+    businessUnitKey,
+    storeKey
+  );
+}
+
+export async function deleteCart(
+  cartId: string,
+  version: number,
+  associateId: string,
+  businessUnitKey: string,
+  storeKey: string
+) {
+  await asAssociateInStore(associateId, businessUnitKey, storeKey)
+    .withId({ ID: cartId })
+    .delete({ queryArgs: { version } })
+    .execute();
+}
