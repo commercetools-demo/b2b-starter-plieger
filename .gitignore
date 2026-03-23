@@ -4,7 +4,7 @@ node_modules/
 .env.local
 *.tsbuildinfo
 .DS_Store
-.claude/
+.claude/agents
 
 # Local Netlify folder
 .netlify
