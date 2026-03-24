@@ -29,7 +29,6 @@ export async function GET(request: NextRequest) {
 
     const orders = await getOrdersForBusinessUnit(
       session.businessUnitKey,
-      session.storeKey,
       session.customerId,
       { limit, offset, sort, status }
     )

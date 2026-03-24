@@ -14,28 +14,13 @@ export async function createOrderFromCart(
   cartVersion: number,
   associateId: string,
   businessUnitKey: string,
-  storeKey?: string
 ) {
   const orderNumber = generateOrderNumber();
-  const asAssociate: any = apiRoot
+  const asAssociate = apiRoot
     .asAssociate()
     .withAssociateIdValue({ associateId })
     .inBusinessUnitKeyWithBusinessUnitKeyValue({ businessUnitKey });
 
-  if (storeKey) {
-    const response = await asAssociate
-      .inStoreKeyWithStoreKeyValue({ storeKey })
-      .orders()
-      .post({
-        body: {
-          cart: { id: cartId, typeId: 'cart' },
-          version: cartVersion,
-          orderNumber,
-        },
-      })
-      .execute();
-    return response.body;
-  }
   const response = await asAssociate
     .orders()
     .post({
@@ -51,7 +36,6 @@ export async function createOrderFromCart(
 
 export async function getOrdersForBusinessUnit(
   businessUnitKey: string,
-  storeKey: string,
   associateId: string,
   options: { limit?: number; offset?: number; sort?: string; status?: string } = {}
 ) {
@@ -63,8 +47,7 @@ export async function getOrdersForBusinessUnit(
   const response = await (apiRoot
     .asAssociate()
     .withAssociateIdValue({ associateId })
-    .inBusinessUnitKeyWithBusinessUnitKeyValue({ businessUnitKey }) as any)
-    .inStoreKeyWithStoreKeyValue({ storeKey })
+    .inBusinessUnitKeyWithBusinessUnitKeyValue({ businessUnitKey }))
     .orders()
     .get({
       queryArgs: {
@@ -82,28 +65,19 @@ export async function getOrderById(
   orderId: string,
   associateId: string,
   businessUnitKey: string,
-  storeKey?: string
 ) {
-  const asAssociate: any = apiRoot
+  const asAssociate = apiRoot
     .asAssociate()
     .withAssociateIdValue({ associateId })
     .inBusinessUnitKeyWithBusinessUnitKeyValue({ businessUnitKey });
 
-  if (storeKey) {
-    const response = await asAssociate
-      .inStoreKeyWithStoreKeyValue({ storeKey })
-      .orders()
-      .withId({ ID: orderId })
-      .get()
-      .execute();
-    return response.body;
-  }
   const response = await asAssociate
     .orders()
     .withId({ ID: orderId })
     .get()
     .execute();
   return response.body;
+
 }
 
 export async function updateOrderState(
@@ -112,16 +86,13 @@ export async function updateOrderState(
   orderState: string,
   associateId: string,
   businessUnitKey: string,
-  storeKey?: string
 ) {
-  const asAssociate: any = apiRoot
+  const asAssociate = apiRoot
     .asAssociate()
     .withAssociateIdValue({ associateId })
     .inBusinessUnitKeyWithBusinessUnitKeyValue({ businessUnitKey });
 
-  if (storeKey) {
     const response = await asAssociate
-      .inStoreKeyWithStoreKeyValue({ storeKey })
       .orders()
       .withId({ ID: orderId })
       .post({
@@ -132,18 +103,6 @@ export async function updateOrderState(
       })
       .execute();
     return response.body;
-  }
-  const response = await asAssociate
-    .orders()
-    .withId({ ID: orderId })
-    .post({
-      body: {
-        version,
-        actions: [{ action: 'changeOrderState', orderState }],
-      },
-    })
-    .execute();
-  return response.body;
 }
 
 export async function createOrderFromQuote(
@@ -151,17 +110,14 @@ export async function createOrderFromQuote(
   quoteVersion: number,
   associateId: string,
   businessUnitKey: string,
-  storeKey?: string
 ) {
   const orderNumber = generateOrderNumber();
-  const asAssociate: any = apiRoot
+  const asAssociate = apiRoot
     .asAssociate()
     .withAssociateIdValue({ associateId })
     .inBusinessUnitKeyWithBusinessUnitKeyValue({ businessUnitKey });
 
-  if (storeKey) {
     const response = await asAssociate
-      .inStoreKeyWithStoreKeyValue({ storeKey })
       .orders()
       .post({
         body: {
@@ -173,17 +129,4 @@ export async function createOrderFromQuote(
       })
       .execute();
     return response.body;
-  }
-  const response = await asAssociate
-    .orders()
-    .post({
-      body: {
-        quote: { id: quoteId, typeId: 'quote' },
-        version: quoteVersion,
-        orderState: 'Open',
-        orderNumber,
-      } as any,
-    })
-    .execute();
-  return response.body;
 }

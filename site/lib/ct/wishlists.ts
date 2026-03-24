@@ -1,22 +1,20 @@
 import { apiRoot } from './client';
 
-function asAssociateInStore(associateId: string, businessUnitKey: string, storeKey: string) {
+function asAssociateInStore(associateId: string, businessUnitKey: string) {
   return (apiRoot
     .asAssociate()
     .withAssociateIdValue({ associateId })
-    .inBusinessUnitKeyWithBusinessUnitKeyValue({ businessUnitKey }) as any)
-    .inStoreKeyWithStoreKeyValue({ storeKey })
+    .inBusinessUnitKeyWithBusinessUnitKeyValue({ businessUnitKey }))
     .shoppingLists();
 }
 
 export async function getPurchaseLists(
   associateId: string,
   businessUnitKey: string,
-  storeKey: string,
   options: { limit?: number; offset?: number } = {}
 ) {
   const { limit = 20, offset = 0 } = options;
-  const response = await asAssociateInStore(associateId, businessUnitKey, storeKey)
+  const response = await asAssociateInStore(associateId, businessUnitKey)
     .get({
       queryArgs: {
         limit,
@@ -32,10 +30,9 @@ export async function getPurchaseLists(
 export async function getPurchaseListById(
   associateId: string,
   businessUnitKey: string,
-  storeKey: string,
   id: string
 ) {
-  const response = await asAssociateInStore(associateId, businessUnitKey, storeKey)
+  const response = await asAssociateInStore(associateId, businessUnitKey)
     .withId({ ID: id })
     .get({
       queryArgs: {
@@ -49,7 +46,6 @@ export async function getPurchaseListById(
 export async function createPurchaseList(
   associateId: string,
   businessUnitKey: string,
-  storeKey: string,
   name: string,
   customerId: string
 ) {
@@ -58,7 +54,7 @@ export async function createPurchaseList(
     customer: { id: customerId, typeId: 'customer' },
   };
 
-  const response = await asAssociateInStore(associateId, businessUnitKey, storeKey)
+  const response = await asAssociateInStore(associateId, businessUnitKey)
     .post({ body: body as any })
     .execute();
   return response.body;
@@ -67,12 +63,11 @@ export async function createPurchaseList(
 export async function updatePurchaseList(
   associateId: string,
   businessUnitKey: string,
-  storeKey: string,
   id: string,
   version: number,
   actions: Array<{ action: string; [key: string]: unknown }>
 ) {
-  const response = await asAssociateInStore(associateId, businessUnitKey, storeKey)
+  const response = await asAssociateInStore(associateId, businessUnitKey)
     .withId({ ID: id })
     .post({ body: { version, actions: actions as any } })
     .execute();
@@ -82,11 +77,10 @@ export async function updatePurchaseList(
 export async function deletePurchaseList(
   associateId: string,
   businessUnitKey: string,
-  storeKey: string,
   id: string,
   version: number
 ) {
-  await asAssociateInStore(associateId, businessUnitKey, storeKey)
+  await asAssociateInStore(associateId, businessUnitKey)
     .withId({ ID: id })
     .delete({ queryArgs: { version } })
     .execute();
@@ -105,7 +99,6 @@ export async function addItemToPurchaseList(
   return updatePurchaseList(
     associateId,
     businessUnitKey,
-    storeKey,
     id,
     version,
     [{ action: 'addLineItem', productId, variantId, quantity }]
@@ -115,7 +108,6 @@ export async function addItemToPurchaseList(
 export async function removeItemFromPurchaseList(
   associateId: string,
   businessUnitKey: string,
-  storeKey: string,
   id: string,
   version: number,
   lineItemId: string
@@ -123,7 +115,6 @@ export async function removeItemFromPurchaseList(
   return updatePurchaseList(
     associateId,
     businessUnitKey,
-    storeKey,
     id,
     version,
     [{ action: 'removeLineItem', lineItemId }]

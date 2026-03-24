@@ -20,7 +20,6 @@ export async function POST(
       version,
       session.customerId,
       session.businessUnitKey,
-      session.storeKey
     );
     return NextResponse.json({ order }, { status: 201 });
   } catch (err: any) {

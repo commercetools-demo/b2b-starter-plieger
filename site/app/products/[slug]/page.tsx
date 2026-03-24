@@ -83,12 +83,15 @@ export default function ProductDetailPage() {
 
   const handleAddToList = async () => {
     if (!selectedList || !product) return;
+    const list = purchaseLists.find((l: any) => l.id === selectedList);
+    if (!list) return;
     setAddingToList(true);
     try {
       await fetch(`/api/purchase-lists/${selectedList}/items`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          version: list.version,
           productId: product.id,
           variantId: product.masterVariant?.id ?? 1,
           quantity: 1,

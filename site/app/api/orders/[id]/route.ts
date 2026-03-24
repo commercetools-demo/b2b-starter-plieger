@@ -18,7 +18,6 @@ export async function GET(
       id,
       session.customerId,
       session.businessUnitKey!,
-      session.storeKey
     )
 
     return NextResponse.json({ order })
@@ -57,7 +56,6 @@ export async function PUT(
       orderState,
       session.customerId,
       session.businessUnitKey!,
-      session.storeKey
     )
 
     return NextResponse.json({ order })

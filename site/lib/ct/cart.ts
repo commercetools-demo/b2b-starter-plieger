@@ -8,14 +8,12 @@ import { apiRoot } from './client';
 function asAssociateInStore(
   associateId: string,
   businessUnitKey: string,
-  storeKey: string
 ) {
   return (apiRoot
     .asAssociate()
     .withAssociateIdValue({ associateId })
-    .inBusinessUnitKeyWithBusinessUnitKeyValue({ businessUnitKey }) as any)
-    .inStoreKeyWithStoreKeyValue({ storeKey })
-    .carts();
+    .inBusinessUnitKeyWithBusinessUnitKeyValue({ businessUnitKey }))
+    .carts()
 }
 
 export async function createCart(
@@ -26,7 +24,7 @@ export async function createCart(
   currency = 'USD',
   country = 'US'
 ) {
-  const response = await asAssociateInStore(associateId, businessUnitKey, storeKey)
+  const response = await asAssociateInStore(associateId, businessUnitKey)
     .post({
       body: {
         currency,
@@ -35,6 +33,10 @@ export async function createCart(
         businessUnit: {
           key: businessUnitKey,
           typeId: 'business-unit',
+        },
+        store: {
+          key: storeKey,
+          typeId: 'store',
         },
       },
     })
@@ -48,7 +50,7 @@ export async function getCartById(
   businessUnitKey: string,
   storeKey: string
 ) {
-  const response = await asAssociateInStore(associateId, businessUnitKey, storeKey)
+  const response = await asAssociateInStore(associateId, businessUnitKey)
     .withId({ ID: cartId })
     .get()
     .execute();
@@ -63,7 +65,7 @@ export async function updateCart(
   businessUnitKey: string,
   storeKey: string
 ) {
-  const response = await asAssociateInStore(associateId, businessUnitKey, storeKey)
+  const response = await asAssociateInStore(associateId, businessUnitKey)
     .withId({ ID: cartId })
     .post({ body: { version, actions: actions as any } })
     .execute();
@@ -194,7 +196,7 @@ export async function deleteCart(
   businessUnitKey: string,
   storeKey: string
 ) {
-  await asAssociateInStore(associateId, businessUnitKey, storeKey)
+  await asAssociateInStore(associateId, businessUnitKey)
     .withId({ ID: cartId })
     .delete({ queryArgs: { version } })
     .execute();

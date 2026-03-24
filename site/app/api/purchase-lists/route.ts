@@ -31,7 +31,6 @@ export async function GET(request: NextRequest) {
     const purchaseLists = await getPurchaseLists(
       session.customerId,
       session.businessUnitKey,
-      session.storeKey,
       { limit, offset }
     )
 
@@ -71,7 +70,6 @@ export async function POST(request: NextRequest) {
     const purchaseList = await createPurchaseList(
       session.customerId,
       session.businessUnitKey,
-      session.storeKey,
       name,
       session.customerId
     )

@@ -17,7 +17,7 @@ export async function GET(
     }
 
     const { id } = await params
-    const purchaseList = await getPurchaseListById(session.customerId, session.businessUnitKey!, session.storeKey!, id)
+    const purchaseList = await getPurchaseListById(session.customerId, session.businessUnitKey!, id)
 
     return NextResponse.json({ purchaseList })
   } catch (error: any) {
@@ -49,7 +49,7 @@ export async function DELETE(
       )
     }
 
-    await deletePurchaseList(session.customerId, session.businessUnitKey!, session.storeKey!, id, version)
+    await deletePurchaseList(session.customerId, session.businessUnitKey!, id, version)
 
     return NextResponse.json({ success: true })
   } catch (error: any) {

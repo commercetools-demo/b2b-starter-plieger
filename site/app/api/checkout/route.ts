@@ -61,7 +61,6 @@ export async function POST(request: NextRequest) {
       cart.version,
       session.customerId,
       session.businessUnitKey,
-      session.storeKey
     )
 
     // Clear cartId from session
