@@ -1,0 +1,120 @@
+{
+  "auth": {
+    "forgotPassword": {
+      "title": "Forgot Password",
+      "description": "Enter your email and we'll send you a reset link.",
+      "emailLabel": "Email Address",
+      "submitButton": "Send Reset Link",
+      "successMessage": "If an account exists with that email, you'll receive a reset link shortly.",
+      "backToLogin": "Back to Sign In"
+    },
+    "resetPassword": {
+      "title": "Reset Password",
+      "newPasswordLabel": "New Password",
+      "submitButton": "Reset Password",
+      "successMessage": "Your password has been reset. You can now sign in.",
+      "invalidToken": "This reset link is invalid or has expired."
+    }
+  },
+  "account": {
+    "title": "My Account",
+    "tabs": {
+      "general": "General",
+      "security": "Security",
+      "addresses": "Addresses"
+    },
+    "general": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "saveButton": "Save Changes",
+      "successMessage": "Profile updated successfully."
+    },
+    "security": {
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "submitButton": "Change Password",
+      "successMessage": "Password changed successfully."
+    },
+    "addresses": {
+      "addAddress": "Add Address",
+      "noAddresses": "No addresses saved yet.",
+      "street": "Street",
+      "city": "City",
+      "state": "State",
+      "postalCode": "Postal Code",
+      "country": "Country",
+      "saveButton": "Save Address",
+      "deleteConfirm": "Delete this address?"
+    }
+  },
+  "categories": {
+    "title": "Categories",
+    "browseAll": "Browse all categories",
+    "noProducts": "No products found in this category.",
+    "products": "Products"
+  },
+  "search": {
+    "title": "Search Results",
+    "resultsFor": "Results for \"{query}\"",
+    "noResults": "No products found for \"{query}\".",
+    "placeholder": "Search products...",
+    "allResults": "See all results for \"{query}\""
+  },
+  "wishlists": {
+    "title": "My Wishlists",
+    "createWishlist": "Create Wishlist",
+    "nameLabel": "Wishlist Name",
+    "noWishlists": "No wishlists yet.",
+    "addToCart": "Add to Cart",
+    "removeItem": "Remove",
+    "emptyWishlist": "This wishlist is empty.",
+    "deleteWishlist": "Delete Wishlist",
+    "items": "{count} items"
+  },
+  "checkoutQuote": {
+    "title": "Accept Quote",
+    "summary": "Quote Summary",
+    "acceptButton": "Accept & Place Order",
+    "sellerComment": "Seller Note",
+    "successMessage": "Order placed successfully!",
+    "validTo": "Valid until",
+    "lineItems": "Line Items"
+  },
+  "recurringOrders": {
+    "title": "Recurring Orders",
+    "status": {
+      "Active": "Active",
+      "Paused": "Paused",
+      "Canceled": "Canceled",
+      "Expired": "Expired"
+    },
+    "pause": "Pause",
+    "resume": "Resume",
+    "cancel": "Cancel",
+    "duplicate": "Duplicate",
+    "schedule": "Schedule",
+    "nextOrder": "Next Order",
+    "lastOrder": "Last Order",
+    "noOrders": "No recurring orders found.",
+    "originOrder": "Origin Order",
+    "lineItems": "Items"
+  },
+  "ratings": {
+    "title": "Customer Reviews",
+    "writeReview": "Write a Review",
+    "submitReview": "Submit Review",
+    "ratingLabel": "Your Rating",
+    "commentLabel": "Your Review",
+    "titleLabel": "Review Title",
+    "noReviews": "No reviews yet. Be the first to review this product!",
+    "loginToReview": "Sign in to write a review",
+    "averageRating": "Average Rating",
+    "totalReviews": "{count, plural, one {# review} other {# reviews}}"
+  },
+  "language": {
+    "en": "English",
+    "de": "Deutsch",
+    "selectLanguage": "Language"
+  }
+}

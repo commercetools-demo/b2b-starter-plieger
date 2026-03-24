@@ -8,6 +8,7 @@ import { usePermissions } from '@/hooks/usePermissions';
 import { Button } from '@/components/ui/Button';
 import { AddToCartButton } from '@/components/product/AddToCartButton';
 import { Select } from '@/components/ui/Select';
+import { RatingsSection } from '@/components/product/RatingsSection';
 import { localizedString, formatMoney } from '@/lib/utils';
 
 function formatAttributeValue(value: any): string {
@@ -259,6 +260,9 @@ export default function ProductDetailPage() {
           )}
         </div>
       </div>
+
+      {/* Ratings & Reviews */}
+      <RatingsSection productId={product.id} />
     </div>
   );
 }

@@ -32,6 +32,10 @@ export async function searchProducts(options: {
   priceCurrency?: string;
   priceCountry?: string;
   storeKey?: string;
+  /** Attribute names to request distinct facets for */
+  facets?: string[];
+  /** Attribute value filters: { [attributeName]: values[] } */
+  filters?: Record<string, string[]>;
 } = {}) {
   const {
     text,
@@ -41,6 +45,8 @@ export async function searchProducts(options: {
     priceCurrency = 'USD',
     priceCountry = 'US',
     storeKey,
+    facets: facetFields,
+    filters,
   } = options;
 
   // Build the search query
@@ -64,6 +70,21 @@ export async function searchProducts(options: {
         values: [categoryId],
       },
     });
+  }
+
+  // Attribute filters from facet selections
+  if (filters) {
+    for (const [field, values] of Object.entries(filters)) {
+      if (values.length > 0) {
+        queryExpressions.push({
+          exact: {
+            field: `variants.attributes.${field}`,
+            fieldType: 'text',
+            values,
+          },
+        });
+      }
+    }
   }
 
   // Build projection parameters for price selection
@@ -93,6 +114,27 @@ export async function searchProducts(options: {
     body.query = { and: queryExpressions };
   }
 
+  // Add sort if provided
+  if (options.sort && options.sort !== 'score') {
+    const [field, order] = options.sort.split('-');
+    if (field === 'price') {
+      body.sort = [{ field: 'variants.prices.centAmount', order: order === 'desc' ? 'desc' : 'asc' }];
+    } else if (field === 'name') {
+      body.sort = [{ field: 'name.en-US', order: order === 'desc' ? 'desc' : 'asc' }];
+    }
+  }
+
+  // Add facets if requested
+  if (facetFields && facetFields.length > 0) {
+    body.facets = facetFields.map((f) => ({
+      distinct: {
+        name: f,
+        field: `variants.attributes.${f}`,
+        fieldType: 'text',
+      },
+    }));
+  }
+
   const response = await apiRoot
     .products()
     .search()
@@ -108,6 +150,7 @@ export async function searchProducts(options: {
     total: response.body.total,
     limit: response.body.limit,
     offset: response.body.offset,
+    facets: (response.body as any).facets ?? [],
   };
 }
 

@@ -25,6 +25,14 @@ export async function GET(request: NextRequest) {
       storeKey = session?.storeKey || undefined
     }
 
+    // Parse filter.{name}=val1,val2 params into filters object
+    const filters: Record<string, string[]> = {};
+    searchParams.forEach((value, key) => {
+      if (key.startsWith('filter.')) {
+        filters[key.slice(7)] = value.split(',').filter(Boolean);
+      }
+    });
+
     const results = await searchProducts({
       text,
       categoryId,
@@ -34,6 +42,7 @@ export async function GET(request: NextRequest) {
       priceCurrency,
       priceCountry,
       storeKey,
+      filters: Object.keys(filters).length > 0 ? filters : undefined,
     })
 
     return NextResponse.json(results)

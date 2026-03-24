@@ -18,10 +18,13 @@ const navItems: NavItem[] = [
   { label: 'Approval Flows', href: '/dashboard/approval-flows', requiredPermissions: ['UpdateApprovalFlowStatuses'] },
   { label: 'Approval Rules', href: '/dashboard/approval-rules', requiredPermissions: ['CreateApprovalRules', 'UpdateApprovalRules'] },
   { label: 'Purchase Lists', href: '/dashboard/purchase-lists', requiredPermissions: ['ViewMyShoppingLists', 'ViewOthersShoppingLists'] },
+  { label: 'Recurring Orders', href: '/dashboard/recurring-orders' },
   { label: 'Company Admin', href: '/dashboard/company', requiredPermissions: ['UpdateBusinessUnitDetails'] },
   { label: 'Associates', href: '/dashboard/company/associates', requiredPermissions: ['UpdateAssociates'] },
   { label: 'Addresses', href: '/dashboard/company/addresses' },
+  { label: 'My Addresses', href: '/dashboard/addresses' },
   { label: 'My Profile', href: '/dashboard/settings' },
+  { label: 'Account', href: '/account' },
 ];
 
 export function DashboardNav() {
