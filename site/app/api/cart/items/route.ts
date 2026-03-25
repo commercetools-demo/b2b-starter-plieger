@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSession, setSession } from '@/lib/session'
-import { addLineItem, createCart, getCartById, updateCart } from '@/lib/ct/cart'
+import { addLineItem, addLineItemWithRecurrence, createCart, getCartById, updateCart } from '@/lib/ct/cart'
 import { apiRoot } from '@/lib/ct/client'
 
 // Cache store distribution channels
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { productId, variantId, quantity } = await request.json()
+    const { productId, variantId, quantity, recurrencePolicyId } = await request.json()
 
     if (!productId || !variantId) {
       return NextResponse.json(
@@ -89,17 +89,30 @@ export async function POST(request: NextRequest) {
     // Look up the store's distribution channel for price selection
     const distributionChannelId = await getDistributionChannelForStore(session.storeKey)
 
-    const cart = await addLineItem(
-      cartId!,
-      cartVersion,
-      productId,
-      variantId,
-      quantity || 1,
-      session.customerId,
-      session.businessUnitKey!,
-      session.storeKey!,
-      distributionChannelId
-    )
+    const cart = recurrencePolicyId
+      ? await addLineItemWithRecurrence(
+          cartId!,
+          cartVersion,
+          productId,
+          variantId,
+          quantity || 1,
+          recurrencePolicyId,
+          session.customerId,
+          session.businessUnitKey!,
+          session.storeKey!,
+          distributionChannelId
+        )
+      : await addLineItem(
+          cartId!,
+          cartVersion,
+          productId,
+          variantId,
+          quantity || 1,
+          session.customerId,
+          session.businessUnitKey!,
+          session.storeKey!,
+          distributionChannelId
+        )
 
     const response = NextResponse.json({ cart }, { status: 201 })
 

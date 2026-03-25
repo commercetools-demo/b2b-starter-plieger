@@ -23,6 +23,12 @@ interface CartContextValue {
     variantId: number,
     quantity: number,
   ) => Promise<void>;
+  addItemWithRecurrence: (
+    productId: string,
+    variantId: number,
+    quantity: number,
+    recurrencePolicyId: string,
+  ) => Promise<void>;
   updateQuantity: (lineItemId: string, quantity: number) => Promise<void>;
   removeItem: (lineItemId: string) => Promise<void>;
   applyDiscountCode: (code: string) => Promise<void>;
@@ -85,6 +91,29 @@ export function CartProvider({ children }: { children: ReactNode }) {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ productId, variantId, quantity }),
+        });
+        if (!res.ok) {
+          const error = await res.json().catch(() => ({}));
+          throw new Error(error.message ?? 'Failed to add item');
+        }
+        const data = await res.json();
+        setCart(data.cart ?? data);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [ensureCart],
+  );
+
+  const addItemWithRecurrence = useCallback(
+    async (productId: string, variantId: number, quantity: number, recurrencePolicyId: string) => {
+      try {
+        setLoading(true);
+        await ensureCart();
+        const res = await fetch('/api/cart/items', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productId, variantId, quantity, recurrencePolicyId }),
         });
         if (!res.ok) {
           const error = await res.json().catch(() => ({}));
@@ -176,6 +205,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       miniCartOpen,
       fetchCart,
       addItem,
+      addItemWithRecurrence,
       updateQuantity,
       removeItem,
       applyDiscountCode,
@@ -189,6 +219,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       miniCartOpen,
       fetchCart,
       addItem,
+      addItemWithRecurrence,
       updateQuantity,
       removeItem,
       applyDiscountCode,

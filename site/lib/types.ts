@@ -163,6 +163,10 @@ export interface LineItem {
     discounted?: { value: Money };
   };
   totalPrice: Money;
+  recurrenceInfo?: {
+    recurrencePolicy: { id: string; typeId: 'recurrence-policy' };
+    priceSelectionMode: 'Dynamic' | 'Fixed';
+  };
 }
 
 export interface Cart {
@@ -380,6 +384,7 @@ export interface ProductVariant {
     country?: string;
     channel?: { id: string; typeId: 'channel' };
     customerGroup?: { id: string; typeId: 'customer-group' };
+    recurrencePolicy?: { id: string; typeId: 'recurrence-policy' };
   }>;
   /** Embedded price selected by priceChannel/priceCurrency query params */
   price?: {
@@ -419,6 +424,8 @@ export interface SessionData {
   businessUnitKey?: string;
   storeKey?: string;
   supplyChannelId?: string;
+  distributionChannelId?: string;
+  productSelectionId?: string;
   locale?: string;
   currency?: string;
 }

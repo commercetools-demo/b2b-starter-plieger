@@ -7,8 +7,10 @@ import { useAuth } from '@/context/AuthContext';
 import { usePermissions } from '@/hooks/usePermissions';
 import { Button } from '@/components/ui/Button';
 import { AddToCartButton } from '@/components/product/AddToCartButton';
+import { SubscribeAndSaveBox } from '@/components/product/SubscribeAndSaveBox';
 import { Select } from '@/components/ui/Select';
 import { RatingsSection } from '@/components/product/RatingsSection';
+import { useRecurrencePolicies } from '@/hooks/useRecurrencePolicies';
 import { localizedString, formatMoney } from '@/lib/utils';
 
 function formatAttributeValue(value: any): string {
@@ -48,6 +50,7 @@ export default function ProductDetailPage() {
   const [selectedImage, setSelectedImage] = useState(0);
 
   const canUpdateLists = hasAnyPermission(['UpdateMyShoppingLists', 'UpdateOthersShoppingLists']);
+  const { data: recurrencePolicies = [] } = useRecurrencePolicies();
 
   const [supplyChannelId, setSupplyChannelId] = useState<string | null>(null);
 
@@ -134,6 +137,9 @@ export default function ProductDetailPage() {
   // Prefer embedded price (from priceChannel selection), fall back to prices array
   const price = product.masterVariant?.price ?? product.masterVariant?.prices?.[0];
   const attributes = product.masterVariant?.attributes ?? [];
+  const recurringPrices = product.masterVariant?.recurrencePrices?.filter((p: any) => p.recurrencePolicy);
+  const allPrices = product.masterVariant?.prices.concat(recurringPrices);
+  const showSubscribeAndSave = isLoggedIn && recurringPrices.length > 0 && recurrencePolicies.length > 0;
   const name = localizedString(product.name);
   const description = localizedString(product.description);
   const sku = product.masterVariant?.sku;
@@ -205,12 +211,23 @@ export default function ProductDetailPage() {
 
           <div className="space-y-4 mb-8">
             {isLoggedIn ? (
-              <AddToCartButton
-                productId={product.id}
-                variantId={product.masterVariant?.id ?? 1}
-                availableQuantity={inventoryQuantity}
-                isOutOfStock={isOutOfStock}
-              />
+              showSubscribeAndSave ? (
+                <SubscribeAndSaveBox
+                  productId={product.id}
+                  variantId={product.masterVariant?.id ?? 1}
+                  prices={allPrices}
+                  policies={recurrencePolicies}
+                  availableQuantity={inventoryQuantity}
+                  isOutOfStock={isOutOfStock}
+                />
+              ) : (
+                <AddToCartButton
+                  productId={product.id}
+                  variantId={product.masterVariant?.id ?? 1}
+                  availableQuantity={inventoryQuantity}
+                  isOutOfStock={isOutOfStock}
+                />
+              )
             ) : (
               <Button variant="primary" href="/login">Sign In to Order</Button>
             )}

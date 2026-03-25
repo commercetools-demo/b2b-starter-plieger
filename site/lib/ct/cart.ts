@@ -189,6 +189,57 @@ export async function addDiscountCode(
   );
 }
 
+export async function addLineItemWithRecurrence(
+  cartId: string,
+  version: number,
+  productId: string,
+  variantId: number,
+  quantity: number,
+  recurrencePolicyId: string,
+  associateId: string,
+  businessUnitKey: string,
+  storeKey: string,
+  distributionChannelId?: string
+) {
+  // Step 1: add the line item
+  const cart1 = await addLineItem(
+    cartId,
+    version,
+    productId,
+    variantId,
+    quantity,
+    associateId,
+    businessUnitKey,
+    storeKey,
+    distributionChannelId
+  );
+  // Step 2: find the newly added line item by productId + variantId
+  const lineItem = cart1.lineItems.find(
+    (li) => li.productId === productId && li.variant.id === variantId
+  );
+  if (!lineItem) {
+    throw new Error('Line item not found after add');
+  }
+  // Step 3: set recurrence info
+  return updateCart(
+    cartId,
+    cart1.version,
+    [
+      {
+        action: 'setLineItemRecurrenceInfo',
+        lineItemId: lineItem.id,
+        recurrenceInfo: {
+          recurrencePolicy: { typeId: 'recurrence-policy', id: recurrencePolicyId },
+          priceSelectionMode: 'Fixed',
+        },
+      },
+    ],
+    associateId,
+    businessUnitKey,
+    storeKey
+  );
+}
+
 export async function deleteCart(
   cartId: string,
   version: number,
