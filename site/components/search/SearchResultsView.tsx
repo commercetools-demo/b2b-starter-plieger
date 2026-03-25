@@ -30,18 +30,27 @@ function SearchResultsContent({ query }: { query: string }) {
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
-    const params = new URLSearchParams();
-    params.set('limit', String(LIMIT));
-    params.set('offset', String(offset));
-    if (query) params.set('q', query);
-    if (sort && sort !== 'score') params.set('sort', sort);
-
-    Object.entries(selectedFilters).forEach(([k, vals]) => {
-      if (vals.length > 0) params.set(`filter.${k}`, vals.join(','));
-    });
-
     try {
-      const res = await fetch(`/api/products?${params}`);
+      const filters = Object.entries(selectedFilters)
+        .filter(([, vals]) => vals.length > 0)
+        .map(([k, vals]) => ({ identifier: k, type: 'term', terms: vals }));
+
+      const body: Record<string, unknown> = {
+        limit: LIMIT,
+        cursor: `offset:${offset}`,
+      };
+      if (query) body.query = query;
+      if (filters.length) body.filters = filters;
+      if (sort && sort !== 'score') {
+        const [field, order] = sort.split('-');
+        if (field) body.sortAttributes = { [field]: order === 'desc' ? 'desc' : 'asc' };
+      }
+
+      const res = await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
       const data = await res.json();
       setProducts(data.results ?? []);
       setTotal(data.total ?? 0);

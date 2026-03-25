@@ -426,6 +426,8 @@ export interface SessionData {
   supplyChannelId?: string;
   distributionChannelId?: string;
   productSelectionId?: string;
+  /** B2B customer group IDs for priceCustomerGroupAssignments */
+  accountGroupIds?: string[];
   locale?: string;
   currency?: string;
 }
