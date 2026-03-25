@@ -13,8 +13,10 @@
     "@commercetools/sdk-client-v2": "^3.4.0",
     "jose": "^6.2.1",
     "next": "^15.3.0",
+    "next-intl": "^3.26.5",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "swr": "^2.3.3"
   },
   "devDependencies": {
     "@netlify/plugin-nextjs": "^5.15.9",

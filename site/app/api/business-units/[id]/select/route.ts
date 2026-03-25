@@ -1,27 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSession, setSession } from '@/lib/session'
-import { apiRoot } from '@/lib/ct/client'
-
-// Cache store supply channels
-const storeSupplyChannelCache = new Map<string, string | undefined>()
-
-async function getSupplyChannelForStore(storeKey: string): Promise<string | undefined> {
-  if (storeSupplyChannelCache.has(storeKey)) {
-    return storeSupplyChannelCache.get(storeKey)
-  }
-  try {
-    const store = await apiRoot
-      .stores()
-      .withKey({ key: storeKey })
-      .get()
-      .execute()
-    const channelId = store.body.supplyChannels?.[0]?.id
-    storeSupplyChannelCache.set(storeKey, channelId)
-    return channelId
-  } catch {
-    return undefined
-  }
-}
+import { getStoreChannelData } from '@/lib/ct/stores'
 
 export async function POST(
   request: NextRequest,
@@ -43,8 +22,8 @@ export async function POST(
       )
     }
 
-    // Look up the store's supply channel for inventory
-    const supplyChannelId = await getSupplyChannelForStore(storeKey)
+    const { supplyChannelId, distributionChannelId, productSelectionId } =
+      await getStoreChannelData(storeKey)
 
     const response = NextResponse.json({ success: true })
 
@@ -53,6 +32,8 @@ export async function POST(
       businessUnitKey,
       storeKey,
       supplyChannelId,
+      distributionChannelId,
+      productSelectionId,
     })
 
     return response

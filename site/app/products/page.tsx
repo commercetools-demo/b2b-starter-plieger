@@ -23,20 +23,35 @@ function ProductsContent() {
   const [products, setProducts] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState(searchParams.get('q') ?? '');
   const [categories, setCategories] = useState<Category[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') ?? '');
+
+  // Derive all filter state from URL so category clicks and pagination always reflect current URL
+  const query = searchParams.get('q') ?? '';
+  const selectedCategory = searchParams.get('category') ?? '';
   const offset = parseInt(searchParams.get('offset') ?? '0', 10);
+
+  // Separate controlled state for the text input while the user is typing
+  const [inputSearch, setInputSearch] = useState(query);
+
+  // Keep input in sync if the URL query changes externally (e.g. browser back/forward)
+  useEffect(() => {
+    setInputSearch(query);
+  }, [query]);
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
-    const params = new URLSearchParams();
-    params.set('limit', String(LIMIT));
-    params.set('offset', String(offset));
-    if (search) params.set('q', search);
-    if (selectedCategory) params.set('category', selectedCategory);
     try {
-      const res = await fetch(`/api/products?${params}`);
+      const body: Record<string, unknown> = {
+        limit: LIMIT,
+        cursor: `offset:${offset}`,
+      };
+      if (query) body.query = query;
+      if (selectedCategory) body.categories = [selectedCategory];
+      const res = await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
       const data = await res.json();
       setProducts(data.results ?? []);
       setTotal(data.total ?? 0);
@@ -45,7 +60,7 @@ function ProductsContent() {
     } finally {
       setLoading(false);
     }
-  }, [offset, search, selectedCategory]);
+  }, [offset, query, selectedCategory]);
 
   useEffect(() => {
     fetchProducts();
@@ -69,7 +84,7 @@ function ProductsContent() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    updateParams({ q: search, offset: '' });
+    updateParams({ q: inputSearch, offset: '' });
   };
 
   return (
@@ -109,8 +124,8 @@ function ProductsContent() {
               <Input
                 name="search"
                 type="search"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                value={inputSearch}
+                onChange={(e) => setInputSearch(e.target.value)}
                 placeholder="Search products..."
               />
             </div>

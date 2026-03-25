@@ -70,7 +70,6 @@ export async function DELETE(
     const purchaseList = await removeItemFromPurchaseList(
       session.customerId,
       session.businessUnitKey!,
-      session.storeKey!,
       id,
       version,
       lineItemId

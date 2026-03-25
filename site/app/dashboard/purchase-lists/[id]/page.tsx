@@ -119,7 +119,7 @@ export default function PurchaseListDetailPage() {
       <Button variant="ghost" size="sm" href="/dashboard/purchase-lists" className="mb-4">&larr; Back to Purchase Lists</Button>
 
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">{list.name}</h1>
+        <h1 className="text-2xl font-bold">{localizedString(list.name)}</h1>
         {items.length > 0 && (
           <Button variant="primary" loading={addingAll} onClick={handleAddAllToCart}>
             Add All to Cart

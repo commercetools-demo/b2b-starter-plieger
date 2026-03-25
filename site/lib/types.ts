@@ -163,6 +163,10 @@ export interface LineItem {
     discounted?: { value: Money };
   };
   totalPrice: Money;
+  recurrenceInfo?: {
+    recurrencePolicy: { id: string; typeId: 'recurrence-policy' };
+    priceSelectionMode: 'Dynamic' | 'Fixed';
+  };
 }
 
 export interface Cart {
@@ -380,6 +384,7 @@ export interface ProductVariant {
     country?: string;
     channel?: { id: string; typeId: 'channel' };
     customerGroup?: { id: string; typeId: 'customer-group' };
+    recurrencePolicy?: { id: string; typeId: 'recurrence-policy' };
   }>;
   /** Embedded price selected by priceChannel/priceCurrency query params */
   price?: {
@@ -419,6 +424,75 @@ export interface SessionData {
   businessUnitKey?: string;
   storeKey?: string;
   supplyChannelId?: string;
+  distributionChannelId?: string;
+  productSelectionId?: string;
+  /** B2B customer group IDs for priceCustomerGroupAssignments */
+  accountGroupIds?: string[];
+  locale?: string;
+  currency?: string;
+}
+
+// ─── Wishlists (Personal) ─────────────────────────────────────────
+export interface WishlistLineItem {
+  id: string;
+  productId: string;
+  name: Record<string, string>;
+  variant: {
+    id: number;
+    sku?: string;
+    images?: ProductImage[];
+  };
+  quantity: number;
+  addedAt: string;
+}
+
+export interface Wishlist {
+  id: string;
+  version: number;
+  key?: string;
+  name: Record<string, string>;
+  description?: Record<string, string>;
+  customer?: { id: string; typeId: 'customer' };
+  lineItems: WishlistLineItem[];
+  createdAt: string;
+  lastModifiedAt: string;
+}
+
+// ─── Recurring Orders ─────────────────────────────────────────────
+export type RecurringOrderState = 'Active' | 'Paused' | 'Canceled' | 'Expired';
+export type IntervalUnit = 'Days' | 'Weeks' | 'Months';
+
+export interface RecurrencePolicySchedule {
+  type: 'standard';
+  value: number;
+  intervalUnit: IntervalUnit;
+}
+
+export interface RecurrencePolicy {
+  id: string;
+  key?: string;
+  name: string;
+  schedule: RecurrencePolicySchedule;
+  createdAt: string;
+}
+
+export interface RecurringOrder {
+  id: string;
+  version: number;
+  businessUnitKey: string;
+  customerId: string;
+  originOrderId: string;
+  state: RecurringOrderState;
+  schedule: RecurrencePolicySchedule;
+  startsAt: string;
+  nextOrderAt?: string;
+  lastOrderAt?: string;
+  resumesAt?: string;
+  createdAt: string;
+  orderSnapshot: {
+    totalPrice: Money;
+    lineItems: { name: Record<string, string>; quantity: number }[];
+  };
 }
 
 // ─── Paginated Response ────────────────────────────────────────────

@@ -8,14 +8,12 @@ import { apiRoot } from './client';
 function asAssociateInStore(
   associateId: string,
   businessUnitKey: string,
-  storeKey: string
 ) {
   return (apiRoot
     .asAssociate()
     .withAssociateIdValue({ associateId })
-    .inBusinessUnitKeyWithBusinessUnitKeyValue({ businessUnitKey }) as any)
-    .inStoreKeyWithStoreKeyValue({ storeKey })
-    .carts();
+    .inBusinessUnitKeyWithBusinessUnitKeyValue({ businessUnitKey }))
+    .carts()
 }
 
 export async function createCart(
@@ -26,7 +24,7 @@ export async function createCart(
   currency = 'USD',
   country = 'US'
 ) {
-  const response = await asAssociateInStore(associateId, businessUnitKey, storeKey)
+  const response = await asAssociateInStore(associateId, businessUnitKey)
     .post({
       body: {
         currency,
@@ -35,6 +33,10 @@ export async function createCart(
         businessUnit: {
           key: businessUnitKey,
           typeId: 'business-unit',
+        },
+        store: {
+          key: storeKey,
+          typeId: 'store',
         },
       },
     })
@@ -48,7 +50,7 @@ export async function getCartById(
   businessUnitKey: string,
   storeKey: string
 ) {
-  const response = await asAssociateInStore(associateId, businessUnitKey, storeKey)
+  const response = await asAssociateInStore(associateId, businessUnitKey)
     .withId({ ID: cartId })
     .get()
     .execute();
@@ -63,7 +65,7 @@ export async function updateCart(
   businessUnitKey: string,
   storeKey: string
 ) {
-  const response = await asAssociateInStore(associateId, businessUnitKey, storeKey)
+  const response = await asAssociateInStore(associateId, businessUnitKey)
     .withId({ ID: cartId })
     .post({ body: { version, actions: actions as any } })
     .execute();
@@ -79,7 +81,8 @@ export async function addLineItem(
   associateId: string,
   businessUnitKey: string,
   storeKey: string,
-  distributionChannelId?: string
+  distributionChannelId?: string,
+  recurrenceInfo?: { recurrencePolicy: { typeId: string; id: string }; priceSelectionMode: string }
 ) {
   const lineAction: { action: string; [key: string]: unknown } = {
     action: 'addLineItem',
@@ -92,6 +95,9 @@ export async function addLineItem(
       typeId: 'channel',
       id: distributionChannelId,
     };
+  }
+  if (recurrenceInfo) {
+    lineAction.recurrenceInfo = recurrenceInfo;
   }
   return updateCart(cartId, version, [lineAction], associateId, businessUnitKey, storeKey);
 }
@@ -187,6 +193,35 @@ export async function addDiscountCode(
   );
 }
 
+export async function addLineItemWithRecurrence(
+  cartId: string,
+  version: number,
+  productId: string,
+  variantId: number,
+  quantity: number,
+  recurrencePolicyId: string,
+  associateId: string,
+  businessUnitKey: string,
+  storeKey: string,
+  distributionChannelId?: string
+) {
+  return addLineItem(
+    cartId,
+    version,
+    productId,
+    variantId,
+    quantity,
+    associateId,
+    businessUnitKey,
+    storeKey,
+    distributionChannelId,
+    {
+      recurrencePolicy: { typeId: 'recurrence-policy', id: recurrencePolicyId },
+      priceSelectionMode: 'Fixed',
+    }
+  );
+}
+
 export async function deleteCart(
   cartId: string,
   version: number,
@@ -194,7 +229,7 @@ export async function deleteCart(
   businessUnitKey: string,
   storeKey: string
 ) {
-  await asAssociateInStore(associateId, businessUnitKey, storeKey)
+  await asAssociateInStore(associateId, businessUnitKey)
     .withId({ ID: cartId })
     .delete({ queryArgs: { version } })
     .execute();

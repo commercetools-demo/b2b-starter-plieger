@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useCart } from '@/context/CartContext';
+import { useRecurrencePolicies } from '@/hooks/useRecurrencePolicies';
 import { formatMoney, localizedString } from '@/lib/utils';
 import type { LineItem } from '@/lib/types';
 
@@ -11,7 +12,12 @@ export interface CartItemProps {
 
 export function CartItem({ item }: CartItemProps) {
   const { updateQuantity, removeItem, loading } = useCart();
+  const { data: policies = [] } = useRecurrencePolicies();
   const [qty, setQty] = useState(item.quantity);
+
+  const recurringPolicy = item.recurrenceInfo
+    ? policies.find((p) => p.id === item.recurrenceInfo!.recurrencePolicy.id)
+    : null;
 
   const image = item.variant.images?.[0];
   const name = localizedString(item.name);
@@ -46,6 +52,11 @@ export function CartItem({ item }: CartItemProps) {
           <h4 className="text-sm font-medium text-slate-900">{name}</h4>
           {sku && (
             <p className="mt-0.5 text-xs text-slate-500">SKU: {sku}</p>
+          )}
+          {recurringPolicy && (
+            <span className="mt-1 inline-block text-xs text-blue-600 bg-blue-50 rounded px-1.5 py-0.5">
+              ↻ {recurringPolicy.name}
+            </span>
           )}
           <p className="mt-1 text-sm text-slate-600">
             {formatMoney(item.price.value)} each

@@ -1,13 +1,15 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useBusinessUnit } from '@/context/BusinessUnitContext';
 import { useCart } from '@/context/CartContext';
 import { MiniCart } from './MiniCart';
 import { QuickOrder } from '@/components/order/QuickOrder';
 import { usePermissions } from '@/hooks/usePermissions';
+import { LanguageSelector } from './LanguageSelector';
 
 const ChevronDown = () => (
   <svg className="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -22,6 +24,7 @@ const CheckIcon = () => (
 );
 
 export function Header() {
+  const router = useRouter();
   const { user, isLoggedIn, logout } = useAuth();
   const {
     currentBusinessUnit,
@@ -39,6 +42,10 @@ export function Header() {
   const [buMenuOpen, setBuMenuOpen] = useState(false);
   const [storeMenuOpen, setStoreMenuOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
+  const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const userMenuRef = useRef<HTMLDivElement>(null);
   const buMenuRef = useRef<HTMLDivElement>(null);
@@ -55,15 +62,38 @@ export function Header() {
       if (storeMenuRef.current && !storeMenuRef.current.contains(e.target as Node)) {
         setStoreMenuOpen(false);
       }
+      if (suggestionsRef.current && !suggestionsRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const fetchSuggestions = useCallback(async (q: string) => {
+    if (q.length < 2) { setSuggestions([]); return; }
+    try {
+      const res = await fetch(`/api/products/search-suggestions?q=${encodeURIComponent(q)}`);
+      const data = await res.json();
+      setSuggestions(data);
+      setShowSuggestions(true);
+    } catch {
+      setSuggestions([]);
+    }
+  }, []);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setSearch(val);
+    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+    searchDebounceRef.current = setTimeout(() => fetchSuggestions(val), 300);
+  };
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    setShowSuggestions(false);
     if (search.trim()) {
-      window.location.href = `/products?q=${encodeURIComponent(search.trim())}`;
+      router.push(`/search?q=${encodeURIComponent(search.trim())}`);
     }
   };
 
@@ -185,11 +215,12 @@ export function Header() {
             onSubmit={handleSearch}
             className="hidden flex-1 max-w-md mx-8 md:flex"
           >
-            <div className="relative w-full">
+            <div className="relative w-full" ref={suggestionsRef}>
               <input
                 type="text"
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={handleSearchChange}
+                onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
                 placeholder="Search products..."
                 className="w-full rounded-md border border-slate-300 py-2 pl-3 pr-10 text-sm text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
@@ -201,11 +232,41 @@ export function Header() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </button>
+              {/* Suggestions dropdown */}
+              {showSuggestions && suggestions.length > 0 && (
+                <div className="absolute left-0 right-0 top-full z-40 mt-1 rounded-md border border-slate-200 bg-white shadow-lg">
+                  {suggestions.map((s) => (
+                    <a
+                      key={s.id}
+                      href={s.url}
+                      onClick={() => setShowSuggestions(false)}
+                      className="flex items-center gap-3 px-3 py-2 hover:bg-slate-50"
+                    >
+                      {s.image && (
+                        <img src={s.image} alt="" className="h-8 w-8 rounded object-cover" />
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm text-slate-900">{s.name}</p>
+                        {s.sku && <p className="text-xs text-slate-400">SKU: {s.sku}</p>}
+                      </div>
+                    </a>
+                  ))}
+                  <div className="border-t border-slate-100 px-3 py-2">
+                    <button
+                      type="submit"
+                      className="text-xs text-red-600 hover:underline"
+                    >
+                      See all results for &ldquo;{search}&rdquo;
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </form>
 
           {/* Right actions */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            <LanguageSelector />
             {isLoggedIn ? (
               <>
                 {/* Quick Order */}
@@ -326,7 +387,7 @@ export function Header() {
                 <input
                   type="text"
                   value={search}
-                  onChange={(e) => setSearch(e.target.value)}
+                  onChange={handleSearchChange}
                   placeholder="Search products..."
                   className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
                 />

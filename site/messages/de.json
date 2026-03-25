@@ -1,0 +1,120 @@
+{
+  "auth": {
+    "forgotPassword": {
+      "title": "Passwort vergessen",
+      "description": "Geben Sie Ihre E-Mail-Adresse ein und wir senden Ihnen einen Reset-Link.",
+      "emailLabel": "E-Mail-Adresse",
+      "submitButton": "Reset-Link senden",
+      "successMessage": "Falls ein Konto mit dieser E-Mail existiert, erhalten Sie in Kürze einen Reset-Link.",
+      "backToLogin": "Zurück zur Anmeldung"
+    },
+    "resetPassword": {
+      "title": "Passwort zurücksetzen",
+      "newPasswordLabel": "Neues Passwort",
+      "submitButton": "Passwort zurücksetzen",
+      "successMessage": "Ihr Passwort wurde zurückgesetzt. Sie können sich jetzt anmelden.",
+      "invalidToken": "Dieser Reset-Link ist ungültig oder abgelaufen."
+    }
+  },
+  "account": {
+    "title": "Mein Konto",
+    "tabs": {
+      "general": "Allgemein",
+      "security": "Sicherheit",
+      "addresses": "Adressen"
+    },
+    "general": {
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "email": "E-Mail",
+      "saveButton": "Änderungen speichern",
+      "successMessage": "Profil erfolgreich aktualisiert."
+    },
+    "security": {
+      "currentPassword": "Aktuelles Passwort",
+      "newPassword": "Neues Passwort",
+      "submitButton": "Passwort ändern",
+      "successMessage": "Passwort erfolgreich geändert."
+    },
+    "addresses": {
+      "addAddress": "Adresse hinzufügen",
+      "noAddresses": "Noch keine Adressen gespeichert.",
+      "street": "Straße",
+      "city": "Stadt",
+      "state": "Bundesland",
+      "postalCode": "Postleitzahl",
+      "country": "Land",
+      "saveButton": "Adresse speichern",
+      "deleteConfirm": "Diese Adresse löschen?"
+    }
+  },
+  "categories": {
+    "title": "Kategorien",
+    "browseAll": "Alle Kategorien durchsuchen",
+    "noProducts": "Keine Produkte in dieser Kategorie gefunden.",
+    "products": "Produkte"
+  },
+  "search": {
+    "title": "Suchergebnisse",
+    "resultsFor": "Ergebnisse für \"{query}\"",
+    "noResults": "Keine Produkte für \"{query}\" gefunden.",
+    "placeholder": "Produkte suchen...",
+    "allResults": "Alle Ergebnisse für \"{query}\" anzeigen"
+  },
+  "wishlists": {
+    "title": "Meine Wunschlisten",
+    "createWishlist": "Wunschliste erstellen",
+    "nameLabel": "Name der Wunschliste",
+    "noWishlists": "Noch keine Wunschlisten vorhanden.",
+    "addToCart": "In den Warenkorb",
+    "removeItem": "Entfernen",
+    "emptyWishlist": "Diese Wunschliste ist leer.",
+    "deleteWishlist": "Wunschliste löschen",
+    "items": "{count} Artikel"
+  },
+  "checkoutQuote": {
+    "title": "Angebot annehmen",
+    "summary": "Angebotsübersicht",
+    "acceptButton": "Annehmen & Bestellung aufgeben",
+    "sellerComment": "Verkäuferhinweis",
+    "successMessage": "Bestellung erfolgreich aufgegeben!",
+    "validTo": "Gültig bis",
+    "lineItems": "Positionen"
+  },
+  "recurringOrders": {
+    "title": "Wiederkehrende Bestellungen",
+    "status": {
+      "Active": "Aktiv",
+      "Paused": "Pausiert",
+      "Canceled": "Abgebrochen",
+      "Expired": "Abgelaufen"
+    },
+    "pause": "Pausieren",
+    "resume": "Fortsetzen",
+    "cancel": "Abbrechen",
+    "duplicate": "Duplizieren",
+    "schedule": "Zeitplan",
+    "nextOrder": "Nächste Bestellung",
+    "lastOrder": "Letzte Bestellung",
+    "noOrders": "Keine wiederkehrenden Bestellungen gefunden.",
+    "originOrder": "Ursprüngliche Bestellung",
+    "lineItems": "Artikel"
+  },
+  "ratings": {
+    "title": "Kundenbewertungen",
+    "writeReview": "Bewertung schreiben",
+    "submitReview": "Bewertung absenden",
+    "ratingLabel": "Ihre Bewertung",
+    "commentLabel": "Ihre Rezension",
+    "titleLabel": "Titel der Rezension",
+    "noReviews": "Noch keine Bewertungen. Seien Sie der Erste!",
+    "loginToReview": "Anmelden um eine Bewertung zu schreiben",
+    "averageRating": "Durchschnittsbewertung",
+    "totalReviews": "{count} Bewertungen"
+  },
+  "language": {
+    "en": "English",
+    "de": "Deutsch",
+    "selectLanguage": "Sprache"
+  }
+}
