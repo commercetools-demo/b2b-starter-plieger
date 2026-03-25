@@ -12,7 +12,6 @@ export interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const { isLoggedIn } = useAuth();
   const name = localizedString(product.name);
-  const slug = localizedString(product.slug);
   const image = product.masterVariant.images?.[0];
   const price = product.masterVariant.price?.value
     ?? product.masterVariant.prices?.[0]?.value;
@@ -20,7 +19,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Link
-      href={`/products/${slug}`}
+      href={`/products/${product.id}`}
       className="group flex flex-col overflow-hidden rounded-lg border border-slate-200 bg-white transition-shadow hover:shadow-md"
     >
       {/* Image */}

@@ -38,7 +38,7 @@ function formatAttributeValue(value: any): string {
 }
 
 export default function ProductDetailPage() {
-  const { slug } = useParams<{ slug: string }>();
+  const { id } = useParams<{ id: string }>();
   const { addToast } = useToast();
   const { isLoggedIn } = useAuth();
   const { hasAnyPermission } = usePermissions();
@@ -56,7 +56,7 @@ export default function ProductDetailPage() {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`/api/products/${slug}`)
+    fetch(`/api/products/${id}`)
       .then((res) => res.json())
       .then((data) => {
         setProduct(data.product ?? data);
@@ -64,7 +64,7 @@ export default function ProductDetailPage() {
       })
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, [slug]);
+  }, [id]);
 
   // Extract inventory from product variant availability using the store's supply channel
   const availability = product?.masterVariant?.availability;
@@ -139,7 +139,7 @@ export default function ProductDetailPage() {
   const attributes = product.masterVariant?.attributes ?? [];
   const recurringPrices = product.masterVariant?.recurrencePrices?.filter((p: any) => p.recurrencePolicy);
   const allPrices = product.masterVariant?.prices.concat(recurringPrices);
-  const showSubscribeAndSave = isLoggedIn && recurringPrices.length > 0 && recurrencePolicies.length > 0;
+  const showSubscribeAndSave = isLoggedIn && recurringPrices?.length > 0 && recurrencePolicies?.length > 0;
   const name = localizedString(product.name);
   const description = localizedString(product.description);
   const sku = product.masterVariant?.sku;

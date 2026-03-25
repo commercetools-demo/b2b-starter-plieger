@@ -190,45 +190,6 @@ export class ProductApi {
   }
 
   // --------------------------------------------------------------------------
-  // getProductBySlug — exact slug match via Product Search API
-  // --------------------------------------------------------------------------
-
-  async getProductBySlug(slug: string, locale = 'en-US'): Promise<ProductProjection | null> {
-    const ctLocale = getLocale({ ...this.session, locale: this.session.locale ?? locale });
-
-    // Use a direct slug-exact search (bypassing the factory for precision)
-    const response = await apiRoot
-      .products()
-      .search()
-      .post({
-        body: {
-          limit: 1,
-          query: {
-            exact: {
-              field: 'slug',
-              language: ctLocale.language,
-              value: slug,
-            },
-          },
-          productProjectionParameters: {
-            priceCurrency: ctLocale.currency,
-            priceCountry: ctLocale.country,
-            staged: false,
-            ...(this.session.storeKey ? { storeProjection: this.session.storeKey } : {}),
-            ...(this.session.distributionChannelId ? { priceChannel: this.session.distributionChannelId } : {}),
-            ...(this.session.accountGroupIds?.length
-              ? { priceCustomerGroupAssignments: this.session.accountGroupIds }
-              : {}),
-          },
-        } as any,
-      })
-      .execute();
-
-    const searchResult = response.body.results?.[0] as any;
-    return (searchResult?.productProjection ?? searchResult) || null;
-  }
-
-  // --------------------------------------------------------------------------
   // queryCategories — with optional store scoping
   // --------------------------------------------------------------------------
 

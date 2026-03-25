@@ -22,14 +22,13 @@ export async function POST(request: NextRequest) {
 
     await apiRoot
       .customers()
-      .withId({ ID: session.customerId })
-      .changePassword()
+      .password()
       .post({
         body: {
-          id: session.customerId,
           version: customer.body.version,
           currentPassword,
           newPassword,
+          id: session.customerId,
         },
       })
       .execute();

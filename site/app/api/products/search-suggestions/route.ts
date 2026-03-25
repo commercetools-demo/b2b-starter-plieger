@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
       name: localizedString(p.name),
       sku: p.masterVariant?.sku,
       image: p.masterVariant?.images?.[0]?.url,
-      url: `/products/${localizedString(p.slug)}`,
+      url: `/products/${p.id}`,
     }));
     return NextResponse.json(suggestions);
   } catch {

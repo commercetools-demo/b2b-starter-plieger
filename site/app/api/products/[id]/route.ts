@@ -1,18 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getProductBySlug } from '@/lib/ct/products';
+import { getProductById } from '@/lib/ct/products';
 import { getSession } from '@/lib/session';
 
 export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> },
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { slug } = await params;
-    const { searchParams } = new URL(request.url);
-    const locale = searchParams.get('locale') || undefined;
-
+    const { id } = await params;
     const session = await getSession();
-    const product = await getProductBySlug(slug, locale, session);
+    const product = await getProductById(id, session);
 
     if (!product) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });

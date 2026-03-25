@@ -81,7 +81,8 @@ export async function addLineItem(
   associateId: string,
   businessUnitKey: string,
   storeKey: string,
-  distributionChannelId?: string
+  distributionChannelId?: string,
+  recurrenceInfo?: { recurrencePolicy: { typeId: string; id: string }; priceSelectionMode: string }
 ) {
   const lineAction: { action: string; [key: string]: unknown } = {
     action: 'addLineItem',
@@ -94,6 +95,9 @@ export async function addLineItem(
       typeId: 'channel',
       id: distributionChannelId,
     };
+  }
+  if (recurrenceInfo) {
+    lineAction.recurrenceInfo = recurrenceInfo;
   }
   return updateCart(cartId, version, [lineAction], associateId, businessUnitKey, storeKey);
 }
@@ -201,8 +205,7 @@ export async function addLineItemWithRecurrence(
   storeKey: string,
   distributionChannelId?: string
 ) {
-  // Step 1: add the line item
-  const cart1 = await addLineItem(
+  return addLineItem(
     cartId,
     version,
     productId,
@@ -211,32 +214,11 @@ export async function addLineItemWithRecurrence(
     associateId,
     businessUnitKey,
     storeKey,
-    distributionChannelId
-  );
-  // Step 2: find the newly added line item by productId + variantId
-  const lineItem = cart1.lineItems.find(
-    (li) => li.productId === productId && li.variant.id === variantId
-  );
-  if (!lineItem) {
-    throw new Error('Line item not found after add');
-  }
-  // Step 3: set recurrence info
-  return updateCart(
-    cartId,
-    cart1.version,
-    [
-      {
-        action: 'setLineItemRecurrenceInfo',
-        lineItemId: lineItem.id,
-        recurrenceInfo: {
-          recurrencePolicy: { typeId: 'recurrence-policy', id: recurrencePolicyId },
-          priceSelectionMode: 'Fixed',
-        },
-      },
-    ],
-    associateId,
-    businessUnitKey,
-    storeKey
+    distributionChannelId,
+    {
+      recurrencePolicy: { typeId: 'recurrence-policy', id: recurrencePolicyId },
+      priceSelectionMode: 'Fixed',
+    }
   );
 }
 

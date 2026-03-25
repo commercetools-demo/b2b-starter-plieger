@@ -27,15 +27,6 @@ export async function searchProducts(
 // Single product lookup
 // ---------------------------------------------------------------------------
 
-export async function getProductBySlug(
-  slug: string,
-  locale = 'en-US',
-  session?: Partial<SessionData>,
-) {
-  const s = session ?? await getSession();
-  return new ProductApi(s).getProductBySlug(slug, locale);
-}
-
 export async function getProductById(
   id: string,
   session?: Partial<SessionData>,
