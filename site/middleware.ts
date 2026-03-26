@@ -33,9 +33,8 @@ export async function middleware(request: NextRequest) {
 
   // Derive locale from session, fallback to default
   const rawSessionLocale = (session.locale as string | undefined) ?? DEFAULT_LOCALE.language;
-  const sessionLanguage = rawSessionLocale.split('-')[0].toLowerCase();
-  const sessionLocale = (locales as readonly string[]).includes(sessionLanguage)
-    ? sessionLanguage
+  const sessionLocale = (locales as readonly string[]).includes(rawSessionLocale)
+    ? rawSessionLocale
     : DEFAULT_LOCALE.language;
 
   // No locale prefix → redirect to locale-prefixed URL

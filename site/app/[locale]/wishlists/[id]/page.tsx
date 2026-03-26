@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { useLocale } from '@/context/LocaleContext';
+import { useWishlist, useWishlistMutations } from '@/hooks/useWishlists';
 import { Button } from '@/components/ui/Button';
 import { WishlistItemRow } from '@/components/wishlists/WishlistItemRow';
 import { localizedString } from '@/lib/utils';
@@ -15,36 +15,24 @@ export default function WishlistDetailPage() {
   const { localePath } = useLocale();
   const { isLoggedIn } = useAuth();
   const { addToast } = useToast();
+  const { data: wishlist, isLoading } = useWishlist(id);
+  const { removeItem } = useWishlistMutations();
 
-  const [wishlist, setWishlist] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!isLoggedIn) { router.push(localePath('/login')); return; }
-    fetch(`/api/wishlists/${id}`)
-      .then((r) => r.json())
-      .then(setWishlist)
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, [id, isLoggedIn, router]);
+  if (!isLoggedIn) {
+    router.push(localePath('/login'));
+    return null;
+  }
 
   const handleRemoveItem = async (lineItemId: string) => {
     try {
-      const res = await fetch(`/api/wishlists/${id}/items`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lineItemId }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      setWishlist(data);
+      await removeItem(id, lineItemId);
       addToast('Item removed');
     } catch (err: any) {
       addToast(err?.message ?? 'Failed to remove item');
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="mx-auto max-w-3xl px-6 py-10">
         <div className="animate-pulse space-y-4">

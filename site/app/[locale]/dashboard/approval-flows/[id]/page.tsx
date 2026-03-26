@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useToast } from '@/context/ToastContext';
 import { useLocale } from '@/context/LocaleContext';
+import { useApprovalFlow, useApprovalFlowMutations } from '@/hooks/useApprovalFlows';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Table } from '@/components/ui/Table';
@@ -21,31 +22,17 @@ export default function ApprovalFlowDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { localePath } = useLocale();
   const { addToast } = useToast();
-  const [flow, setFlow] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const { data: flow, isLoading } = useApprovalFlow(id);
+  const { performFlowAction } = useApprovalFlowMutations();
+
   const [actionLoading, setActionLoading] = useState(false);
   const [rejectOpen, setRejectOpen] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
 
-  useEffect(() => {
-    fetch(`/api/approval-flows/${id}`)
-      .then((r) => r.json())
-      .then((data) => setFlow(data.approvalFlow ?? data))
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, [id]);
-
   const handleApprove = async () => {
     setActionLoading(true);
     try {
-      const res = await fetch(`/api/approval-flows/${id}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'approve' }),
-      });
-      if (!res.ok) throw new Error();
-      const data = await res.json();
-      setFlow(data.approvalFlow ?? data);
+      await performFlowAction(id, 'approve');
       addToast('Flow approved');
     } catch {
       addToast('Failed to approve');
@@ -57,14 +44,7 @@ export default function ApprovalFlowDetailPage() {
   const handleReject = async () => {
     setActionLoading(true);
     try {
-      const res = await fetch(`/api/approval-flows/${id}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'reject', reason: rejectReason }),
-      });
-      if (!res.ok) throw new Error();
-      const data = await res.json();
-      setFlow(data.approvalFlow ?? data);
+      await performFlowAction(id, 'reject', rejectReason);
       addToast('Flow rejected');
       setRejectOpen(false);
       setRejectReason('');
@@ -75,7 +55,7 @@ export default function ApprovalFlowDetailPage() {
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="animate-pulse space-y-4">
         <div className="h-8 bg-gray-200 rounded w-1/3" />
@@ -110,7 +90,6 @@ export default function ApprovalFlowDetailPage() {
     <div>
       <Button variant="ghost" size="sm" href={localePath('/dashboard/approval-flows')} className="mb-4">&larr; Back to Approval Flows</Button>
 
-      {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold">Approval Flow</h1>
@@ -119,7 +98,6 @@ export default function ApprovalFlowDetailPage() {
         <Badge variant={statusVariant[flow.status] ?? 'neutral'}>{flow.status}</Badge>
       </div>
 
-      {/* Order Info */}
       {flow.order && (
         <div className="bg-white rounded-xl border border-gray-100 p-6 mb-6">
           <h2 className="text-lg font-semibold mb-3">Linked Order</h2>
@@ -144,7 +122,6 @@ export default function ApprovalFlowDetailPage() {
         </div>
       )}
 
-      {/* Rules */}
       {flow.rules?.length > 0 && (
         <div className="bg-white rounded-xl border border-gray-100 p-6 mb-6">
           <h2 className="text-lg font-semibold mb-3">Applicable Rules</h2>
@@ -159,7 +136,6 @@ export default function ApprovalFlowDetailPage() {
         </div>
       )}
 
-      {/* Approvals */}
       {flow.approvals?.length > 0 && (
         <div className="bg-white rounded-xl border border-gray-100 p-6 mb-6">
           <h2 className="text-lg font-semibold mb-4">Approvals</h2>
@@ -167,7 +143,6 @@ export default function ApprovalFlowDetailPage() {
         </div>
       )}
 
-      {/* Rejections */}
       {flow.rejections?.length > 0 && (
         <div className="bg-white rounded-xl border border-gray-100 p-6 mb-6">
           <h2 className="text-lg font-semibold mb-4">Rejections</h2>
@@ -175,7 +150,6 @@ export default function ApprovalFlowDetailPage() {
         </div>
       )}
 
-      {/* Eligible / Pending Approvers */}
       {(flow.eligibleApprovers?.length > 0 || flow.pendingApprovers?.length > 0) && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           {flow.eligibleApprovers?.length > 0 && (
@@ -201,7 +175,6 @@ export default function ApprovalFlowDetailPage() {
         </div>
       )}
 
-      {/* Actions */}
       {isPending && (
         <div className="flex gap-3">
           <Button variant="primary" loading={actionLoading} onClick={handleApprove}>Approve</Button>
@@ -209,7 +182,6 @@ export default function ApprovalFlowDetailPage() {
         </div>
       )}
 
-      {/* Reject Modal */}
       <Modal
         isOpen={rejectOpen}
         onClose={() => setRejectOpen(false)}

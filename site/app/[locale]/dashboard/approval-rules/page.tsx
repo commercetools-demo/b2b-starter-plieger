@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useState } from 'react';
 import { useToast } from '@/context/ToastContext';
 import { useLocale } from '@/context/LocaleContext';
+import { useApprovalRules, useApprovalRuleMutations } from '@/hooks/useApprovalRules';
 import { Table } from '@/components/ui/Table';
 import { Pagination } from '@/components/ui/Pagination';
 import { Button } from '@/components/ui/Button';
@@ -46,48 +47,27 @@ const emptyForm: EditForm = {
 export default function ApprovalRulesPage() {
   const { addToast } = useToast();
   const { localePath } = useLocale();
-  const [rules, setRules] = useState<any[]>([]);
-  const [total, setTotal] = useState(0);
   const [offset, setOffset] = useState(0);
-  const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingRule, setEditingRule] = useState<any>(null);
   const [form, setForm] = useState<EditForm>(emptyForm);
   const [saving, setSaving] = useState(false);
 
-  const fetchRules = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/approval-rules?limit=${LIMIT}&offset=${offset}`);
-      const data = await res.json();
-      setRules(data.results ?? []);
-      setTotal(data.total ?? 0);
-    } catch {
-      setRules([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [offset]);
-
-  useEffect(() => {
-    fetchRules();
-  }, [fetchRules]);
+  const { data, isLoading } = useApprovalRules(offset);
+  const { updateRule } = useApprovalRuleMutations();
+  const rules = data?.results ?? [];
+  const total = data?.total ?? 0;
 
   const openEdit = (rule: any) => {
     setEditingRule(rule);
 
-    // Parse the predicate string back into visual conditions
     const conditions = parsePredicate(rule.predicate ?? '');
-
-    // Extract requester role keys
     const requesters =
       rule.requesters?.map((r: any) => r.associateRole?.key).filter(Boolean) ?? [];
 
-    // Extract approver tiers - handle nested or/and structure
     let approvers: { role: string; tier: number }[] = [];
     if (rule.approvers?.tiers) {
       approvers = rule.approvers.tiers.map((tier: any, i: number) => {
-        // Structure: tiers[].and[].or[].associateRole.key
         const roleKey =
           tier?.and?.[0]?.or?.[0]?.associateRole?.key ??
           tier?.and?.[0]?.associateRole?.key ??
@@ -158,7 +138,6 @@ export default function ApprovalRulesPage() {
       const predicate = buildPredicateString(form.conditions);
 
       if (editingRule) {
-        // Update existing rule using update actions
         const actions: any[] = [];
 
         if (form.name !== editingRule.name) {
@@ -174,7 +153,6 @@ export default function ApprovalRulesPage() {
           actions.push({ action: 'setPredicate', predicate });
         }
 
-        // Always update approvers and requesters for simplicity
         actions.push({
           action: 'setApprovers',
           approvers: {
@@ -190,20 +168,11 @@ export default function ApprovalRulesPage() {
           })),
         });
 
-        const res = await fetch(`/api/approval-rules/${editingRule.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ version: editingRule.version, actions }),
-        });
-        if (!res.ok) {
-          const err = await res.json().catch(() => ({}));
-          throw new Error(err.error || 'Failed to update rule');
-        }
+        await updateRule(editingRule.id, editingRule.version, actions);
       }
 
       addToast('Rule updated');
       setModalOpen(false);
-      fetchRules();
     } catch (e: any) {
       addToast(e.message || 'Failed to save rule');
     } finally {
@@ -259,7 +228,7 @@ export default function ApprovalRulesPage() {
       </div>
 
       <div className="bg-white rounded-xl border border-gray-100 p-6">
-        <Table columns={columns} data={rules} loading={loading} emptyMessage="No approval rules found." />
+        <Table columns={columns} data={rules} loading={isLoading} emptyMessage="No approval rules found." />
         {total > LIMIT && (
           <div className="mt-6">
             <Pagination total={total} limit={LIMIT} offset={offset} onChange={setOffset} />
@@ -267,7 +236,6 @@ export default function ApprovalRulesPage() {
         )}
       </div>
 
-      {/* Edit Modal */}
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
@@ -307,7 +275,6 @@ export default function ApprovalRulesPage() {
             onChange={(e) => setForm((p) => ({ ...p, status: e.target.value }))}
           />
 
-          {/* Predicate Builder */}
           <div>
             <p className="text-sm font-medium text-slate-700 mb-2">Conditions</p>
             <PredicateBuilder
@@ -316,7 +283,6 @@ export default function ApprovalRulesPage() {
             />
           </div>
 
-          {/* Requesters */}
           <div>
             <p className="text-sm font-medium text-slate-700 mb-2">Requesters</p>
             <div className="flex flex-wrap gap-2">
@@ -341,7 +307,6 @@ export default function ApprovalRulesPage() {
             </div>
           </div>
 
-          {/* Approvers */}
           <div>
             <p className="text-sm font-medium text-slate-700 mb-2">Approvers</p>
             <div className="space-y-2">

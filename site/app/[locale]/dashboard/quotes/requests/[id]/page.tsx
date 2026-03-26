@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useToast } from '@/context/ToastContext';
 import { useLocale } from '@/context/LocaleContext';
+import { useQuoteRequest, useQuoteMutations } from '@/hooks/useQuotes';
 import { Button } from '@/components/ui/Button';
 import { Table } from '@/components/ui/Table';
 import { QuoteStatus } from '@/components/quotes/QuoteStatus';
@@ -13,30 +14,15 @@ export default function QuoteRequestDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { localePath } = useLocale();
   const { addToast } = useToast();
-  const [quoteRequest, setQuoteRequest] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const { data: quoteRequest, isLoading } = useQuoteRequest(id);
+  const { cancelQuoteRequest } = useQuoteMutations();
   const [cancelLoading, setCancelLoading] = useState(false);
-
-  useEffect(() => {
-    fetch(`/api/quote-requests/${id}`)
-      .then((r) => r.json())
-      .then((data) => setQuoteRequest(data.quoteRequest ?? data))
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, [id]);
 
   const handleCancel = async () => {
     if (!quoteRequest) return;
     setCancelLoading(true);
     try {
-      const res = await fetch(`/api/quote-requests/${id}`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ version: quoteRequest.version }),
-      });
-      if (!res.ok) throw new Error();
-      const data = await res.json();
-      setQuoteRequest(data.quoteRequest ?? data);
+      await cancelQuoteRequest(id, quoteRequest.version);
       addToast('Quote request cancelled');
     } catch {
       addToast('Failed to cancel quote request');
@@ -45,7 +31,7 @@ export default function QuoteRequestDetailPage() {
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="animate-pulse space-y-4">
         <div className="h-8 bg-gray-200 rounded w-1/3" />
@@ -81,7 +67,6 @@ export default function QuoteRequestDetailPage() {
     <div>
       <Button variant="ghost" size="sm" href={localePath('/dashboard/quotes')} className="mb-4">&larr; Back to Quotes</Button>
 
-      {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold">Quote Request {quoteRequest.id.slice(0, 8)}</h1>
@@ -90,7 +75,6 @@ export default function QuoteRequestDetailPage() {
         <QuoteStatus state={state} />
       </div>
 
-      {/* Line Items */}
       <div className="bg-white rounded-xl border border-gray-100 p-6 mb-6">
         <h2 className="text-lg font-semibold mb-4">Line Items</h2>
         <Table columns={lineItemColumns} data={quoteRequest.lineItems ?? []} loading={false} emptyMessage="No items" />
@@ -102,7 +86,6 @@ export default function QuoteRequestDetailPage() {
         </div>
       </div>
 
-      {/* Notes */}
       {quoteRequest.comment && (
         <div className="bg-white rounded-xl border border-gray-100 p-6 mb-6">
           <h2 className="text-lg font-semibold mb-2">Notes</h2>
@@ -110,7 +93,6 @@ export default function QuoteRequestDetailPage() {
         </div>
       )}
 
-      {/* PO Number */}
       {quoteRequest.purchaseOrderNumber && (
         <div className="bg-white rounded-xl border border-gray-100 p-6 mb-6">
           <h2 className="text-lg font-semibold mb-2">Purchase Order</h2>
@@ -118,7 +100,6 @@ export default function QuoteRequestDetailPage() {
         </div>
       )}
 
-      {/* Actions */}
       {canCancel && (
         <div className="flex gap-3">
           <Button variant="danger" loading={cancelLoading} onClick={handleCancel}>

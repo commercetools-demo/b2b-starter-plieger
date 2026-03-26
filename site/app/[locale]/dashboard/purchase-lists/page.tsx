@@ -1,12 +1,13 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/context/ToastContext';
 import { useLocale } from '@/context/LocaleContext';
 import { useBusinessUnit } from '@/context/BusinessUnitContext';
 import { useAuth } from '@/context/AuthContext';
 import { usePermissions } from '@/hooks/usePermissions';
+import { usePurchaseLists, usePurchaseListMutations } from '@/hooks/usePurchaseLists';
 import { Button } from '@/components/ui/Button';
 import { Table } from '@/components/ui/Table';
 import { Modal } from '@/components/ui/Modal';
@@ -21,8 +22,10 @@ export default function PurchaseListsPage() {
   const { user } = useAuth();
   const { currentBusinessUnit } = useBusinessUnit();
   const { can } = usePermissions();
-  const [lists, setLists] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data, isLoading } = usePurchaseLists();
+  const { createList, deleteList } = usePurchaseListMutations();
+  const lists = data?.results ?? [];
+
   const [createOpen, setCreateOpen] = useState(false);
   const [newName, setNewName] = useState('');
   const [creating, setCreating] = useState(false);
@@ -34,37 +37,14 @@ export default function PurchaseListsPage() {
   const canDeleteMy = can('DeleteMyShoppingLists');
   const canDeleteOthers = can('DeleteOthersShoppingLists');
 
-  const fetchLists = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await fetch('/api/purchase-lists');
-      const data = await res.json();
-      setLists(data.results ?? []);
-    } catch {
-      setLists([]);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchLists();
-  }, [fetchLists]);
-
   const handleCreate = async () => {
     if (!newName.trim()) return;
     setCreating(true);
     try {
-      const res = await fetch('/api/purchase-lists', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: newName.trim() }),
-      });
-      if (!res.ok) throw new Error();
+      await createList(newName.trim());
       addToast('Purchase list created');
       setCreateOpen(false);
       setNewName('');
-      fetchLists();
     } catch {
       addToast('Failed to create list');
     } finally {
@@ -73,18 +53,12 @@ export default function PurchaseListsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    const list = lists.find((l) => l.id === id);
+    const list = lists.find((l: any) => l.id === id);
     if (!list) return;
     setDeletingId(id);
     try {
-      const res = await fetch(`/api/purchase-lists/${id}`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ version: list.version }),
-      });
-      if (!res.ok) throw new Error();
+      await deleteList(id, list.version);
       addToast('Purchase list deleted');
-      fetchLists();
     } catch {
       addToast('Failed to delete list');
     } finally {
@@ -149,7 +123,7 @@ export default function PurchaseListsPage() {
     },
   ];
 
-  if (!loading && lists.length === 0) {
+  if (!isLoading && lists.length === 0) {
     return (
       <div>
         <div className="flex items-center justify-between mb-6">
@@ -197,7 +171,7 @@ export default function PurchaseListsPage() {
       </div>
 
       <div className="bg-white rounded-xl border border-gray-100 p-6">
-        <Table columns={columns} data={lists} loading={loading} emptyMessage="No purchase lists." onRowClick={(row: any) => router.push(localePath(`/dashboard/purchase-lists/${row.id}`))} />
+        <Table columns={columns} data={lists} loading={isLoading} emptyMessage="No purchase lists." onRowClick={(row: any) => router.push(localePath(`/dashboard/purchase-lists/${row.id}`))} />
       </div>
 
       <CreateModal

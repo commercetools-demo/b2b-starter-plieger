@@ -10,7 +10,7 @@
 import type { ProductProjection, Category as CTCategory } from '@commercetools/platform-sdk';
 import { apiRoot } from './client';
 import { ProductSearchFactory } from './product-search-factory';
-import { DEFAULT_LOCALE } from '@/i18n/config';
+import { DEFAULT_LOCALE, LANGUAGE_LOCALE_MAP } from '@/i18n/config';
 import type {
   ProductQuery,
   ProductPaginatedResult,
@@ -46,10 +46,11 @@ const PRODUCT_PROJECTION_EXPANDS = [
 
 function getLocale(session: Partial<SessionData>): Locale {
   const rawLocale = session.locale ?? DEFAULT_LOCALE.locale;
-  const parts = rawLocale.includes('-') ? rawLocale.split('-') : [rawLocale, 'US'];
+  const resolvedLocale = LANGUAGE_LOCALE_MAP[rawLocale] ? rawLocale : DEFAULT_LOCALE.locale;
+  const config = LANGUAGE_LOCALE_MAP[resolvedLocale];
   return {
-    language: parts[0] ?? DEFAULT_LOCALE.language,
-    country: parts[1] ?? 'US',
+    language: resolvedLocale,
+    country: config.country,
     currency: session.currency ?? DEFAULT_LOCALE.currency,
   };
 }
@@ -108,11 +109,14 @@ export class ProductApi {
       'key',
     );
 
+
     const response = await apiRoot
       .products()
       .search()
       .post({ body: searchRequest as any })
       .execute();
+
+      console.log('Product search response', response)
 
     let searchResults = response.body.results as any[];
     const productIds: string[] = searchResults.map((r: any) => r.id).filter(Boolean);

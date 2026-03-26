@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState, useCallback, Suspense } from 'react';
+import { useMemo, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useProducts } from '@/hooks/useProducts';
 import { ProductGrid } from '@/components/product/ProductGrid';
 import { Pagination } from '@/components/ui/Pagination';
 import { FacetSidebar } from './FacetSidebar';
@@ -21,7 +22,6 @@ function CategoryViewContent({ categoryId, categoryName }: CategoryViewProps) {
   const offset = parseInt(searchParams.get('offset') ?? '0', 10);
   const sort = searchParams.get('sort') ?? 'score';
 
-  // Parse active filters from URL: filter.{name}=val1,val2
   const selectedFilters: Record<string, string[]> = {};
   searchParams.forEach((value, key) => {
     if (key.startsWith('filter.')) {
@@ -29,47 +29,29 @@ function CategoryViewContent({ categoryId, categoryName }: CategoryViewProps) {
     }
   });
 
-  const [products, setProducts] = useState<any[]>([]);
-  const [total, setTotal] = useState(0);
-  const [facets, setFacets] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const body = useMemo(() => {
+    const filters = Object.entries(selectedFilters)
+      .filter(([, vals]) => vals.length > 0)
+      .map(([k, vals]) => ({ identifier: k, type: 'term', terms: vals }));
 
-  const fetchProducts = useCallback(async () => {
-    setLoading(true);
-    try {
-      const filters = Object.entries(selectedFilters)
-        .filter(([, vals]) => vals.length > 0)
-        .map(([k, vals]) => ({ identifier: k, type: 'term', terms: vals }));
-
-      const body: Record<string, unknown> = {
-        limit: LIMIT,
-        cursor: `offset:${offset}`,
-        categories: [categoryId],
-      };
-      if (filters.length) body.filters = filters;
-      if (sort && sort !== 'score') {
-        const [field, order] = sort.split('-');
-        if (field) body.sortAttributes = { [field]: order === 'desc' ? 'desc' : 'asc' };
-      }
-
-      const res = await fetch('/api/products', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-      const data = await res.json();
-      setProducts(data.results ?? []);
-      setTotal(data.total ?? 0);
-      setFacets(data.facets ?? []);
-    } catch {
-      setProducts([]);
-    } finally {
-      setLoading(false);
+    const b: Record<string, unknown> = {
+      limit: LIMIT,
+      cursor: `offset:${offset}`,
+      categories: [categoryId],
+    };
+    if (filters.length) b.filters = filters;
+    if (sort && sort !== 'score') {
+      const [field, order] = sort.split('-');
+      if (field) b.sortAttributes = { [field]: order === 'desc' ? 'desc' : 'asc' };
     }
+    return b;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoryId, offset, sort, searchParams.toString()]);
 
-  useEffect(() => { fetchProducts(); }, [fetchProducts]);
+  const { data, isLoading } = useProducts(body);
+  const products = data?.results ?? [];
+  const total = data?.total ?? 0;
+  const facets = data?.facets ?? [];
 
   const updateParams = (updates: Record<string, string>) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -100,7 +82,7 @@ function CategoryViewContent({ categoryId, categoryName }: CategoryViewProps) {
             <p className="text-sm text-gray-500">{total} products</p>
             <SortSelect value={sort} onChange={(s) => updateParams({ sort: s, offset: '' })} />
           </div>
-          <ProductGrid products={products} loading={loading} />
+          <ProductGrid products={products} loading={isLoading} />
           {total > LIMIT && (
             <div className="mt-8">
               <Pagination

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useBusinessUnit } from '@/context/BusinessUnitContext';
@@ -11,6 +11,7 @@ import { QuickOrder } from '@/components/order/QuickOrder';
 import { usePermissions } from '@/hooks/usePermissions';
 import { LanguageSelector } from './LanguageSelector';
 import { useLocale } from '@/context/LocaleContext';
+import { useSearchSuggestions } from '@/hooks/useSearchSuggestions';
 
 const ChevronDown = () => (
   <svg className="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -44,10 +45,9 @@ export function Header() {
   const [buMenuOpen, setBuMenuOpen] = useState(false);
   const [storeMenuOpen, setStoreMenuOpen] = useState(false);
   const [search, setSearch] = useState('');
-  const [suggestions, setSuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const suggestionsRef = useRef<HTMLDivElement>(null);
-  const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { data: suggestions = [] } = useSearchSuggestions(search);
 
   const userMenuRef = useRef<HTMLDivElement>(null);
   const buMenuRef = useRef<HTMLDivElement>(null);
@@ -72,23 +72,9 @@ export function Header() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const fetchSuggestions = useCallback(async (q: string) => {
-    if (q.length < 2) { setSuggestions([]); return; }
-    try {
-      const res = await fetch(`/api/products/search-suggestions?q=${encodeURIComponent(q)}`);
-      const data = await res.json();
-      setSuggestions(data);
-      setShowSuggestions(true);
-    } catch {
-      setSuggestions([]);
-    }
-  }, []);
-
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    setSearch(val);
-    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
-    searchDebounceRef.current = setTimeout(() => fetchSuggestions(val), 300);
+    setSearch(e.target.value);
+    setShowSuggestions(true);
   };
 
   const handleSearch = (e: React.FormEvent) => {
@@ -222,7 +208,7 @@ export function Header() {
                 type="text"
                 value={search}
                 onChange={handleSearchChange}
-                onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+                onFocus={() => setShowSuggestions(true)}
                 placeholder="Search products..."
                 className="w-full rounded-md border border-slate-300 py-2 pl-3 pr-10 text-sm text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
@@ -235,7 +221,7 @@ export function Header() {
                 </svg>
               </button>
               {/* Suggestions dropdown */}
-              {showSuggestions && suggestions.length > 0 && (
+              {showSuggestions && suggestions.length > 0 && search.length >= 2 && (
                 <div className="absolute left-0 right-0 top-full z-40 mt-1 rounded-md border border-slate-200 bg-white shadow-lg">
                   {suggestions.map((s) => (
                     <a

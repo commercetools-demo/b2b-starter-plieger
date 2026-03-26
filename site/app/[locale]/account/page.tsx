@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect, FormEvent } from 'react';
+import { useState, useEffect, FormEvent, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Suspense } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useLocale } from '@/context/LocaleContext';
 import { useToast } from '@/context/ToastContext';
+import { useAccount, useAccountMutations } from '@/hooks/useAccount';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
@@ -81,8 +81,8 @@ function AccountPageContent() {
   const { addToast } = useToast();
   const { localePath } = useLocale();
 
-  const [account, setAccount] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const { data: account, isLoading } = useAccount();
+  const { updateProfile, changePassword, saveAddress, deleteAddress } = useAccountMutations();
 
   // General form
   const [firstName, setFirstName] = useState('');
@@ -101,21 +101,17 @@ function AccountPageContent() {
   const [addressLoading, setAddressLoading] = useState(false);
 
   useEffect(() => {
-    if (!isLoggedIn) {
-      router.push(localePath('/login'));
-      return;
+    if (account) {
+      setFirstName(account.firstName ?? '');
+      setLastName(account.lastName ?? '');
+      setEmail(account.email ?? '');
     }
-    fetch('/api/account')
-      .then((r) => r.json())
-      .then((data) => {
-        setAccount(data);
-        setFirstName(data.firstName ?? '');
-        setLastName(data.lastName ?? '');
-        setEmail(data.email ?? '');
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, [isLoggedIn, router]);
+  }, [account]);
+
+  if (!isLoggedIn) {
+    router.push(localePath('/login'));
+    return null;
+  }
 
   const setTab = (t: Tab) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -127,14 +123,7 @@ function AccountPageContent() {
     e.preventDefault();
     setSaving(true);
     try {
-      const res = await fetch('/api/account', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ firstName, lastName, email }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      setAccount(data);
+      await updateProfile(firstName, lastName, email);
       addToast('Profile updated successfully');
     } catch (err: any) {
       addToast(err?.message ?? 'Failed to update profile');
@@ -147,13 +136,7 @@ function AccountPageContent() {
     e.preventDefault();
     setChangingPassword(true);
     try {
-      const res = await fetch('/api/auth/change-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ currentPassword, newPassword }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      await changePassword(currentPassword, newPassword);
       addToast('Password changed successfully');
       setCurrentPassword('');
       setNewPassword('');
@@ -167,19 +150,7 @@ function AccountPageContent() {
   const handleSaveAddress = async (address: Address) => {
     setAddressLoading(true);
     try {
-      const method = 'PUT';
-      const body = editingAddress?.id
-        ? { addressId: editingAddress.id, address }
-        : { address };
-      const url = '/api/account/addresses';
-      const res = await fetch(url, {
-        method: editingAddress?.id ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      setAccount(data);
+      await saveAddress(address, editingAddress?.id);
       setShowAddressModal(false);
       setEditingAddress(undefined);
       addToast('Address saved');
@@ -193,21 +164,14 @@ function AccountPageContent() {
   const handleDeleteAddress = async (addressId: string) => {
     if (!confirm('Delete this address?')) return;
     try {
-      const res = await fetch('/api/account/addresses', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ addressId }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      setAccount(data);
+      await deleteAddress(addressId);
       addToast('Address deleted');
     } catch (err: any) {
       addToast(err?.message ?? 'Failed to delete address');
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="mx-auto max-w-3xl px-6 py-10">
         <div className="animate-pulse space-y-4">
@@ -228,7 +192,6 @@ function AccountPageContent() {
     <div className="mx-auto max-w-3xl px-6 py-10">
       <h1 className="text-2xl font-bold mb-6">My Account</h1>
 
-      {/* Tabs */}
       <div className="border-b border-gray-200 mb-6">
         <div className="flex gap-6">
           {tabs.map((t) => (
@@ -247,7 +210,6 @@ function AccountPageContent() {
         </div>
       </div>
 
-      {/* General Tab */}
       {tab === 'general' && (
         <form onSubmit={handleSaveGeneral} className="space-y-4 max-w-md">
           <div className="grid grid-cols-2 gap-4">
@@ -259,7 +221,6 @@ function AccountPageContent() {
         </form>
       )}
 
-      {/* Security Tab */}
       {tab === 'security' && (
         <form onSubmit={handleChangePassword} className="space-y-4 max-w-md">
           <Input
@@ -281,7 +242,6 @@ function AccountPageContent() {
         </form>
       )}
 
-      {/* Addresses Tab */}
       {tab === 'addresses' && (
         <div>
           <div className="flex justify-between items-center mb-4">
@@ -329,7 +289,6 @@ function AccountPageContent() {
         </div>
       )}
 
-      {/* Address Modal */}
       <Modal
         isOpen={showAddressModal}
         onClose={() => { setShowAddressModal(false); setEditingAddress(undefined); }}

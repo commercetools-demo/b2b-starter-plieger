@@ -1,12 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useToast } from '@/context/ToastContext';
 import { useLocale } from '@/context/LocaleContext';
 import { useCart } from '@/context/CartContext';
+import { useOrder, useOrderMutations } from '@/hooks/useOrders';
 import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
 import { Table } from '@/components/ui/Table';
 import { OrderStatus } from '@/components/orders/OrderStatus';
 import { formatMoney, formatDate, localizedString } from '@/lib/utils';
@@ -17,35 +16,16 @@ export default function OrderDetailPage() {
   const { localePath } = useLocale();
   const { addToast } = useToast();
   const { addItem } = useCart();
-  const [order, setOrder] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [cancelling, setCancelling] = useState(false);
-
-  useEffect(() => {
-    fetch(`/api/orders/${id}`)
-      .then((r) => r.json())
-      .then((data) => setOrder(data.order ?? data))
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, [id]);
+  const { data: order, isLoading } = useOrder(id);
+  const { cancelOrder } = useOrderMutations();
 
   const handleCancel = async () => {
     if (!order) return;
-    setCancelling(true);
     try {
-      const res = await fetch(`/api/orders/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ version: order.version, orderState: 'Cancelled' }),
-      });
-      if (!res.ok) throw new Error();
-      const data = await res.json();
-      setOrder(data.order ?? data);
+      await cancelOrder(id, order.version);
       addToast('Order cancelled');
     } catch {
       addToast('Failed to cancel order');
-    } finally {
-      setCancelling(false);
     }
   };
 
@@ -62,7 +42,7 @@ export default function OrderDetailPage() {
     router.push(localePath('/cart'));
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="animate-pulse space-y-4">
         <div className="h-8 bg-gray-200 rounded w-1/3" />
@@ -113,10 +93,8 @@ export default function OrderDetailPage() {
 
   return (
     <div>
-      {/* Back navigation */}
       <Button variant="ghost" size="sm" href={localePath('/dashboard/orders')} className="mb-4">&larr; Back to Orders</Button>
 
-      {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold">Order {order.orderNumber ?? order.id.slice(0, 8)}</h1>
@@ -125,13 +103,11 @@ export default function OrderDetailPage() {
         <OrderStatus state={order.orderState} />
       </div>
 
-      {/* Line Items */}
       <div className="bg-white rounded-xl border border-gray-100 p-6 mb-6">
         <h2 className="text-lg font-semibold mb-4">Items</h2>
         <Table columns={lineItemColumns} data={order.lineItems ?? []} loading={false} emptyMessage="No items" />
       </div>
 
-      {/* Addresses */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div className="bg-white rounded-xl border border-gray-100 p-6">
           <h2 className="text-lg font-semibold mb-3">Shipping Address</h2>
@@ -143,7 +119,6 @@ export default function OrderDetailPage() {
         </div>
       </div>
 
-      {/* Totals */}
       <div className="bg-white rounded-xl border border-gray-100 p-6 mb-6">
         <h2 className="text-lg font-semibold mb-3">Order Total</h2>
         <dl className="space-y-2 text-sm max-w-xs">
@@ -164,10 +139,9 @@ export default function OrderDetailPage() {
         </dl>
       </div>
 
-      {/* Actions */}
       <div className="flex gap-3">
         {order.orderState === 'Open' && (
-          <Button variant="danger" loading={cancelling} onClick={handleCancel}>Cancel Order</Button>
+          <Button variant="danger" onClick={handleCancel}>Cancel Order</Button>
         )}
         <Button variant="secondary" onClick={handleReorder}>Reorder</Button>
       </div>

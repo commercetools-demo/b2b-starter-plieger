@@ -4,8 +4,8 @@ import { locales } from '@/i18n/config';
 import { useLocale } from '@/context/LocaleContext';
 
 const LOCALE_LABELS: Record<string, string> = {
-  en: 'EN',
-  de: 'DE',
+  'en-US': 'EN',
+  'de-DE': 'DE',
 };
 
 export function LanguageSelector() {

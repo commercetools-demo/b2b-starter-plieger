@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/context/ToastContext';
 import { useLocale } from '@/context/LocaleContext';
+import { usePurchaseList, usePurchaseListMutations } from '@/hooks/usePurchaseLists';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -15,43 +16,21 @@ export default function PurchaseListDetailPage() {
   const { addItem } = useCart();
   const { addToast } = useToast();
   const { localePath } = useLocale();
-  const [list, setList] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const { data: list, isLoading } = usePurchaseList(id);
+  const { addItem: addItemToList, removeItem } = usePurchaseListMutations();
+
   const [skuSearch, setSkuSearch] = useState('');
   const [searching, setSearching] = useState(false);
   const [addingAll, setAddingAll] = useState(false);
   const [removingId, setRemovingId] = useState<string | null>(null);
 
-  const fetchList = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/purchase-lists/${id}`);
-      const data = await res.json();
-      setList(data.purchaseList ?? data);
-    } catch {
-      setList(null);
-    } finally {
-      setLoading(false);
-    }
-  }, [id]);
-
-  useEffect(() => {
-    fetchList();
-  }, [fetchList]);
-
   const handleAddBySku = async () => {
     if (!skuSearch.trim()) return;
     setSearching(true);
     try {
-      const res = await fetch(`/api/purchase-lists/${id}/items`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sku: skuSearch.trim() }),
-      });
-      if (!res.ok) throw new Error();
+      await addItemToList(id, skuSearch.trim());
       addToast('Item added to list');
       setSkuSearch('');
-      fetchList();
     } catch {
       addToast('Failed to add item. Check the SKU and try again.');
     } finally {
@@ -62,10 +41,8 @@ export default function PurchaseListDetailPage() {
   const handleRemoveItem = async (lineItemId: string) => {
     setRemovingId(lineItemId);
     try {
-      const res = await fetch(`/api/purchase-lists/${id}/items/${lineItemId}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error();
+      await removeItem(id, lineItemId);
       addToast('Item removed');
-      fetchList();
     } catch {
       addToast('Failed to remove item');
     } finally {
@@ -96,7 +73,7 @@ export default function PurchaseListDetailPage() {
     setAddingAll(false);
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="animate-pulse space-y-4">
         <div className="h-8 bg-gray-200 rounded w-1/3" />
@@ -129,7 +106,6 @@ export default function PurchaseListDetailPage() {
         )}
       </div>
 
-      {/* Quick Add by SKU */}
       <div className="bg-white rounded-xl border border-gray-100 p-4 mb-6">
         <form
           onSubmit={(e) => {
@@ -151,7 +127,6 @@ export default function PurchaseListDetailPage() {
         </form>
       </div>
 
-      {/* Items */}
       {items.length === 0 ? (
         <EmptyState
           icon="📦"

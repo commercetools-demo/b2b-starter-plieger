@@ -4,18 +4,12 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
-  useState,
   type ReactNode,
 } from 'react';
-
-interface AuthUser {
-  id: string;
-  email: string;
-  firstName?: string;
-  lastName?: string;
-}
+import useSWR from 'swr';
+import { KEY_AUTH_ME } from '@/lib/cache-keys';
+import { type AuthUser, meFetcher, loginRequest, logoutRequest, registerRequest } from '@/hooks/useAuthApi';
 
 interface AuthContextValue {
   user: AuthUser | null;
@@ -36,53 +30,28 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data: user = null, isLoading, mutate } = useSWR<AuthUser | null>(
+    KEY_AUTH_ME,
+    meFetcher,
+    { revalidateOnFocus: false },
+  );
 
   const refresh = useCallback(async () => {
-    try {
-      setLoading(true);
-      const res = await fetch('/api/auth/me');
-      if (res.ok) {
-        const data = await res.json();
-        // /api/auth/me returns { customer, businessUnitKey, storeKey }
-        const c = data.customer ?? data;
-        setUser({
-          id: c.id,
-          email: c.email,
-          firstName: c.firstName,
-          lastName: c.lastName,
-        });
-      } else {
-        setUser(null);
-      }
-    } catch {
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    await mutate();
+  }, [mutate]);
 
   const login = useCallback(
     async (email: string, password: string) => {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-      if (!res.ok) {
-        const error = await res.json().catch(() => ({}));
-        throw new Error(error.message ?? 'Login failed');
-      }
-      await refresh();
+      await loginRequest(email, password);
+      await mutate();
     },
-    [refresh],
+    [mutate],
   );
 
   const logout = useCallback(async () => {
-    await fetch('/api/auth/logout', { method: 'POST' });
-    setUser(null);
-  }, []);
+    await logoutRequest();
+    await mutate(null, { revalidate: false });
+  }, [mutate]);
 
   const register = useCallback(
     async (
@@ -92,35 +61,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       lastName: string,
       companyName?: string,
     ) => {
-      const res = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, firstName, lastName, companyName }),
-      });
-      if (!res.ok) {
-        const error = await res.json().catch(() => ({}));
-        throw new Error(error.message ?? 'Registration failed');
-      }
-      await refresh();
+      await registerRequest(email, password, firstName, lastName, companyName);
+      await mutate();
     },
-    [refresh],
+    [mutate],
   );
-
-  useEffect(() => {
-    refresh();
-  }, [refresh]);
 
   const value = useMemo<AuthContextValue>(
     () => ({
       user,
       isLoggedIn: user !== null,
-      loading,
+      loading: isLoading,
       login,
       logout,
       register,
       refresh,
     }),
-    [user, loading, login, logout, register, refresh],
+    [user, isLoading, login, logout, register, refresh],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

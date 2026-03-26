@@ -10,8 +10,11 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import useSWR from 'swr';
 import type { BusinessUnit, Store } from '@/lib/types';
 import { useAuth } from './AuthContext';
+import { KEY_BUSINESS_UNITS } from '@/lib/cache-keys';
+import { businessUnitsFetcher, selectBusinessUnitRequest } from '@/hooks/useBusinessUnitApi';
 
 interface BusinessUnitContextValue {
   currentBusinessUnit: BusinessUnit | null;
@@ -27,62 +30,48 @@ const BusinessUnitContext = createContext<BusinessUnitContextValue | undefined>(
   undefined,
 );
 
-async function callSelectBU(
-  buId: string,
-  buKey: string,
-  storeKey: string,
-): Promise<boolean> {
-  try {
-    const res = await fetch(`/api/business-units/${buId}/select`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ businessUnitKey: buKey, storeKey }),
-    });
-    return res.ok;
-  } catch {
-    return false;
-  }
-}
-
 export function BusinessUnitProvider({ children }: { children: ReactNode }) {
   const { isLoggedIn, loading: authLoading } = useAuth();
-  const [businessUnits, setBusinessUnits] = useState<BusinessUnit[]>([]);
   const [currentBusinessUnit, setCurrentBusinessUnit] =
     useState<BusinessUnit | null>(null);
   const [currentStore, setCurrentStore] = useState<Store | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [selectionLoading, setSelectionLoading] = useState(false);
   const autoSelectedRef = useRef(false);
 
-  const fetchBusinessUnits = useCallback(async () => {
-    try {
-      setLoading(true);
-      const res = await fetch('/api/business-units');
-      if (res.ok) {
-        const data = await res.json();
-        const units: BusinessUnit[] =
-          data.businessUnits ?? data.results ?? (Array.isArray(data) ? data : []);
-        setBusinessUnits(units);
+  const { data: businessUnits = [], isLoading: buLoading, mutate } = useSWR<BusinessUnit[]>(
+    isLoggedIn && !authLoading ? KEY_BUSINESS_UNITS : null,
+    businessUnitsFetcher,
+  );
 
-        // Auto-select the first BU and its first store after login
-        if (units.length > 0 && !autoSelectedRef.current) {
-          autoSelectedRef.current = true;
-          const bu = units[0];
-          const store = bu.stores?.[0];
-          if (store) {
-            const ok = await callSelectBU(bu.id, bu.key, store.key);
-            if (ok) {
-              setCurrentBusinessUnit(bu);
-              setCurrentStore(store);
-            }
+  // Auto-select first BU and store after login
+  useEffect(() => {
+    if (businessUnits.length > 0 && !autoSelectedRef.current) {
+      autoSelectedRef.current = true;
+      const bu = businessUnits[0];
+      const store = bu.stores?.[0];
+      if (store) {
+        selectBusinessUnitRequest(bu.id, bu.key, store.key).then((ok) => {
+          if (ok) {
+            setCurrentBusinessUnit(bu);
+            setCurrentStore(store);
           }
-        }
+        });
       }
-    } catch {
-      setBusinessUnits([]);
-    } finally {
-      setLoading(false);
     }
-  }, []);
+  }, [businessUnits]);
+
+  // Reset on logout
+  useEffect(() => {
+    if (!authLoading && !isLoggedIn) {
+      setCurrentBusinessUnit(null);
+      setCurrentStore(null);
+      autoSelectedRef.current = false;
+    }
+  }, [isLoggedIn, authLoading]);
+
+  const fetchBusinessUnits = useCallback(async () => {
+    await mutate();
+  }, [mutate]);
 
   const selectBusinessUnit = useCallback(
     async (id: string) => {
@@ -90,15 +79,15 @@ export function BusinessUnitProvider({ children }: { children: ReactNode }) {
       if (!bu) return;
       const store = bu.stores?.[0];
       if (!store) return;
-      setLoading(true);
+      setSelectionLoading(true);
       try {
-        const ok = await callSelectBU(bu.id, bu.key, store.key);
+        const ok = await selectBusinessUnitRequest(bu.id, bu.key, store.key);
         if (ok) {
           setCurrentBusinessUnit(bu);
           setCurrentStore(store);
         }
       } finally {
-        setLoading(false);
+        setSelectionLoading(false);
       }
     },
     [businessUnits],
@@ -109,9 +98,9 @@ export function BusinessUnitProvider({ children }: { children: ReactNode }) {
       if (!currentBusinessUnit) return;
       const store = currentBusinessUnit.stores?.find((s) => s.key === storeKey);
       if (!store) return;
-      setLoading(true);
+      setSelectionLoading(true);
       try {
-        const ok = await callSelectBU(
+        const ok = await selectBusinessUnitRequest(
           currentBusinessUnit.id,
           currentBusinessUnit.key,
           storeKey,
@@ -120,29 +109,18 @@ export function BusinessUnitProvider({ children }: { children: ReactNode }) {
           setCurrentStore(store);
         }
       } finally {
-        setLoading(false);
+        setSelectionLoading(false);
       }
     },
     [currentBusinessUnit],
   );
-
-  useEffect(() => {
-    if (!authLoading && isLoggedIn) {
-      fetchBusinessUnits();
-    } else if (!authLoading && !isLoggedIn) {
-      setBusinessUnits([]);
-      setCurrentBusinessUnit(null);
-      setCurrentStore(null);
-      autoSelectedRef.current = false;
-    }
-  }, [isLoggedIn, authLoading, fetchBusinessUnits]);
 
   const value = useMemo<BusinessUnitContextValue>(
     () => ({
       currentBusinessUnit,
       currentStore,
       businessUnits,
-      loading,
+      loading: buLoading || selectionLoading,
       fetchBusinessUnits,
       selectBusinessUnit,
       selectStore,
@@ -151,7 +129,8 @@ export function BusinessUnitProvider({ children }: { children: ReactNode }) {
       currentBusinessUnit,
       currentStore,
       businessUnits,
-      loading,
+      buLoading,
+      selectionLoading,
       fetchBusinessUnits,
       selectBusinessUnit,
       selectStore,

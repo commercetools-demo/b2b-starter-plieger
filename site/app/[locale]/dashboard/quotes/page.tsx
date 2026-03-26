@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale } from '@/context/LocaleContext';
+import { useQuotes, useQuoteRequests } from '@/hooks/useQuotes';
 import { Table } from '@/components/ui/Table';
 import { Pagination } from '@/components/ui/Pagination';
 import { QuoteStatus } from '@/components/quotes/QuoteStatus';
@@ -14,46 +15,18 @@ export default function QuotesPage() {
   const router = useRouter();
   const { localePath } = useLocale();
   const [activeTab, setActiveTab] = useState<'quotes' | 'requests'>('quotes');
-  const [quotes, setQuotes] = useState<any[]>([]);
-  const [quoteRequests, setQuoteRequests] = useState<any[]>([]);
-  const [quotesTotal, setQuotesTotal] = useState(0);
-  const [requestsTotal, setRequestsTotal] = useState(0);
   const [quotesOffset, setQuotesOffset] = useState(0);
   const [requestsOffset, setRequestsOffset] = useState(0);
-  const [loading, setLoading] = useState(true);
 
-  const fetchQuotes = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/quotes?limit=${LIMIT}&offset=${quotesOffset}`);
-      const data = await res.json();
-      setQuotes(data.results ?? []);
-      setQuotesTotal(data.total ?? 0);
-    } catch {
-      setQuotes([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [quotesOffset]);
+  const { data: quotesData, isLoading: quotesLoading } = useQuotes(quotesOffset);
+  const { data: requestsData, isLoading: requestsLoading } = useQuoteRequests(requestsOffset);
 
-  const fetchRequests = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/quote-requests?limit=${LIMIT}&offset=${requestsOffset}`);
-      const data = await res.json();
-      setQuoteRequests(data.results ?? []);
-      setRequestsTotal(data.total ?? 0);
-    } catch {
-      setQuoteRequests([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [requestsOffset]);
+  const quotes = quotesData?.results ?? [];
+  const quoteRequests = requestsData?.results ?? [];
+  const quotesTotal = quotesData?.total ?? 0;
+  const requestsTotal = requestsData?.total ?? 0;
 
-  useEffect(() => {
-    if (activeTab === 'quotes') fetchQuotes();
-    else fetchRequests();
-  }, [activeTab, fetchQuotes, fetchRequests]);
+  const loading = activeTab === 'quotes' ? quotesLoading : requestsLoading;
 
   const quoteColumns = [
     { key: 'id', header: 'Quote ID', render: (row: any) => row.id.slice(0, 8) },
@@ -78,7 +51,6 @@ export default function QuotesPage() {
     <div>
       <h1 className="text-2xl font-bold mb-6">Quotes</h1>
 
-      {/* Tabs */}
       <div className="flex border-b border-gray-200 mb-6">
         {tabs.map((tab) => (
           <button

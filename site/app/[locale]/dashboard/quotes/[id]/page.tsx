@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useToast } from '@/context/ToastContext';
 import { useLocale } from '@/context/LocaleContext';
+import { useQuote, useQuoteMutations } from '@/hooks/useQuotes';
 import { Button } from '@/components/ui/Button';
 import { Table } from '@/components/ui/Table';
 import { Modal } from '@/components/ui/Modal';
@@ -15,36 +16,18 @@ export default function QuoteDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { localePath } = useLocale();
   const { addToast } = useToast();
-  const [quote, setQuote] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const { data: quote, isLoading } = useQuote(id);
+  const { performQuoteAction } = useQuoteMutations();
+
   const [actionLoading, setActionLoading] = useState(false);
   const [renegotiateOpen, setRenegotiateOpen] = useState(false);
   const [comment, setComment] = useState('');
 
-  useEffect(() => {
-    fetch(`/api/quotes/${id}`)
-      .then((r) => r.json())
-      .then((data) => setQuote(data.quote ?? data))
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, [id]);
-
-  const performAction = async (action: string, body?: Record<string, any>) => {
+  const handleAction = async (action: string, extra?: Record<string, any>) => {
     if (!quote) return;
     setActionLoading(true);
     try {
-      const res = await fetch(`/api/quotes/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action,
-          version: quote.version,
-          buyerComment: body?.comment,
-        }),
-      });
-      if (!res.ok) throw new Error();
-      const data = await res.json();
-      setQuote(data.quote ?? data);
+      await performQuoteAction(id, action, quote.version, extra);
       addToast(`Quote ${action}ed successfully`);
     } catch {
       addToast(`Failed to ${action} quote`);
@@ -53,7 +36,7 @@ export default function QuoteDetailPage() {
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="animate-pulse space-y-4">
         <div className="h-8 bg-gray-200 rounded w-1/3" />
@@ -71,8 +54,6 @@ export default function QuoteDetailPage() {
     );
   }
 
-  // Calculate discount by comparing quote request original total to quoted total
-  const quoteRequestRef = quote.quoteRequest;
   const originalTotal = quote.stagedCart?.obj?.totalPrice ?? null;
   const quotedTotal = quote.totalPrice;
   const hasDiscount =
@@ -91,7 +72,6 @@ export default function QuoteDetailPage() {
     ? Math.round(((originalTotal.centAmount - quotedTotal.centAmount) / originalTotal.centAmount) * 100)
     : 0;
 
-  // Check for per-line-item discounts by comparing discountedPrice to original price
   const lineItemColumns = [
     {
       key: 'name',
@@ -128,7 +108,6 @@ export default function QuoteDetailPage() {
     <div>
       <Button variant="ghost" size="sm" href={localePath('/dashboard/quotes')} className="mb-4">&larr; Back to Quotes</Button>
 
-      {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold">Quote {quote.id.slice(0, 8)}</h1>
@@ -137,7 +116,6 @@ export default function QuoteDetailPage() {
         <QuoteStatus state={state} />
       </div>
 
-      {/* Discount Banner */}
       {hasDiscount && (
         <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -153,7 +131,6 @@ export default function QuoteDetailPage() {
         </div>
       )}
 
-      {/* Line Items */}
       <div className="bg-white rounded-xl border border-gray-100 p-6 mb-6">
         <h2 className="text-lg font-semibold mb-4">Line Items</h2>
         <Table columns={lineItemColumns} data={quote.lineItems ?? []} loading={false} emptyMessage="No items" />
@@ -168,7 +145,6 @@ export default function QuoteDetailPage() {
         </div>
       </div>
 
-      {/* Comments */}
       {(quote.buyerComment || quote.sellerComment) && (
         <div className="bg-white rounded-xl border border-gray-100 p-6 mb-6">
           <h2 className="text-lg font-semibold mb-4">Comments</h2>
@@ -189,7 +165,6 @@ export default function QuoteDetailPage() {
         </div>
       )}
 
-      {/* PO Number */}
       {quote.purchaseOrderNumber && (
         <div className="bg-white rounded-xl border border-gray-100 p-6 mb-6">
           <h2 className="text-lg font-semibold mb-2">Purchase Order</h2>
@@ -197,10 +172,9 @@ export default function QuoteDetailPage() {
         </div>
       )}
 
-      {/* Actions */}
       <div className="flex gap-3">
         {canAccept && (
-          <Button variant="primary" loading={actionLoading} onClick={() => performAction('accept')}>
+          <Button variant="primary" loading={actionLoading} onClick={() => handleAction('accept')}>
             Accept Quote
           </Button>
         )}
@@ -210,13 +184,12 @@ export default function QuoteDetailPage() {
           </Button>
         )}
         {canDecline && (
-          <Button variant="danger" loading={actionLoading} onClick={() => performAction('decline')}>
+          <Button variant="danger" loading={actionLoading} onClick={() => handleAction('decline')}>
             Decline Quote
           </Button>
         )}
       </div>
 
-      {/* Renegotiate Modal */}
       <Modal
         isOpen={renegotiateOpen}
         onClose={() => setRenegotiateOpen(false)}
@@ -228,7 +201,7 @@ export default function QuoteDetailPage() {
               variant="primary"
               loading={actionLoading}
               onClick={async () => {
-                await performAction('renegotiate', { comment });
+                await handleAction('renegotiate', { buyerComment: comment });
                 setRenegotiateOpen(false);
                 setComment('');
               }}

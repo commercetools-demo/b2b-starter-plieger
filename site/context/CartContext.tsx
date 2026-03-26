@@ -4,13 +4,22 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useState,
   type ReactNode,
 } from 'react';
+import useSWR from 'swr';
 import type { Cart } from '@/lib/types';
 import { useBusinessUnit } from './BusinessUnitContext';
+import { KEY_CART } from '@/lib/cache-keys';
+import {
+  cartFetcher,
+  createCartRequest,
+  addCartItemRequest,
+  updateCartItemRequest,
+  removeCartItemRequest,
+  applyDiscountCodeRequest,
+} from '@/hooks/useCartApi';
 
 interface CartContextValue {
   cart: Cart | null;
@@ -40,9 +49,14 @@ const CartContext = createContext<CartContextValue | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const { currentBusinessUnit } = useBusinessUnit();
-  const [cart, setCart] = useState<Cart | null>(null);
-  const [loading, setLoading] = useState(false);
   const [miniCartOpen, setMiniCartOpen] = useState(false);
+  const [mutating, setMutating] = useState(false);
+
+  const { data: cart = null, isLoading, mutate } = useSWR<Cart | null>(
+    currentBusinessUnit ? KEY_CART : null,
+    cartFetcher,
+    { revalidateOnFocus: false },
+  );
 
   const itemCount = useMemo(
     () =>
@@ -51,157 +65,85 @@ export function CartProvider({ children }: { children: ReactNode }) {
   );
 
   const fetchCart = useCallback(async () => {
-    try {
-      setLoading(true);
-      const res = await fetch('/api/cart');
-      if (res.ok) {
-        const data = await res.json();
-        // API returns { cart: ... } — unwrap it
-        const c = data.cart !== undefined ? data.cart : data;
-        setCart(c || null);
-      } else if (res.status === 404) {
-        setCart(null);
-      }
-    } catch {
-      // Silently handle fetch errors — cart may not exist yet
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    await mutate();
+  }, [mutate]);
 
   const ensureCart = useCallback(async (): Promise<Cart> => {
     if (cart) return cart;
-    const res = await fetch('/api/cart', { method: 'POST' });
-    if (!res.ok) {
-      const error = await res.json().catch(() => ({}));
-      throw new Error(error.message ?? 'Failed to create cart');
-    }
-    const data = await res.json();
-    const newCart: Cart = data.cart ?? data;
-    setCart(newCart);
+    const newCart = await createCartRequest();
+    await mutate(newCart, { revalidate: false });
     return newCart;
-  }, [cart]);
+  }, [cart, mutate]);
 
   const addItem = useCallback(
     async (productId: string, variantId: number, quantity: number) => {
       try {
-        setLoading(true);
+        setMutating(true);
         await ensureCart();
-        const res = await fetch('/api/cart/items', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ productId, variantId, quantity }),
-        });
-        if (!res.ok) {
-          const error = await res.json().catch(() => ({}));
-          throw new Error(error.message ?? 'Failed to add item');
-        }
-        const data = await res.json();
-        setCart(data.cart ?? data);
+        const updated = await addCartItemRequest(productId, variantId, quantity);
+        await mutate(updated, { revalidate: false });
       } finally {
-        setLoading(false);
+        setMutating(false);
       }
     },
-    [ensureCart],
+    [ensureCart, mutate],
   );
 
   const addItemWithRecurrence = useCallback(
     async (productId: string, variantId: number, quantity: number, recurrencePolicyId: string) => {
       try {
-        setLoading(true);
+        setMutating(true);
         await ensureCart();
-        const res = await fetch('/api/cart/items', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ productId, variantId, quantity, recurrencePolicyId }),
-        });
-        if (!res.ok) {
-          const error = await res.json().catch(() => ({}));
-          throw new Error(error.message ?? 'Failed to add item');
-        }
-        const data = await res.json();
-        setCart(data.cart ?? data);
+        const updated = await addCartItemRequest(productId, variantId, quantity, recurrencePolicyId);
+        await mutate(updated, { revalidate: false });
       } finally {
-        setLoading(false);
+        setMutating(false);
       }
     },
-    [ensureCart],
+    [ensureCart, mutate],
   );
 
   const updateQuantity = useCallback(
     async (lineItemId: string, quantity: number) => {
       try {
-        setLoading(true);
-        const res = await fetch(`/api/cart/items/${lineItemId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ quantity }),
-        });
-        if (!res.ok) {
-          const error = await res.json().catch(() => ({}));
-          throw new Error(error.message ?? 'Failed to update quantity');
-        }
-        const data = await res.json();
-        setCart(data.cart ?? data);
+        setMutating(true);
+        const updated = await updateCartItemRequest(lineItemId, quantity);
+        await mutate(updated, { revalidate: false });
       } finally {
-        setLoading(false);
+        setMutating(false);
       }
     },
-    [],
+    [mutate],
   );
 
   const removeItem = useCallback(async (lineItemId: string) => {
     try {
-      setLoading(true);
-      const res = await fetch(`/api/cart/items/${lineItemId}`, {
-        method: 'DELETE',
-      });
-      if (!res.ok) {
-        const error = await res.json().catch(() => ({}));
-        throw new Error(error.message ?? 'Failed to remove item');
-      }
-      const data = await res.json();
-      setCart(data.cart ?? data);
+      setMutating(true);
+      const updated = await removeCartItemRequest(lineItemId);
+      await mutate(updated, { revalidate: false });
     } finally {
-      setLoading(false);
+      setMutating(false);
     }
-  }, []);
+  }, [mutate]);
 
   const applyDiscountCode = useCallback(async (code: string) => {
     try {
-      setLoading(true);
-      const res = await fetch('/api/cart/discount-code', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code }),
-      });
-      if (!res.ok) {
-        const error = await res.json().catch(() => ({}));
-        throw new Error(error.message ?? 'Failed to apply discount code');
-      }
-      const data = await res.json();
-      setCart(data.cart ?? data);
+      setMutating(true);
+      const updated = await applyDiscountCodeRequest(code);
+      await mutate(updated, { revalidate: false });
     } finally {
-      setLoading(false);
+      setMutating(false);
     }
-  }, []);
+  }, [mutate]);
 
   const openMiniCart = useCallback(() => setMiniCartOpen(true), []);
   const closeMiniCart = useCallback(() => setMiniCartOpen(false), []);
-
-  useEffect(() => {
-    if (currentBusinessUnit) {
-      fetchCart();
-    } else {
-      setCart(null);
-    }
-  }, [currentBusinessUnit, fetchCart]);
 
   const value = useMemo<CartContextValue>(
     () => ({
       cart,
       itemCount,
-      loading,
+      loading: isLoading || mutating,
       miniCartOpen,
       fetchCart,
       addItem,
@@ -215,7 +157,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     [
       cart,
       itemCount,
-      loading,
+      isLoading,
+      mutating,
       miniCartOpen,
       fetchCart,
       addItem,

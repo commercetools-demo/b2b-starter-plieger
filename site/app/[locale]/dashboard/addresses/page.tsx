@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useToast } from '@/context/ToastContext';
+import { useAccount, useAccountMutations } from '@/hooks/useAccount';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
@@ -45,23 +46,14 @@ const blankAddress: Address = { country: 'US', firstName: '', lastName: '', stre
 
 export default function DashboardAddressesPage() {
   const { addToast } = useToast();
-  const [addresses, setAddresses] = useState<Address[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: account, isLoading } = useAccount();
+  const { saveAddress, deleteAddress } = useAccountMutations();
+  const addresses: Address[] = account?.addresses ?? [];
+
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState<Address | undefined>();
   const [form, setForm] = useState<Address>(blankAddress);
   const [saving, setSaving] = useState(false);
-
-  const fetchAddresses = () => {
-    setLoading(true);
-    fetch('/api/account')
-      .then((r) => r.json())
-      .then((data) => setAddresses(data.addresses ?? []))
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  };
-
-  useEffect(() => { fetchAddresses(); }, []);
 
   const openAdd = () => { setEditing(undefined); setForm(blankAddress); setShowModal(true); };
   const openEdit = (addr: Address) => { setEditing(addr); setForm({ ...addr }); setShowModal(true); };
@@ -69,17 +61,7 @@ export default function DashboardAddressesPage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const body = editing?.id
-        ? { addressId: editing.id, address: form }
-        : { address: form };
-      const res = await fetch('/api/account/addresses', {
-        method: editing?.id ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      setAddresses(data.addresses ?? []);
+      await saveAddress(form, editing?.id);
       setShowModal(false);
       addToast('Address saved');
     } catch (err: any) {
@@ -92,14 +74,7 @@ export default function DashboardAddressesPage() {
   const handleDelete = async (addressId: string) => {
     if (!confirm('Delete this address?')) return;
     try {
-      const res = await fetch('/api/account/addresses', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ addressId }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      setAddresses(data.addresses ?? []);
+      await deleteAddress(addressId);
       addToast('Address deleted');
     } catch (err: any) {
       addToast(err?.message ?? 'Failed to delete');
@@ -113,7 +88,7 @@ export default function DashboardAddressesPage() {
         <Button variant="primary" size="sm" onClick={openAdd}>Add Address</Button>
       </div>
 
-      {loading ? (
+      {isLoading ? (
         <div className="animate-pulse space-y-3">
           {[1, 2].map((i) => <div key={i} className="h-24 bg-gray-200 rounded" />)}
         </div>

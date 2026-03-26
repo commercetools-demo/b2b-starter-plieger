@@ -1,21 +1,17 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useLocale } from '@/context/LocaleContext';
 import { useBusinessUnit } from '@/context/BusinessUnitContext';
 import { usePermissions } from '@/hooks/usePermissions';
+import { useOrders } from '@/hooks/useOrders';
+import { useQuotes } from '@/hooks/useQuotes';
+import { useApprovalFlows } from '@/hooks/useApprovalFlows';
 import { Button } from '@/components/ui/Button';
 import { Table } from '@/components/ui/Table';
 import { OrderStatus } from '@/components/orders/OrderStatus';
 import { formatMoney, formatDateTime } from '@/lib/utils';
-
-interface Stats {
-  recentOrders: number;
-  pendingQuotes: number;
-  pendingApprovals: number;
-}
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -23,34 +19,19 @@ export default function DashboardPage() {
   const { user } = useAuth();
   const { currentBusinessUnit } = useBusinessUnit();
   const { can, hasAnyPermission } = usePermissions();
-  const [stats, setStats] = useState<Stats>({ recentOrders: 0, pendingQuotes: 0, pendingApprovals: 0 });
-  const [recentOrders, setRecentOrders] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (!currentBusinessUnit) return;
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const [ordersRes, quotesRes, approvalsRes] = await Promise.all([
-          fetch('/api/orders?limit=5').then((r) => r.json()),
-          fetch('/api/quotes?limit=1').then((r) => r.json()),
-          fetch('/api/approval-flows?status=Pending&limit=1').then((r) => r.json()),
-        ]);
-        setRecentOrders(ordersRes.results ?? []);
-        setStats({
-          recentOrders: ordersRes.total ?? 0,
-          pendingQuotes: quotesRes.total ?? 0,
-          pendingApprovals: approvalsRes.total ?? 0,
-        });
-      } catch {
-        // Silently fail; empty data displayed
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [currentBusinessUnit]);
+  const { data: ordersData, isLoading: ordersLoading } = useOrders(0, '', 5);
+  const { data: quotesData } = useQuotes(0);
+  const { data: approvalsData } = useApprovalFlows(0, 'Pending');
+
+  const recentOrders = ordersData?.results ?? [];
+  const loading = ordersLoading;
+
+  const stats = {
+    recentOrders: ordersData?.total ?? 0,
+    pendingQuotes: quotesData?.total ?? 0,
+    pendingApprovals: approvalsData?.total ?? 0,
+  };
 
   const canViewOrders = hasAnyPermission(['ViewMyOrders', 'ViewOthersOrders']);
   const canViewQuotes = hasAnyPermission(['ViewMyQuotes', 'ViewOthersQuotes']);
@@ -84,7 +65,6 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         {statCards.map((card) =>
           card.enabled ? (
@@ -109,7 +89,6 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* Recent Orders */}
       {canViewOrders && (
         <div className="bg-white rounded-xl border border-gray-100 p-6 mb-8">
           <div className="flex items-center justify-between mb-4">
@@ -126,7 +105,6 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Quick Actions */}
       <div className="flex flex-wrap gap-3">
         {canCreateOrders ? (
           <Button variant="primary" href={localePath('/products')}>New Order</Button>

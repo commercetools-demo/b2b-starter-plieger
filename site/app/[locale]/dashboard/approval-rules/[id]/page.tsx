@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useToast } from '@/context/ToastContext';
 import { useLocale } from '@/context/LocaleContext';
+import { useApprovalRule, useApprovalRuleMutations } from '@/hooks/useApprovalRules';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { formatDate } from '@/lib/utils';
@@ -13,34 +14,16 @@ export default function ApprovalRuleDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { localePath } = useLocale();
   const { addToast } = useToast();
-  const [rule, setRule] = useState<ApprovalRule | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data: rule, isLoading } = useApprovalRule(id);
+  const { toggleStatus } = useApprovalRuleMutations();
   const [toggling, setToggling] = useState(false);
-
-  useEffect(() => {
-    fetch(`/api/approval-rules/${id}`)
-      .then((r) => r.json())
-      .then((data) => setRule(data.approvalRule ?? null))
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, [id]);
 
   const handleToggleStatus = async () => {
     if (!rule) return;
     setToggling(true);
     const newStatus = rule.status === 'Active' ? 'Inactive' : 'Active';
     try {
-      const res = await fetch(`/api/approval-rules/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          version: rule.version,
-          actions: [{ action: 'setStatus', status: newStatus }],
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      setRule(data.approvalRule);
+      await toggleStatus(id, rule.version, newStatus);
       addToast(`Rule set to ${newStatus}`);
     } catch (err: any) {
       addToast(err?.message ?? 'Failed to update');
@@ -49,7 +32,7 @@ export default function ApprovalRuleDetailPage() {
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="animate-pulse space-y-4">
         <div className="h-8 bg-gray-200 rounded w-64" />
@@ -91,7 +74,7 @@ export default function ApprovalRuleDetailPage() {
           <div className="rounded-xl border border-slate-200 bg-white p-5">
             <h3 className="text-sm font-semibold text-slate-700 mb-3">Requesters</h3>
             <ul className="space-y-1">
-              {rule.requesters.map((r, i) => (
+              {rule.requesters.map((r: any, i: number) => (
                 <li key={i} className="text-sm text-slate-700">
                   <span className="font-mono text-xs bg-slate-100 rounded px-1.5 py-0.5">{r.associateRole.key}</span>
                 </li>
@@ -103,11 +86,11 @@ export default function ApprovalRuleDetailPage() {
         <div className="rounded-xl border border-slate-200 bg-white p-5">
           <h3 className="text-sm font-semibold text-slate-700 mb-3">Approval Hierarchy</h3>
           <div className="space-y-3">
-            {rule.approvers.tiers.map((tier, i) => (
+            {rule.approvers.tiers.map((tier: any, i: number) => (
               <div key={i} className="flex items-center gap-2">
                 <span className="text-xs text-slate-400 font-mono w-16">Tier {i + 1}</span>
                 <div className="flex flex-wrap gap-2">
-                  {tier.and.map((a, j) => (
+                  {tier.and.map((a: any, j: number) => (
                     <span key={j} className="text-xs font-mono bg-slate-100 rounded px-1.5 py-0.5">
                       {a.associateRole.key}
                     </span>

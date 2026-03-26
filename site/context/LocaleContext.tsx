@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { DEFAULT_LOCALE, LANGUAGE_LOCALE_MAP, type Locale } from '@/i18n/config';
+import { setLocaleRequest } from '@/hooks/useLocaleApi';
 
 interface LocaleContextValue {
   locale: string;
@@ -43,18 +44,14 @@ export function LocaleProvider({
     const newLocale = config.locale;
     const newCurrency = currency; // keep store-assigned currency; only locale changes
 
-    await fetch('/api/session/locale', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ locale: newLanguage, currency: newCurrency }),
-    });
+    await setLocaleRequest(newLanguage, newCurrency);
 
     setLocale(newLocale);
     setLanguageState(newLanguage);
 
     // Navigate to the same path under the new locale prefix
     const currentPath = window.location.pathname;
-    const pathWithoutLocale = currentPath.replace(/^\/[a-z]{2}(\/|$)/, '/');
+    const pathWithoutLocale = currentPath.replace(/^\/[a-z]{2}-[A-Z]{2}(\/|$)/, '/');
     const newPath = `/${newLanguage}${pathWithoutLocale === '/' ? '' : pathWithoutLocale}`;
     router.push(newPath);
     router.refresh();

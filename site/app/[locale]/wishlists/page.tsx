@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect, FormEvent } from 'react';
+import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { useLocale } from '@/context/LocaleContext';
+import { useWishlists, useWishlistMutations } from '@/hooks/useWishlists';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
@@ -15,35 +16,25 @@ export default function WishlistsPage() {
   const { localePath } = useLocale();
   const { isLoggedIn } = useAuth();
   const { addToast } = useToast();
+  const { data, isLoading } = useWishlists();
+  const { createWishlist, deleteWishlist } = useWishlistMutations();
+  const wishlists = data?.results ?? [];
 
-  const [wishlists, setWishlists] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [newName, setNewName] = useState('');
   const [creating, setCreating] = useState(false);
 
-  useEffect(() => {
-    if (!isLoggedIn) { router.push(localePath('/login')); return; }
-    fetch('/api/wishlists')
-      .then((r) => r.json())
-      .then((data) => setWishlists(data.results ?? []))
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, [isLoggedIn, router]);
+  if (!isLoggedIn) {
+    router.push(localePath('/login'));
+    return null;
+  }
 
   const handleCreate = async (e: FormEvent) => {
     e.preventDefault();
     if (!newName.trim()) return;
     setCreating(true);
     try {
-      const res = await fetch('/api/wishlists', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: newName.trim() }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      setWishlists((prev) => [data, ...prev]);
+      await createWishlist(newName.trim());
       setShowCreate(false);
       setNewName('');
       addToast('Wishlist created');
@@ -57,16 +48,14 @@ export default function WishlistsPage() {
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this wishlist?')) return;
     try {
-      const res = await fetch(`/api/wishlists/${id}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error('Failed');
-      setWishlists((prev) => prev.filter((w) => w.id !== id));
+      await deleteWishlist(id);
       addToast('Wishlist deleted');
     } catch {
       addToast('Failed to delete wishlist');
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="mx-auto max-w-3xl px-6 py-10">
         <div className="animate-pulse space-y-4">
@@ -93,7 +82,7 @@ export default function WishlistsPage() {
         </div>
       ) : (
         <div className="space-y-3">
-          {wishlists.map((w) => (
+          {wishlists.map((w: any) => (
             <WishlistCard key={w.id} wishlist={w} onDelete={handleDelete} />
           ))}
         </div>

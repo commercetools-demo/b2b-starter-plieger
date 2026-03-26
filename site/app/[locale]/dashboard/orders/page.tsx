@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale } from '@/context/LocaleContext';
+import { useOrders } from '@/hooks/useOrders';
 import { Table } from '@/components/ui/Table';
 import { Pagination } from '@/components/ui/Pagination';
 import { OrderStatus } from '@/components/orders/OrderStatus';
@@ -21,34 +22,12 @@ const STATUS_OPTIONS = [
 export default function OrdersPage() {
   const router = useRouter();
   const { localePath } = useLocale();
-  const [orders, setOrders] = useState<any[]>([]);
-  const [total, setTotal] = useState(0);
   const [offset, setOffset] = useState(0);
-  const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('');
 
-  const fetchOrders = useCallback(async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams({
-        limit: String(LIMIT),
-        offset: String(offset),
-      });
-      if (statusFilter) params.set('status', statusFilter);
-      const res = await fetch(`/api/orders?${params}`);
-      const data = await res.json();
-      setOrders(data.results ?? []);
-      setTotal(data.total ?? 0);
-    } catch {
-      setOrders([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [offset, statusFilter]);
-
-  useEffect(() => {
-    fetchOrders();
-  }, [fetchOrders]);
+  const { data, isLoading } = useOrders(offset, statusFilter, LIMIT);
+  const orders = data?.results ?? [];
+  const total = data?.total ?? 0;
 
   const handleStatusChange = (value: string) => {
     setStatusFilter(value);
@@ -102,7 +81,7 @@ export default function OrdersPage() {
         <Table
           columns={columns}
           data={orders}
-          loading={loading}
+          loading={isLoading}
           emptyMessage="No orders found."
           onRowClick={(row: any) => router.push(localePath(`/dashboard/orders/${row.id}`))}
         />

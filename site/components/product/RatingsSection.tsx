@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, FormEvent } from 'react';
+import { useState, FormEvent } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/Button';
 import { RatingStars } from './RatingStars';
 import { formatDateTime } from '@/lib/utils';
 import { useLocale } from '@/context/LocaleContext';
+import { useRatings, useRatingMutations } from '@/hooks/useRatings';
 
 interface RatingsSectionProps {
   productId: string;
@@ -18,9 +19,6 @@ export function RatingsSection({ productId }: RatingsSectionProps) {
   const { addToast } = useToast();
   const { localePath } = useLocale();
 
-  const [reviews, setReviews] = useState<any[]>([]);
-  const [summary, setSummary] = useState<{ averageRating: number; totalReviews: number } | null>(null);
-  const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState<'latest' | 'highest' | 'lowest'>('latest');
   const [showForm, setShowForm] = useState(false);
 
@@ -30,23 +28,14 @@ export function RatingsSection({ productId }: RatingsSectionProps) {
   const [newComment, setNewComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  const fetchReviews = (s = sort) => {
-    setLoading(true);
-    fetch(`/api/ratings/${productId}?sort=${s}&limit=10`)
-      .then((r) => r.json())
-      .then((data) => {
-        setReviews(data.results ?? []);
-        setSummary(data.summary ?? null);
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  };
+  const { data, isLoading } = useRatings(productId, sort);
+  const { submitReview } = useRatingMutations(productId, sort);
 
-  useEffect(() => { fetchReviews(); }, [productId]);
+  const reviews = data?.results ?? [];
+  const summary = data?.summary ?? null;
 
   const handleSortChange = (s: typeof sort) => {
     setSort(s);
-    fetchReviews(s);
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -54,19 +43,12 @@ export function RatingsSection({ productId }: RatingsSectionProps) {
     if (newRating === 0) { addToast('Please select a rating'); return; }
     setSubmitting(true);
     try {
-      const res = await fetch(`/api/ratings/${productId}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rating: newRating, comment: newComment, title: newTitle || undefined }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      await submitReview(newRating, newComment, newTitle || undefined);
       addToast('Review submitted!');
       setShowForm(false);
       setNewRating(0);
       setNewTitle('');
       setNewComment('');
-      fetchReviews();
     } catch (err: any) {
       addToast(err?.message ?? 'Failed to submit review');
     } finally {
@@ -153,7 +135,7 @@ export function RatingsSection({ productId }: RatingsSectionProps) {
       )}
 
       {/* Reviews list */}
-      {loading ? (
+      {isLoading ? (
         <div className="animate-pulse space-y-4">
           {[1, 2].map((i) => <div key={i} className="h-20 bg-gray-200 rounded" />)}
         </div>

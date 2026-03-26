@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/context/ToastContext';
 import { useLocale } from '@/context/LocaleContext';
+import { useApprovalRuleMutations } from '@/hooks/useApprovalRules';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
@@ -23,6 +24,7 @@ export default function CreateApprovalRulePage() {
   const router = useRouter();
   const { localePath } = useLocale();
   const { addToast } = useToast();
+  const { createRule } = useApprovalRuleMutations();
   const [saving, setSaving] = useState(false);
 
   const [name, setName] = useState('');
@@ -92,15 +94,7 @@ export default function CreateApprovalRulePage() {
         })),
       };
 
-      const res = await fetch('/api/approval-rules', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || 'Failed to create rule');
-      }
+      await createRule(body);
       addToast('Approval rule created');
       router.push(localePath('/dashboard/approval-rules'));
     } catch (e: any) {
@@ -119,7 +113,6 @@ export default function CreateApprovalRulePage() {
       <h1 className="text-2xl font-bold mb-6">Create Approval Rule</h1>
 
       <div className="space-y-6">
-        {/* Basic Info */}
         <div className="bg-white rounded-xl border border-gray-100 p-6">
           <h2 className="text-lg font-semibold mb-4">Rule Details</h2>
           <div className="space-y-4">
@@ -149,7 +142,6 @@ export default function CreateApprovalRulePage() {
           </div>
         </div>
 
-        {/* Predicate Builder */}
         <div className="bg-white rounded-xl border border-gray-100 p-6">
           <h2 className="text-lg font-semibold mb-1">Conditions</h2>
           <p className="text-sm text-gray-500 mb-4">
@@ -159,7 +151,6 @@ export default function CreateApprovalRulePage() {
           <PredicateBuilder conditions={conditions} onChange={setConditions} />
         </div>
 
-        {/* Requesters */}
         <div className="bg-white rounded-xl border border-gray-100 p-6">
           <h2 className="text-lg font-semibold mb-1">Requesters</h2>
           <p className="text-sm text-gray-500 mb-4">
@@ -187,7 +178,6 @@ export default function CreateApprovalRulePage() {
           </div>
         </div>
 
-        {/* Approvers */}
         <div className="bg-white rounded-xl border border-gray-100 p-6">
           <h2 className="text-lg font-semibold mb-1">Approvers</h2>
           <p className="text-sm text-gray-500 mb-4">
@@ -237,7 +227,6 @@ export default function CreateApprovalRulePage() {
           </div>
         </div>
 
-        {/* Actions */}
         <div className="flex gap-3 pt-2">
           <Button variant="primary" loading={saving} onClick={handleSave}>
             Create Rule

@@ -1,3 +1,4 @@
+import { ShoppingListDraft } from '@commercetools/platform-sdk';
 import { apiRoot } from './client';
 
 function asAssociateInStore(associateId: string, businessUnitKey: string) {
@@ -46,16 +47,19 @@ export async function getPurchaseListById(
 export async function createPurchaseList(
   associateId: string,
   businessUnitKey: string,
+  storeKey: string,
   name: string,
-  customerId: string
+  customerId: string,
+  locale: string
 ) {
-  const body: Record<string, unknown> = {
-    name: { 'en-US': name },
+  const body: ShoppingListDraft = {
+    name: { [locale]: name },
     customer: { id: customerId, typeId: 'customer' },
+    store: { typeId: 'store', key: storeKey}
   };
 
   const response = await asAssociateInStore(associateId, businessUnitKey)
-    .post({ body: body as any })
+    .post({ body })
     .execute();
   return response.body;
 }

@@ -5,6 +5,7 @@ import { useCart } from '@/context/CartContext';
 import { useToast } from '@/context/ToastContext';
 import { usePermissions } from '@/hooks/usePermissions';
 import { localizedString, formatMoney } from '@/lib/utils';
+import { lookupProductBySku } from '@/hooks/useProductsApi';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 
@@ -36,12 +37,8 @@ export function QuickOrder() {
 
   const lookupSku = useCallback(async (sku: string, quantity: number): Promise<QuickOrderItem> => {
     try {
-      const res = await fetch(`/api/products/sku?sku=${encodeURIComponent(sku)}`);
-      if (!res.ok) {
-        return { sku, quantity, status: 'not_found', selected: false };
-      }
-      const data = await res.json();
-      const product = data.product;
+      const product = await lookupProductBySku(sku);
+      if (!product) return { sku, quantity, status: 'not_found', selected: false };
       const isOnStock = product.variant.isOnStock ?? true;
       const availableQuantity = product.variant.availableQuantity ?? null;
       const outOfStock = !isOnStock || (typeof availableQuantity === 'number' && availableQuantity <= 0);

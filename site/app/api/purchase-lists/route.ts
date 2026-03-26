@@ -4,6 +4,7 @@ import {
   getPurchaseLists,
   createPurchaseList,
 } from '@/lib/ct/wishlists'
+import { DEFAULT_LOCALE } from '@/i18n/config'
 
 export async function GET(request: NextRequest) {
   try {
@@ -67,11 +68,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    const locale = session.locale ?? DEFAULT_LOCALE.locale
     const purchaseList = await createPurchaseList(
       session.customerId,
       session.businessUnitKey,
+      session.storeKey,
       name,
-      session.customerId
+      session.customerId,
+      locale
     )
 
     return NextResponse.json({ purchaseList }, { status: 201 })
