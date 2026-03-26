@@ -1,18 +1,19 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useFormatters } from '@/hooks/useFormatters';
+import { useTranslations } from 'next-intl';
 
 const BUILD_TIME = new Date().toISOString();
 
 export function Footer() {
   const [deployTime, setDeployTime] = useState('');
+  const { formatDateTime } = useFormatters();
+  const t = useTranslations('footer');
 
   useEffect(() => {
     setDeployTime(
-      new Date(BUILD_TIME).toLocaleString(undefined, {
-        dateStyle: 'medium',
-        timeStyle: 'short',
-      })
+      formatDateTime(BUILD_TIME, { dateStyle: 'medium', timeStyle: 'short' } as Intl.DateTimeFormatOptions)
     );
   }, []);
 
@@ -23,12 +24,12 @@ export function Footer() {
           <div className="flex items-center gap-2">
             <img src="/logo.png" alt="Atlas Construction Equipment" className="h-6 w-auto" />
             <p className="text-sm text-slate-500">
-              Atlas Construction Equipment &middot; Powered by commercetools &middot; {new Date().getFullYear()}
+              Atlas Construction Equipment &middot; {t('poweredBy')} &middot; {new Date().getFullYear()}
             </p>
           </div>
           {deployTime && (
             <p className="text-xs text-slate-400">
-              Deployed: {deployTime}
+              {t('deployed')}: {deployTime}
             </p>
           )}
         </div>

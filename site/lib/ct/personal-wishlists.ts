@@ -34,12 +34,12 @@ export async function getWishlistById(id: string, customerId: string) {
   return list;
 }
 
-export async function createWishlist(customerId: string, name: string) {
+export async function createWishlist(customerId: string, name: string, locale: string) {
   const response = await apiRoot
     .shoppingLists()
     .post({
       body: {
-        name: { 'en-US': name },
+        name: { [locale]: name },
         customer: { id: customerId, typeId: 'customer' },
       },
     })

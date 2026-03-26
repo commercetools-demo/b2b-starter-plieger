@@ -1,11 +1,13 @@
 'use client';
 
 import { useState, useEffect, FormEvent } from 'react';
+import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { Button } from '@/components/ui/Button';
 import { RatingStars } from './RatingStars';
 import { formatDateTime } from '@/lib/utils';
+import { useLocale } from '@/context/LocaleContext';
 
 interface RatingsSectionProps {
   productId: string;
@@ -14,6 +16,7 @@ interface RatingsSectionProps {
 export function RatingsSection({ productId }: RatingsSectionProps) {
   const { isLoggedIn } = useAuth();
   const { addToast } = useToast();
+  const { localePath } = useLocale();
 
   const [reviews, setReviews] = useState<any[]>([]);
   const [summary, setSummary] = useState<{ averageRating: number; totalReviews: number } | null>(null);
@@ -129,7 +132,7 @@ export function RatingsSection({ productId }: RatingsSectionProps) {
 
       {!isLoggedIn && (
         <p className="text-sm text-gray-500 mb-4">
-          <a href="/login" className="text-primary hover:underline">Sign in</a> to write a review.
+          <Link href={localePath('/login')} className="text-primary hover:underline">Sign in</Link> to write a review.
         </p>
       )}
 

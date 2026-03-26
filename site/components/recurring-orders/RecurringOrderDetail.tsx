@@ -7,6 +7,7 @@ import { RecurringOrderStateBadge } from './RecurringOrderStateBadge';
 import { formatMoney, formatDate, localizedString } from '@/lib/utils';
 import { useRecurringOrderActions } from '@/hooks/useRecurringOrders';
 import type { RecurringOrder } from '@/lib/types';
+import { useLocale } from '@/context/LocaleContext';
 
 interface RecurringOrderDetailProps {
   order: RecurringOrder & { id: string };
@@ -16,6 +17,7 @@ export function RecurringOrderDetail({ order }: RecurringOrderDetailProps) {
   const router = useRouter();
   const { addToast } = useToast();
   const { pauseOrder, resumeOrder, cancelOrder, duplicateOrder } = useRecurringOrderActions();
+  const { localePath } = useLocale();
 
   const doAction = async (action: 'pause' | 'resume' | 'cancel' | 'duplicate') => {
     const fn = { pause: pauseOrder, resume: resumeOrder, cancel: cancelOrder, duplicate: duplicateOrder }[action];
@@ -23,7 +25,7 @@ export function RecurringOrderDetail({ order }: RecurringOrderDetailProps) {
       await fn(order.id);
       addToast(action === 'duplicate' ? 'Recurring order duplicated' : `Order ${action}d`);
       if (action === 'duplicate') {
-        router.push('/dashboard/recurring-orders');
+        router.push(localePath('/dashboard/recurring-orders'));
       }
     } catch (err: any) {
       addToast(err?.message ?? `Failed to ${action}`);

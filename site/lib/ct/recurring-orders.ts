@@ -1,5 +1,6 @@
 import { apiRoot } from './client';
 import type { RecurringOrder, RecurringOrderState, RecurrencePolicy } from '@/lib/types';
+import { localizedString } from '@/lib/utils';
 
 export async function getRecurringOrders(
   customerId: string,
@@ -93,8 +94,8 @@ export async function duplicateRecurringOrder(id: string) {
   });
 }
 
-export async function getRecurrencePolicies(options: { limit?: number } = {}) {
-  const { limit = 50 } = options;
+export async function getRecurrencePolicies(options: { limit?: number; locale?: string } = {}) {
+  const { limit = 50, locale } = options;
   const response = await (apiRoot as any)
     .recurrencePolicies()
     .get({ queryArgs: { limit } })
@@ -103,7 +104,7 @@ export async function getRecurrencePolicies(options: { limit?: number } = {}) {
   return response.body.results.map((policy: any): RecurrencePolicy => ({
     id: policy.id,
     key: policy.key,
-    name: localizedStringToString(policy.name),
+    name: localizedString(policy.name, locale),
     schedule: policy.schedule,
     createdAt: policy.createdAt,
   }));
@@ -138,9 +139,4 @@ function deriveSnapshot(cart: any): RecurringOrder['orderSnapshot'] {
       quantity: li.quantity,
     })),
   };
-}
-
-function localizedStringToString(ls: Record<string, string> | undefined): string {
-  if (!ls) return '';
-  return ls['en-US'] ?? ls['en'] ?? Object.values(ls)[0] ?? '';
 }

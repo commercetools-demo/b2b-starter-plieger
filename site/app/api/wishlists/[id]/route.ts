@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/session';
 import { getWishlistById, updateWishlist, deleteWishlist } from '@/lib/ct/personal-wishlists';
+import { DEFAULT_LOCALE } from '@/i18n/config';
 
 interface Params {
   params: Promise<{ id: string }>;
@@ -29,11 +30,12 @@ export async function PUT(request: NextRequest, { params }: Params) {
 
   const { id } = await params;
   const { name } = await request.json();
+  const locale = session.locale ?? DEFAULT_LOCALE.locale;
 
   try {
     const current = await getWishlistById(id, session.customerId);
     const updated = await updateWishlist(current.id, current.version, [
-      { action: 'changeName', name: { 'en-US': name } },
+      { action: 'changeName', name: { [locale]: name } },
     ]);
     return NextResponse.json(updated);
   } catch (err: any) {

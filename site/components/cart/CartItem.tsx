@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { useCart } from '@/context/CartContext';
 import { useRecurrencePolicies } from '@/hooks/useRecurrencePolicies';
-import { formatMoney, localizedString } from '@/lib/utils';
+import { useFormatters } from '@/hooks/useFormatters';
+import { useTranslations } from 'next-intl';
 import type { LineItem } from '@/lib/types';
 
 export interface CartItemProps {
@@ -12,6 +13,8 @@ export interface CartItemProps {
 
 export function CartItem({ item }: CartItemProps) {
   const { updateQuantity, removeItem, loading } = useCart();
+  const { formatMoney, localizedString } = useFormatters();
+  const t = useTranslations('cart');
   const { data: policies = [] } = useRecurrencePolicies();
   const [qty, setQty] = useState(item.quantity);
 
@@ -41,7 +44,7 @@ export function CartItem({ item }: CartItemProps) {
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-xs text-slate-400">
-            No img
+            {t('noImage')}
           </div>
         )}
       </div>

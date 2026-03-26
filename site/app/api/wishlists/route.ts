@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/session';
 import { getWishlists, createWishlist } from '@/lib/ct/personal-wishlists';
+import { DEFAULT_LOCALE } from '@/i18n/config';
 
 export async function GET() {
   const session = await getSession();
@@ -28,7 +29,8 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const wishlist = await createWishlist(session.customerId, name);
+    const locale = session.locale ?? DEFAULT_LOCALE.locale;
+    const wishlist = await createWishlist(session.customerId, name, locale);
     return NextResponse.json(wishlist);
   } catch (err: any) {
     return NextResponse.json({ error: err?.message ?? 'Failed to create wishlist' }, { status: 500 });

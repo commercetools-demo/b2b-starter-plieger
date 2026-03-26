@@ -45,10 +45,9 @@ export async function getCategories(session?: Partial<SessionData>) {
   return result.items;
 }
 
-export async function getCategoryBySlug(slug: string, locale = 'en-US', session?: Partial<SessionData>) {
+export async function getCategoryBySlug(slug: string, session?: Partial<SessionData>) {
   const s = session ?? await getSession();
-  // locale is used to derive the language for the slug query inside ProductApi
-  const api = new ProductApi({ ...s, locale: s.locale ?? locale });
+  const api = new ProductApi(s);
   const result = await api.queryCategories({ slug, limit: 1 });
   return result.items[0] ?? null;
 }

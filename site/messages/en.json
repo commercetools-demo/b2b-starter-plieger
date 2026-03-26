@@ -72,6 +72,19 @@
     "deleteWishlist": "Delete Wishlist",
     "items": "{count} items"
   },
+  "product": {
+    "priceOnRequest": "Price on request",
+    "signInForPricing": "Sign in for pricing",
+    "signInToSeePricing": "Sign in to see pricing",
+    "noImage": "No image",
+    "notFound": "Product Not Found",
+    "notFoundDescription": "The product you are looking for does not exist.",
+    "backToProducts": "Back to Products",
+    "sku": "SKU"
+  },
+  "cart": {
+    "noImage": "No image"
+  },
   "checkoutQuote": {
     "title": "Accept Quote",
     "summary": "Quote Summary",
@@ -79,7 +92,18 @@
     "sellerComment": "Seller Note",
     "successMessage": "Order placed successfully!",
     "validTo": "Valid until",
-    "lineItems": "Line Items"
+    "lineItems": "Line Items",
+    "noQuoteSpecified": "No quote specified",
+    "quoteNotFound": "Quote not found"
+  },
+  "footer": {
+    "poweredBy": "Powered by commercetools",
+    "deployed": "Deployed"
+  },
+  "predicateBuilder": {
+    "currencyUSD": "USD ($)",
+    "currencyEUR": "EUR (€)",
+    "currencyGBP": "GBP (£)"
   },
   "recurringOrders": {
     "title": "Recurring Orders",

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 
 export interface PredicateCondition {
   field: string;
@@ -21,12 +22,6 @@ const numericOperators = [
   { value: '<', label: 'is less than' },
   { value: '<=', label: 'is less than or equal to' },
   { value: '=', label: 'is equal to' },
-];
-
-const currencyOptions = [
-  { value: 'USD', label: 'USD ($)', symbol: '$' },
-  { value: 'EUR', label: 'EUR (€)', symbol: '€' },
-  { value: 'GBP', label: 'GBP (£)', symbol: '£' },
 ];
 
 const currencySymbolMap: Record<string, string> = {
@@ -247,6 +242,14 @@ function CurrencyInput({
 }
 
 export function PredicateBuilder({ conditions, onChange }: PredicateBuilderProps) {
+  const t = useTranslations('predicateBuilder');
+
+  const currencyOptions = [
+    { value: 'USD', label: t('currencyUSD'), symbol: '$' },
+    { value: 'EUR', label: t('currencyEUR'), symbol: '€' },
+    { value: 'GBP', label: t('currencyGBP'), symbol: '£' },
+  ];
+
   const updateCondition = (index: number, updates: Partial<PredicateCondition>) => {
     const updated = conditions.map((c, i) => (i === index ? { ...c, ...updates } : c));
     onChange(updated);

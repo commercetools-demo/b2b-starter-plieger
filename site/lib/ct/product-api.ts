@@ -10,6 +10,7 @@
 import type { ProductProjection, Category as CTCategory } from '@commercetools/platform-sdk';
 import { apiRoot } from './client';
 import { ProductSearchFactory } from './product-search-factory';
+import { DEFAULT_LOCALE } from '@/i18n/config';
 import type {
   ProductQuery,
   ProductPaginatedResult,
@@ -44,12 +45,12 @@ const PRODUCT_PROJECTION_EXPANDS = [
 // ---------------------------------------------------------------------------
 
 function getLocale(session: Partial<SessionData>): Locale {
-  const rawLocale = session.locale ?? 'en-US';
-  const [language, countryPart] = rawLocale.split('-');
+  const rawLocale = session.locale ?? DEFAULT_LOCALE.locale;
+  const parts = rawLocale.includes('-') ? rawLocale.split('-') : [rawLocale, 'US'];
   return {
-    language: language ?? 'en',
-    country: countryPart ?? 'US',
-    currency: session.currency ?? 'USD',
+    language: parts[0] ?? DEFAULT_LOCALE.language,
+    country: parts[1] ?? 'US',
+    currency: session.currency ?? DEFAULT_LOCALE.currency,
   };
 }
 

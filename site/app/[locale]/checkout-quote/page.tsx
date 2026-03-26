@@ -2,13 +2,17 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { useLocale } from '@/context/LocaleContext';
+import { useFormatters } from '@/hooks/useFormatters';
 import { Button } from '@/components/ui/Button';
 import { formatMoney, localizedString } from '@/lib/utils';
 
 function CheckoutQuoteContent() {
+  const t = useTranslations('checkoutQuote');
+  const { formatDate } = useFormatters();
   const router = useRouter();
   const { localePath } = useLocale();
   const searchParams = useSearchParams();
@@ -78,7 +82,7 @@ function CheckoutQuoteContent() {
   if (!quoteId) {
     return (
       <div className="mx-auto max-w-3xl px-6 py-10 text-center">
-        <h1 className="text-xl font-bold mb-4">No quote specified</h1>
+        <h1 className="text-xl font-bold mb-4">{t('noQuoteSpecified')}</h1>
         <Button variant="primary" href={localePath('/dashboard/quotes')}>Back to Quotes</Button>
       </div>
     );
@@ -87,7 +91,7 @@ function CheckoutQuoteContent() {
   if (!quote) {
     return (
       <div className="mx-auto max-w-3xl px-6 py-10 text-center">
-        <h1 className="text-xl font-bold mb-4">Quote not found</h1>
+        <h1 className="text-xl font-bold mb-4">{t('quoteNotFound')}</h1>
         <Button variant="primary" href={localePath('/dashboard/quotes')}>Back to Quotes</Button>
       </div>
     );
@@ -126,7 +130,7 @@ function CheckoutQuoteContent() {
 
         {quote.validTo && (
           <p className="text-sm text-slate-500 mb-4">
-            Valid until: {new Date(quote.validTo).toLocaleDateString()}
+            Valid until: {formatDate(quote.validTo)}
           </p>
         )}
 

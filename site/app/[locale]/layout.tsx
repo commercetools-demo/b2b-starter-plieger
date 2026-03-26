@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getMessages } from 'next-intl/server';
+import { getMessages, setRequestLocale } from 'next-intl/server';
 import { NextIntlClientProvider } from 'next-intl';
 import { ToastProvider } from '@/context/ToastContext';
 import { AuthProvider } from '@/context/AuthContext';
@@ -10,7 +10,7 @@ import { SessionProvider } from '@/lib/providers/SessionProvider';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { getSession } from '@/lib/session';
-import { LANGUAGE_LOCALE_MAP, DEFAULT_LOCALE } from '@/i18n/config';
+import { locales, LANGUAGE_LOCALE_MAP, DEFAULT_LOCALE } from '@/i18n/config';
 
 export const metadata: Metadata = {
   title: 'Atlas Construction Equipment | B2B Commerce',
@@ -20,6 +20,10 @@ export const metadata: Metadata = {
   },
 };
 
+export function generateStaticParams() {
+  return locales.map((locale) => ({ locale }));
+}
+
 export default async function LocaleLayout({
   children,
   params,
@@ -28,6 +32,7 @@ export default async function LocaleLayout({
   params: Promise<{ locale: string }>;
 }) {
   const { locale: language } = await params;
+  setRequestLocale(language);
   const [messages, session] = await Promise.all([getMessages(), getSession()]);
 
   const config = LANGUAGE_LOCALE_MAP[language] ?? LANGUAGE_LOCALE_MAP[DEFAULT_LOCALE.language];

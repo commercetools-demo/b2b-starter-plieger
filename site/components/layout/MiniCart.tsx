@@ -4,9 +4,11 @@ import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 import { formatMoney, localizedString } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
+import { useLocale } from '@/context/LocaleContext';
 
 export function MiniCart() {
   const { cart, miniCartOpen, closeMiniCart, removeItem, loading } = useCart();
+  const { localePath } = useLocale();
 
   if (!miniCartOpen) return null;
 
@@ -108,7 +110,7 @@ export function MiniCart() {
             </div>
             <div className="space-y-2">
               <Button
-                href="/cart"
+                href={localePath('/cart')}
                 variant="secondary"
                 className="w-full"
                 onClick={closeMiniCart}
@@ -116,7 +118,7 @@ export function MiniCart() {
                 View Cart
               </Button>
               <Button
-                href="/checkout"
+                href={localePath('/checkout')}
                 variant="primary"
                 className="w-full"
                 onClick={closeMiniCart}
@@ -124,7 +126,7 @@ export function MiniCart() {
                 Checkout
               </Button>
               <Button
-                href="/dashboard/quotes/request"
+                href={localePath('/dashboard/quotes/request')}
                 variant="ghost"
                 className="w-full"
                 onClick={closeMiniCart}

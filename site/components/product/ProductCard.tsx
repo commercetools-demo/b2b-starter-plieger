@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { formatMoney, localizedString } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
+import { useFormatters } from '@/hooks/useFormatters';
+import { useTranslations } from 'next-intl';
 import type { Product } from '@/lib/types';
 
 export interface ProductCardProps {
@@ -11,6 +12,8 @@ export interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const { isLoggedIn } = useAuth();
+  const { formatMoney, localizedString } = useFormatters();
+  const t = useTranslations('product');
   const name = localizedString(product.name);
   const image = product.masterVariant.images?.[0];
   const price = product.masterVariant.price?.value
@@ -32,7 +35,7 @@ export function ProductCard({ product }: ProductCardProps) {
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-sm text-slate-400">
-            No image
+            {t('noImage')}
           </div>
         )}
       </div>
@@ -52,10 +55,10 @@ export function ProductCard({ product }: ProductCardProps) {
                 {formatMoney(price)}
               </p>
             ) : (
-              <p className="text-sm text-slate-500">Price on request</p>
+              <p className="text-sm text-slate-500">{t('priceOnRequest')}</p>
             )
           ) : (
-            <p className="text-sm text-slate-500">Sign in for pricing</p>
+            <p className="text-sm text-slate-500">{t('signInForPricing')}</p>
           )}
         </div>
       </div>

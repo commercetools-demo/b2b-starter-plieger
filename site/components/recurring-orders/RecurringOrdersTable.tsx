@@ -2,9 +2,10 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { formatMoney, formatDate, localizedString } from '@/lib/utils';
+import { useFormatters } from '@/hooks/useFormatters';
 import { RecurringOrderStateBadge } from './RecurringOrderStateBadge';
 import type { RecurringOrder } from '@/lib/types';
+import { useLocale } from '@/context/LocaleContext';
 
 interface RecurringOrdersTableProps {
   orders: RecurringOrder[];
@@ -22,6 +23,8 @@ export function RecurringOrdersTable({
   onDuplicate,
 }: RecurringOrdersTableProps) {
   const router = useRouter();
+  const { localePath } = useLocale();
+  const { formatMoney, formatDate } = useFormatters();
 
   if (orders.length === 0) {
     return <p className="text-sm text-slate-500 py-8 text-center">No recurring orders found.</p>;
@@ -45,14 +48,14 @@ export function RecurringOrdersTable({
             <tr
               key={order.id}
               className="border-b border-slate-100 hover:bg-slate-50 cursor-pointer"
-              onClick={() => router.push(`/dashboard/recurring-orders/${order.id}`)}
+              onClick={() => router.push(localePath(`/dashboard/recurring-orders/${order.id}`))}
             >
               <td className="py-3 px-4">
                 <RecurringOrderStateBadge state={order.state} />
               </td>
               <td className="py-3 px-4">
                 <Link
-                  href={`/dashboard/recurring-orders/${order.id}`}
+                  href={localePath(`/dashboard/recurring-orders/${order.id}`)}
                   className="font-medium text-slate-900 hover:text-red-600"
                 >
                   {(order.originOrderId ?? order.id).slice(0, 8)}…

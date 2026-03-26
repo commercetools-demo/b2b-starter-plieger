@@ -12,20 +12,21 @@ import { SubscribeAndSaveBox } from '@/components/product/SubscribeAndSaveBox';
 import { Select } from '@/components/ui/Select';
 import { RatingsSection } from '@/components/product/RatingsSection';
 import { useRecurrencePolicies } from '@/hooks/useRecurrencePolicies';
-import { localizedString, formatMoney } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
+import { useFormatters } from '@/hooks/useFormatters';
+import { localizedString } from '@/lib/utils';
 
-function formatAttributeValue(value: any): string {
+function formatAttributeValue(value: any, formatMoney: (v: any) => string, locale?: string): string {
   if (value === null || value === undefined) return '—';
   if (typeof value === 'boolean') return value ? 'Yes' : 'No';
   if (typeof value === 'number') return String(value);
   if (typeof value === 'string') return value;
   // Enum: { key, label } or localized enum: { key, label: { "en-US": "..." } }
   if (value.label !== undefined) {
-    return typeof value.label === 'object' ? localizedString(value.label) : String(value.label);
+    return typeof value.label === 'object' ? localizedString(value.label, locale) : String(value.label);
   }
-  // Localized string: { "en-US": "text" }
-  if (value['en-US'] || value['en']) {
-    return localizedString(value);
+  if (typeof value === 'object' && !Array.isArray(value) && value.centAmount === undefined) {
+    return localizedString(value, locale);
   }
   // Money: { centAmount, currencyCode }
   if (value.centAmount !== undefined) {
@@ -33,14 +34,16 @@ function formatAttributeValue(value: any): string {
   }
   // Array of values
   if (Array.isArray(value)) {
-    return value.map(formatAttributeValue).join(', ');
+    return value.map((v) => formatAttributeValue(v, formatMoney, locale)).join(', ');
   }
   return String(value);
 }
 
 export default function ProductDetailPage() {
+  const t = useTranslations('product');
+  const { formatMoney } = useFormatters();
   const { id } = useParams<{ id: string }>();
-  const { localePath } = useLocale();
+  const { locale, localePath } = useLocale();
   const { addToast } = useToast();
   const { isLoggedIn } = useAuth();
   const { hasAnyPermission } = usePermissions();
@@ -128,9 +131,9 @@ export default function ProductDetailPage() {
   if (!product) {
     return (
       <div className="mx-auto max-w-6xl px-6 py-10 text-center">
-        <h1 className="text-2xl font-bold mb-2">Product Not Found</h1>
-        <p className="text-gray-600 mb-6">The product you are looking for does not exist.</p>
-        <Button variant="primary" href={localePath('/products')}>Back to Products</Button>
+        <h1 className="text-2xl font-bold mb-2">{t('notFound')}</h1>
+        <p className="text-gray-600 mb-6">{t('notFoundDescription')}</p>
+        <Button variant="primary" href={localePath('/products')}>{t('backToProducts')}</Button>
       </div>
     );
   }
@@ -185,7 +188,7 @@ export default function ProductDetailPage() {
             </>
           ) : (
             <div className="aspect-square rounded-xl bg-gray-100 flex items-center justify-center text-gray-400 text-4xl">
-              No Image
+              {t('noImage')}
             </div>
           )}
         </div>
@@ -201,10 +204,10 @@ export default function ProductDetailPage() {
                   {formatMoney(price.value)}
                 </p>
               )}
-              {!price && <p className="text-lg text-gray-500 mb-6">Price on request</p>}
+              {!price && <p className="text-lg text-gray-500 mb-6">{t('priceOnRequest')}</p>}
             </>
           ) : (
-            <p className="text-lg text-gray-500 mb-6">Sign in to see pricing</p>
+            <p className="text-lg text-gray-500 mb-6">{t('signInToSeePricing')}</p>
           )}
 
           {description && (
@@ -274,7 +277,7 @@ export default function ProductDetailPage() {
                   .map((attr: any) => (
                   <div key={attr.name}>
                     <dt className="text-gray-500 capitalize">{attr.name.replace(/([A-Z])/g, ' $1').trim()}</dt>
-                    <dd className="font-medium">{formatAttributeValue(attr.value)}</dd>
+                    <dd className="font-medium">{formatAttributeValue(attr.value, formatMoney, locale)}</dd>
                   </div>
                 ))}
               </dl>

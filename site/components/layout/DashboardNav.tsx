@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { classNames } from '@/lib/utils';
 import { usePermissions } from '@/hooks/usePermissions';
+import { useLocale } from '@/context/LocaleContext';
 
 interface NavItem {
   label: string;
@@ -11,7 +12,7 @@ interface NavItem {
   requiredPermissions?: string[];
 }
 
-const navItems: NavItem[] = [
+const NAV_ITEMS: NavItem[] = [
   { label: 'Overview', href: '/dashboard' },
   { label: 'Orders', href: '/dashboard/orders', requiredPermissions: ['ViewMyOrders', 'ViewOthersOrders'] },
   { label: 'Quotes', href: '/dashboard/quotes', requiredPermissions: ['ViewMyQuotes', 'ViewOthersQuotes'] },
@@ -30,23 +31,25 @@ const navItems: NavItem[] = [
 export function DashboardNav() {
   const pathname = usePathname();
   const { hasAnyPermission } = usePermissions();
+  const { localePath } = useLocale();
 
   return (
     <nav className="w-full space-y-1">
-      {navItems.map((item) => {
+      {NAV_ITEMS.map((item) => {
         if (item.requiredPermissions && !hasAnyPermission(item.requiredPermissions)) {
           return null;
         }
 
+        const localHref = localePath(item.href);
         const isActive =
           item.href === '/dashboard'
-            ? pathname === '/dashboard'
-            : pathname.startsWith(item.href);
+            ? pathname === localHref
+            : pathname.startsWith(localHref);
 
         return (
           <Link
             key={item.href}
-            href={item.href}
+            href={localHref}
             className={classNames(
               'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
               isActive

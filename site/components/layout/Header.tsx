@@ -10,6 +10,7 @@ import { MiniCart } from './MiniCart';
 import { QuickOrder } from '@/components/order/QuickOrder';
 import { usePermissions } from '@/hooks/usePermissions';
 import { LanguageSelector } from './LanguageSelector';
+import { useLocale } from '@/context/LocaleContext';
 
 const ChevronDown = () => (
   <svg className="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -36,6 +37,7 @@ export function Header() {
   const { itemCount, openMiniCart } = useCart();
   const { roleKeys } = usePermissions();
   const primaryRole = Array.from(roleKeys)[0];
+  const { localePath } = useLocale();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -93,7 +95,7 @@ export function Header() {
     e.preventDefault();
     setShowSuggestions(false);
     if (search.trim()) {
-      router.push(`/search?q=${encodeURIComponent(search.trim())}`);
+      router.push(localePath(`/search?q=${encodeURIComponent(search.trim())}`));
     }
   };
 
@@ -313,7 +315,7 @@ export function Header() {
                         <p className="text-xs text-slate-500">{user?.email}</p>
                       </div>
                       <Link
-                        href="/dashboard"
+                        href={localePath('/dashboard')}
                         onClick={() => setUserMenuOpen(false)}
                         className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
                       >
@@ -334,7 +336,7 @@ export function Header() {
               </>
             ) : (
               <Link
-                href="/login"
+                href={localePath('/login')}
                 className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
               >
                 Log in
@@ -362,14 +364,14 @@ export function Header() {
         <nav className="hidden border-t border-slate-100 md:block">
           <div className="mx-auto flex max-w-7xl items-center gap-6 px-4 sm:px-6 lg:px-8">
             <Link
-              href="/products"
+              href={localePath('/products')}
               className="border-b-2 border-transparent py-3 text-sm font-medium text-slate-600 hover:border-red-600 hover:text-red-600"
             >
               Products
             </Link>
             {isLoggedIn && (
               <Link
-                href="/dashboard"
+                href={localePath('/dashboard')}
                 className="border-b-2 border-transparent py-3 text-sm font-medium text-slate-600 hover:border-red-600 hover:text-red-600"
               >
                 Dashboard
@@ -394,7 +396,7 @@ export function Header() {
               </form>
 
               <Link
-                href="/products"
+                href={localePath('/products')}
                 onClick={() => setMobileMenuOpen(false)}
                 className="block rounded-md px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
               >
@@ -403,7 +405,7 @@ export function Header() {
               {isLoggedIn && (
                 <>
                   <Link
-                    href="/dashboard"
+                    href={localePath('/dashboard')}
                     onClick={() => setMobileMenuOpen(false)}
                     className="block rounded-md px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
                   >

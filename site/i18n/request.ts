@@ -1,16 +1,21 @@
 import { getRequestConfig } from 'next-intl/server';
-import { getSession } from '@/lib/session';
+import { headers } from 'next/headers';
 import { locales, defaultLocale } from './config';
 
-export default getRequestConfig(async () => {
-  const session = await getSession();
-  const rawLocale = session.locale ?? defaultLocale;
-  const locale = (locales as readonly string[]).includes(rawLocale) ? rawLocale : defaultLocale;
+export default getRequestConfig(async ({ requestLocale }) => {
+  let language = await requestLocale;
 
-  const messages =
-    locale === 'de'
-      ? (await import('../messages/de.json')).default
-      : (await import('../messages/en.json')).default;
+  // Fallback: read from x-locale header set by middleware
+  if (!language || !(locales as readonly string[]).includes(language)) {
+    const headersList = await headers();
+    language = headersList.get('x-locale') ?? defaultLocale;
+  }
 
-  return { locale, messages };
+  if (!(locales as readonly string[]).includes(language)) {
+    language = defaultLocale;
+  }
+
+  const messages = (await import(`../messages/${language}.json`)).default;
+
+  return { locale: language, messages };
 });

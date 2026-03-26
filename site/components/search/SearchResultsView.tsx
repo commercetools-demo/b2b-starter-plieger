@@ -6,12 +6,14 @@ import { ProductGrid } from '@/components/product/ProductGrid';
 import { Pagination } from '@/components/ui/Pagination';
 import { FacetSidebar } from './FacetSidebar';
 import { SortSelect } from './SortSelect';
+import { useLocale } from '@/context/LocaleContext';
 
 const LIMIT = 20;
 
 function SearchResultsContent({ query }: { query: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { localePath } = useLocale();
 
   const offset = parseInt(searchParams.get('offset') ?? '0', 10);
   const sort = searchParams.get('sort') ?? 'score';
@@ -71,7 +73,7 @@ function SearchResultsContent({ query }: { query: string }) {
       if (v) params.set(k, v);
       else params.delete(k);
     });
-    router.push(`/search?${params.toString()}`);
+    router.push(localePath(`/search?${params.toString()}`));
   };
 
   const handleFilterChange = (facetName: string, value: string, checked: boolean) => {
