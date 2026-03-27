@@ -103,6 +103,17 @@ Before making changes, read `FEATURES.md` to understand what already exists. Aft
 - 10 root categories, 30+ subcategories
 - All products share one product selection but pricing varies by channel
 
+
+## Using Skills
+### Features
+You have access to the following skills to implement specific features
+1. 1. Superuser: customer impersonation [skill](./.claude/skills/superuser/SKILL.md)
+
+### Generic guideline skills
+1. Add API: Guidelines to follow when creating a new api call [skill](./.claude/skills/add-api/SKILL.md)
+2. Add new country: Guidelines to follow when adding a new country/locale/language [skill](./.claude/skills/add-country/SKILL.md)
+3. Netlify: Provision a new Netlify site under the "cofe-pre-sales" team and configure environment variables [skill](./.claude/skills/netlify/SKILL.md)
+
 ## Tools Pattern
 All tools import from `tools/ct-admin.mjs` which reads `tools/.env`. To create a new tool, follow the existing pattern — create a standalone `.mjs` file in `tools/`.
 
