@@ -29,27 +29,27 @@ export default function QuotesPage() {
   const loading = activeTab === 'quotes' ? quotesLoading : requestsLoading;
 
   const quoteColumns = [
-    { key: 'id', header: 'Quote ID', render: (row: any) => row.id.slice(0, 8) },
-    { key: 'createdAt', header: 'Date', render: (row: any) => formatDateTime(row.createdAt) },
+    { key: 'id', header: 'Offerte ID', render: (row: any) => row.id.slice(0, 8) },
+    { key: 'createdAt', header: 'Datum', render: (row: any) => formatDateTime(row.createdAt) },
     { key: 'quoteState', header: 'Status', render: (row: any) => <QuoteStatus state={row.quoteState} /> },
-    { key: 'totalPrice', header: 'Total', render: (row: any) => formatMoney(row.totalPrice) },
+    { key: 'totalPrice', header: 'Totaal', render: (row: any) => formatMoney(row.totalPrice) },
   ];
 
   const requestColumns = [
-    { key: 'id', header: 'Request ID', render: (row: any) => row.id.slice(0, 8) },
-    { key: 'createdAt', header: 'Date', render: (row: any) => formatDateTime(row.createdAt) },
+    { key: 'id', header: 'Aanvraag', render: (row: any) => row.id.slice(0, 8) },
+    { key: 'createdAt', header: 'Datum', render: (row: any) => formatDateTime(row.createdAt) },
     { key: 'quoteRequestState', header: 'Status', render: (row: any) => <QuoteStatus state={row.quoteRequestState} /> },
-    { key: 'totalPrice', header: 'Total', render: (row: any) => formatMoney(row.totalPrice) },
+    { key: 'totalPrice', header: 'Totaal', render: (row: any) => formatMoney(row.totalPrice) },
   ];
 
   const tabs = [
-    { key: 'quotes' as const, label: 'Quotes' },
-    { key: 'requests' as const, label: 'Quote Requests' },
+    { key: 'quotes' as const, label: 'Offertes' },
+    { key: 'requests' as const, label: 'Offerte Aanvragen' },
   ];
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Quotes</h1>
+      <h1 className="text-2xl font-bold mb-6">Offertes</h1>
 
       <div className="flex border-b border-gray-200 mb-6">
         {tabs.map((tab) => (
@@ -70,7 +70,7 @@ export default function QuotesPage() {
       <div className="bg-white rounded-xl border border-gray-100 p-6">
         {activeTab === 'quotes' ? (
           <>
-            <Table columns={quoteColumns} data={quotes} loading={loading} emptyMessage="No quotes found." onRowClick={(row: any) => router.push(localePath(`/dashboard/quotes/${row.id}`))} />
+            <Table columns={quoteColumns} data={quotes} loading={loading} emptyMessage="Geen offertes gevonden" onRowClick={(row: any) => router.push(localePath(`/dashboard/quotes/${row.id}`))} />
             {quotesTotal > LIMIT && (
               <div className="mt-6">
                 <Pagination total={quotesTotal} limit={LIMIT} offset={quotesOffset} onChange={setQuotesOffset} />
@@ -79,7 +79,7 @@ export default function QuotesPage() {
           </>
         ) : (
           <>
-            <Table columns={requestColumns} data={quoteRequests} loading={loading} emptyMessage="No quote requests found." onRowClick={(row: any) => router.push(localePath(`/dashboard/quotes/requests/${row.id}`))} />
+            <Table columns={requestColumns} data={quoteRequests} loading={loading} emptyMessage="Geen offerte aanvragen gevonden" onRowClick={(row: any) => router.push(localePath(`/dashboard/quotes/requests/${row.id}`))} />
             {requestsTotal > LIMIT && (
               <div className="mt-6">
                 <Pagination total={requestsTotal} limit={LIMIT} offset={requestsOffset} onChange={setRequestsOffset} />

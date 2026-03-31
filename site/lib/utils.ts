@@ -29,7 +29,7 @@ export function formatDate(
   locale?: string,
   options?: Intl.DateTimeFormatOptions
 ): string {
-  const opts = options ?? { year: 'numeric', month: 'short', day: 'numeric' };
+  const opts = options ?? { year: 'numeric', month: 'long', day: 'numeric' };
   return new Date(dateString).toLocaleDateString(locale ?? DEFAULT_LOCALE.locale, opts);
 }
 
@@ -40,7 +40,7 @@ export function formatDateTime(
 ): string {
   const opts = options ?? {
     year: 'numeric',
-    month: 'short',
+    month: 'long',
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',

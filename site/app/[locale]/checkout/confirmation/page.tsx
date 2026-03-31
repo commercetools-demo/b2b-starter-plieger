@@ -20,7 +20,7 @@ function ConfirmationContent() {
     }
     fetch(`/api/orders/${orderId}`)
       .then((res) => res.json())
-      .then((data) => setOrder(data))
+      .then((data) => setOrder(data.order))
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [orderId]);
@@ -39,28 +39,28 @@ function ConfirmationContent() {
   return (
     <div className="mx-auto max-w-2xl px-6 py-16 text-center">
       <div className="text-5xl mb-4">&#10003;</div>
-      <h1 className="text-3xl font-bold mb-2">Order Confirmed</h1>
+      <h1 className="text-3xl font-bold mb-2">Order Bevestiging</h1>
       <p className="text-gray-600 mb-8">
-        Thank you for your order. We&apos;ve received your purchase and will begin processing it shortly.
+        Dank je voor je bestelling. We hebben deze in goede orde ontvangen en gaan voor je aan de gang
       </p>
 
       {order && (
         <div className="bg-white rounded-xl border border-gray-100 p-6 text-left mb-8">
           <dl className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <dt className="text-gray-500">Order Number</dt>
+              <dt className="text-gray-500">Order Nummer</dt>
               <dd className="font-semibold">{order.orderNumber ?? order.id}</dd>
             </div>
             <div>
-              <dt className="text-gray-500">Date</dt>
+              <dt className="text-gray-500">Datum</dt>
               <dd className="font-semibold">{formatDate(order.createdAt)}</dd>
             </div>
             <div>
-              <dt className="text-gray-500">Items</dt>
+              <dt className="text-gray-500">Artikelen</dt>
               <dd className="font-semibold">{order.lineItems?.length ?? 0}</dd>
             </div>
             <div>
-              <dt className="text-gray-500">Total</dt>
+              <dt className="text-gray-500">Totaal</dt>
               <dd className="font-semibold">{formatMoney(order.taxedPrice?.totalGross ?? order.totalPrice)}</dd>
             </div>
           </dl>
@@ -68,8 +68,8 @@ function ConfirmationContent() {
       )}
 
       <div className="flex items-center justify-center gap-4">
-        <Button variant="primary" href={localePath('/dashboard/orders')}>View Orders</Button>
-        <Button variant="secondary" href={localePath('/products')}>Continue Shopping</Button>
+        <Button variant="primary" href={localePath('/dashboard/orders')}>Bekijk bestellingen</Button>
+        <Button variant="secondary" href={localePath('/products')}>Verder winkelen</Button>
       </div>
     </div>
   );

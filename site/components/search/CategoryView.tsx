@@ -79,7 +79,7 @@ function CategoryViewContent({ categoryId, categoryName }: CategoryViewProps) {
         />
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between mb-6">
-            <p className="text-sm text-gray-500">{total} products</p>
+            <p className="text-sm text-gray-500">{total} producten</p>
             <SortSelect value={sort} onChange={(s) => updateParams({ sort: s, offset: '' })} />
           </div>
           <ProductGrid products={products} loading={isLoading} />

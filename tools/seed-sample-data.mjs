@@ -227,7 +227,7 @@ const ROLES = [
       "UpdateOthersShoppingLists",
       "DeleteMyShoppingLists",
       "DeleteOthersShoppingLists",
-      "UpdateApprovalFlowStatuses",
+     // "UpdateApprovalFlowStatuses",
       "CreateApprovalRules",
       "UpdateApprovalRules",
     ],
@@ -276,7 +276,7 @@ const ROLES = [
       "CreateMyShoppingLists",
       "UpdateMyShoppingLists",
       "DeleteMyShoppingLists",
-      "UpdateApprovalFlowStatuses",
+     // "UpdateApprovalFlowStatuses",
       "ViewOthersOrders",
       "ViewOthersQuotes",
       "ViewOthersShoppingLists",
@@ -374,7 +374,7 @@ async function run() {
     "Password123!"
   );
   const approverCustomer = await ensureCustomer(
-    "approver@acme.com",
+    "buyer@acme.com",
     "Carol",
     "Approver",
     "Password123!"
@@ -382,7 +382,7 @@ async function run() {
 
   // Step 4: Associate Customers with Business Units
   console.log("\nStep 4: Associating customers with business units...");
-  await addAssociateToBU("acme-corp", adminCustomer.id, "admin");
+  await addAssociateToBU("buyer@acme.com", adminCustomer.id, "admin");
   await addAssociateToBU("acme-corp", buyerCustomer.id, "buyer");
   await addAssociateToBU("acme-corp", approverCustomer.id, "approver");
 

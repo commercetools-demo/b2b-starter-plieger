@@ -10,7 +10,7 @@ import { createOrderFromCart } from '@/lib/ct/orders'
 export async function POST(request: NextRequest) {
   try {
     const session = await getSession()
-
+   
     if (!session?.customerId) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
     }

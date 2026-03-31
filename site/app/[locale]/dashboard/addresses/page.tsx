@@ -84,8 +84,8 @@ export default function DashboardAddressesPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">My Addresses</h1>
-        <Button variant="primary" size="sm" onClick={openAdd}>Add Address</Button>
+        <h1 className="text-2xl font-bold">Mijn adressen</h1>
+        <Button variant="primary" size="sm" onClick={openAdd}>Voeg adres toe</Button>
       </div>
 
       {isLoading ? (
@@ -93,7 +93,7 @@ export default function DashboardAddressesPage() {
           {[1, 2].map((i) => <div key={i} className="h-24 bg-gray-200 rounded" />)}
         </div>
       ) : addresses.length === 0 ? (
-        <p className="text-sm text-slate-500 py-8 text-center">No addresses saved yet.</p>
+        <p className="text-sm text-slate-500 py-8 text-center">Er zijn nog geen adressen opgeslagen</p>
       ) : (
         <div className="space-y-3">
           {addresses.map((addr) => (
@@ -104,8 +104,8 @@ export default function DashboardAddressesPage() {
                 <p>{addr.city}, {addr.postalCode} {addr.country}</p>
               </div>
               <div className="flex gap-2">
-                <Button variant="secondary" size="sm" onClick={() => openEdit(addr)}>Edit</Button>
-                <Button variant="secondary" size="sm" onClick={() => handleDelete(addr.id!)}>Delete</Button>
+                <Button variant="secondary" size="sm" onClick={() => openEdit(addr)}>Bewerk</Button>
+                <Button variant="secondary" size="sm" onClick={() => handleDelete(addr.id!)}>Verwijder</Button>
               </div>
             </div>
           ))}
@@ -115,13 +115,13 @@ export default function DashboardAddressesPage() {
       <Modal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
-        title={editing?.id ? 'Edit Address' : 'Add Address'}
+        title={editing?.id ? 'Bewerk adres' : 'Nieuw Address'}
       >
         <div className="space-y-4">
           <AddressFormFields form={form} onChange={(f, v) => setForm((prev) => ({ ...prev, [f]: v }))} />
           <div className="flex gap-2 pt-2">
-            <Button variant="primary" loading={saving} onClick={handleSave}>Save Address</Button>
-            <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
+            <Button variant="primary" loading={saving} onClick={handleSave}>Sla adres op</Button>
+            <Button variant="secondary" onClick={() => setShowModal(false)}>Annuleren</Button>
           </div>
         </div>
       </Modal>

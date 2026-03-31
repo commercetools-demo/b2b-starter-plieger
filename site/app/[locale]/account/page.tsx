@@ -13,7 +13,7 @@ import type { Address } from '@/lib/types';
 
 type Tab = 'general' | 'security' | 'addresses';
 
-const COUNTRIES = ['US', 'DE', 'GB', 'FR', 'ES'];
+const COUNTRIES = ['NL', 'US', 'DE', 'GB', 'FR', 'ES'];
 
 function AddressForm({
   address,
@@ -25,7 +25,7 @@ function AddressForm({
   onCancel: () => void;
 }) {
   const [form, setForm] = useState<Address>({
-    country: address?.country ?? 'US',
+    country: address?.country ?? 'NL',
     firstName: address?.firstName ?? '',
     lastName: address?.lastName ?? '',
     streetName: address?.streetName ?? '',
@@ -42,18 +42,17 @@ function AddressForm({
   return (
     <div className="space-y-3">
       <div className="grid grid-cols-2 gap-3">
-        <Input label="First Name" value={form.firstName ?? ''} onChange={set('firstName')} />
-        <Input label="Last Name" value={form.lastName ?? ''} onChange={set('lastName')} />
+        <Input label="Voornaam" value={form.firstName ?? ''} onChange={set('firstName')} />
+        <Input label="Achternaam" value={form.lastName ?? ''} onChange={set('lastName')} />
       </div>
-      <Input label="Street" value={form.streetName ?? ''} onChange={set('streetName')} />
+      <Input label="Straat" value={form.streetName ?? ''} onChange={set('streetName')} />
       <div className="grid grid-cols-2 gap-3">
-        <Input label="City" value={form.city ?? ''} onChange={set('city')} />
-        <Input label="Postal Code" value={form.postalCode ?? ''} onChange={set('postalCode')} />
+        <Input label="Postcode" value={form.postalCode ?? ''} onChange={set('postalCode')} />
+        <Input label="Stad" value={form.city ?? ''} onChange={set('city')} />
       </div>
       <div className="grid grid-cols-2 gap-3">
-        <Input label="State / Region" value={form.state ?? ''} onChange={set('state')} />
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Land</label>
           <select
             value={form.country}
             onChange={set('country')}
@@ -66,8 +65,8 @@ function AddressForm({
         </div>
       </div>
       <div className="flex gap-2 pt-2">
-        <Button variant="primary" onClick={() => onSave(form)}>Save Address</Button>
-        <Button variant="secondary" onClick={onCancel}>Cancel</Button>
+        <Button variant="primary" onClick={() => onSave(form)}>Sla adres op</Button>
+        <Button variant="secondary" onClick={onCancel}>Annuleren</Button>
       </div>
     </div>
   );
@@ -183,14 +182,14 @@ function AccountPageContent() {
   }
 
   const tabs: { key: Tab; label: string }[] = [
-    { key: 'general', label: 'General' },
-    { key: 'security', label: 'Security' },
-    { key: 'addresses', label: 'Addresses' },
+    { key: 'general', label: 'Algemeen' },
+    { key: 'security', label: 'Veiligheid' },
+    { key: 'addresses', label: 'Adressen' },
   ];
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-10">
-      <h1 className="text-2xl font-bold mb-6">My Account</h1>
+      <h1 className="text-2xl font-bold mb-6">Mijn gegevens</h1>
 
       <div className="border-b border-gray-200 mb-6">
         <div className="flex gap-6">
@@ -213,49 +212,49 @@ function AccountPageContent() {
       {tab === 'general' && (
         <form onSubmit={handleSaveGeneral} className="space-y-4 max-w-md">
           <div className="grid grid-cols-2 gap-4">
-            <Input label="First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-            <Input label="Last Name" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+            <Input label="Voornaam" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+            <Input label="Achternaam" value={lastName} onChange={(e) => setLastName(e.target.value)} />
           </div>
           <Input label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-          <Button variant="primary" loading={saving}>Save Changes</Button>
+          <Button variant="primary" loading={saving}>Bewaren</Button>
         </form>
       )}
 
       {tab === 'security' && (
         <form onSubmit={handleChangePassword} className="space-y-4 max-w-md">
           <Input
-            label="Current Password"
+            label="Huidig wachtwoord"
             type="password"
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
             required
           />
           <Input
-            label="New Password"
+            label="Nieuw wachtwoord"
             type="password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             required
             minLength={8}
           />
-          <Button variant="primary" loading={changingPassword}>Change Password</Button>
+          <Button variant="primary" loading={changingPassword}>Verander wachtwoord</Button>
         </form>
       )}
 
       {tab === 'addresses' && (
         <div>
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-base font-semibold">Saved Addresses</h2>
+            <h2 className="text-base font-semibold">Opgeslagen adressen</h2>
             <Button
               variant="primary"
               size="sm"
               onClick={() => { setEditingAddress(undefined); setShowAddressModal(true); }}
             >
-              Add Address
+              Voeg adres toe
             </Button>
           </div>
           {(account?.addresses ?? []).length === 0 ? (
-            <p className="text-sm text-gray-500">No addresses saved yet.</p>
+            <p className="text-sm text-gray-500">Er zijn nog geen adressen opgeslagen</p>
           ) : (
             <div className="space-y-3">
               {(account.addresses as Address[]).map((addr) => (
@@ -272,14 +271,14 @@ function AccountPageContent() {
                       size="sm"
                       onClick={() => { setEditingAddress(addr); setShowAddressModal(true); }}
                     >
-                      Edit
+                      Aanpassen
                     </Button>
                     <Button
                       variant="secondary"
                       size="sm"
                       onClick={() => handleDeleteAddress(addr.id!)}
                     >
-                      Delete
+                      Verwijderen
                     </Button>
                   </div>
                 </div>

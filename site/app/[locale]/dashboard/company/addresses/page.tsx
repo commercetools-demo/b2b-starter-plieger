@@ -27,7 +27,7 @@ const emptyAddress: AddressForm = {
   city: '',
   state: '',
   postalCode: '',
-  country: 'US',
+  country: 'NL',
 };
 
 export default function AddressesPage() {
@@ -147,18 +147,18 @@ export default function AddressesPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <Button variant="ghost" size="sm" href={localePath('/dashboard/company')} className="mb-2">&larr; Company</Button>
-          <h1 className="text-2xl font-bold">Addresses</h1>
+          <Button variant="ghost" size="sm" href={localePath('/dashboard/company')} className="mb-2">&larr; Bedrijf</Button>
+          <h1 className="text-2xl font-bold">Adresen</h1>
         </div>
-        <Button variant="primary" onClick={() => setAddOpen(true)}>Add Address</Button>
+        <Button variant="primary" onClick={() => setAddOpen(true)}>Voeg adres toe</Button>
       </div>
 
       {addresses.length === 0 ? (
         <EmptyState
           icon="📍"
-          title="No addresses"
-          description="Add addresses for shipping and billing."
-          actionLabel="Add Address"
+          title="Geen addressen"
+          description="Voeg een adres toe"
+          actionLabel="Voeg toe"
           onAction={() => setAddOpen(true)}
         />
       ) : (
@@ -184,7 +184,7 @@ export default function AddressesPage() {
                       loading={togglingId === addr.id}
                       onClick={() => handleToggleDefault(addr.id, 'shipping')}
                     >
-                      Set as Default Shipping
+                      Verzend adres
                     </Button>
                   )}
                   {!isDefaultBilling && (
@@ -194,7 +194,7 @@ export default function AddressesPage() {
                       loading={togglingId === addr.id}
                       onClick={() => handleToggleDefault(addr.id, 'billing')}
                     >
-                      Set as Default Billing
+                      Factuur adres
                     </Button>
                   )}
                   <Button
@@ -203,7 +203,7 @@ export default function AddressesPage() {
                     loading={removingId === addr.id}
                     onClick={() => handleRemove(addr.id)}
                   >
-                    Remove
+                    Verwijderen
                   </Button>
                 </div>
               </div>
@@ -219,21 +219,20 @@ export default function AddressesPage() {
         title="Add Address"
         footer={
           <>
-            <Button variant="ghost" onClick={() => setAddOpen(false)}>Cancel</Button>
-            <Button variant="primary" loading={saving} onClick={handleAdd}>Add</Button>
+            <Button variant="ghost" onClick={() => setAddOpen(false)}>Annuleren</Button>
+            <Button variant="primary" loading={saving} onClick={handleAdd}>Toevoegen</Button>
           </>
         }
       >
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Input label="First Name" name="firstName" value={form.firstName} onChange={updateForm('firstName')} />
-          <Input label="Last Name" name="lastName" value={form.lastName} onChange={updateForm('lastName')} />
+          <Input label="Voornaam" name="firstName" value={form.firstName} onChange={updateForm('firstName')} />
+          <Input label="Achternaam" name="lastName" value={form.lastName} onChange={updateForm('lastName')} />
           <div className="sm:col-span-2">
-            <Input label="Street Address" name="street" value={form.streetName} onChange={updateForm('streetName')} />
+            <Input label="Straat" name="street" value={form.streetName} onChange={updateForm('streetName')} />
           </div>
-          <Input label="City" name="city" value={form.city} onChange={updateForm('city')} />
-          <Input label="State / Province" name="state" value={form.state} onChange={updateForm('state')} />
-          <Input label="Postal Code" name="postalCode" value={form.postalCode} onChange={updateForm('postalCode')} />
-          <Input label="Country" name="country" value={form.country} onChange={updateForm('country')} />
+          <Input label="Postcode" name="postalCode" value={form.postalCode} onChange={updateForm('postalCode')} />
+          <Input label="Woonplaats" name="city" value={form.city} onChange={updateForm('city')} />
+          <Input label="Land" name="country" value={form.country} onChange={updateForm('country')} />
         </div>
       </Modal>
     </div>

@@ -23,9 +23,9 @@ export default function OrderDetailPage() {
     if (!order) return;
     try {
       await cancelOrder(id, order.version);
-      addToast('Order cancelled');
+      addToast('Bestelling geannuleerd');
     } catch {
-      addToast('Failed to cancel order');
+      addToast('Kan bestelling niet annuleren');
     }
   };
 
@@ -38,7 +38,7 @@ export default function OrderDetailPage() {
         // skip items that fail
       }
     }
-    addToast('Items added to cart');
+    addToast('Artikelen toegevoegd aan winkelwagen');
     router.push(localePath('/cart'));
   };
 
@@ -54,8 +54,8 @@ export default function OrderDetailPage() {
   if (!order) {
     return (
       <div className="text-center py-16">
-        <h1 className="text-2xl font-bold mb-2">Order Not Found</h1>
-        <Button variant="primary" href={localePath('/dashboard/orders')}>Back to Orders</Button>
+        <h1 className="text-2xl font-bold mb-2">Bestelling niet gevondern</h1>
+        <Button variant="primary" href={localePath('/dashboard/orders')}>Terug naar bestellingen</Button>
       </div>
     );
   }
@@ -74,9 +74,9 @@ export default function OrderDetailPage() {
       ),
     },
     { key: 'sku', header: 'SKU', render: (item: any) => item.variant?.sku ?? '-' },
-    { key: 'quantity', header: 'Qty', render: (item: any) => item.quantity },
-    { key: 'price', header: 'Unit Price', render: (item: any) => formatMoney(item.price?.value) },
-    { key: 'total', header: 'Total', render: (item: any) => formatMoney(item.totalPrice) },
+    { key: 'quantity', header: 'Aant.', render: (item: any) => item.quantity },
+    { key: 'price', header: 'Stuks Prijs', render: (item: any) => formatMoney(item.price?.value) },
+    { key: 'total', header: 'Totaal', render: (item: any) => formatMoney(item.totalPrice) },
   ];
 
   const renderAddress = (address: any) => {
@@ -93,34 +93,34 @@ export default function OrderDetailPage() {
 
   return (
     <div>
-      <Button variant="ghost" size="sm" href={localePath('/dashboard/orders')} className="mb-4">&larr; Back to Orders</Button>
+      <Button variant="ghost" size="sm" href={localePath('/dashboard/orders')} className="mb-4">&larr; Terug naar bestellingen</Button>
 
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold">Order {order.orderNumber ?? order.id.slice(0, 8)}</h1>
+          <h1 className="text-2xl font-bold">Bestelling {order.orderNumber ?? order.id.slice(0, 8)}</h1>
           <p className="text-gray-500 text-sm mt-1">{formatDate(order.createdAt)}</p>
         </div>
         <OrderStatus state={order.orderState} />
       </div>
 
       <div className="bg-white rounded-xl border border-gray-100 p-6 mb-6">
-        <h2 className="text-lg font-semibold mb-4">Items</h2>
+        <h2 className="text-lg font-semibold mb-4">Artikelen</h2>
         <Table columns={lineItemColumns} data={order.lineItems ?? []} loading={false} emptyMessage="No items" />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div className="bg-white rounded-xl border border-gray-100 p-6">
-          <h2 className="text-lg font-semibold mb-3">Shipping Address</h2>
+          <h2 className="text-lg font-semibold mb-3">Verzend adres</h2>
           {renderAddress(order.shippingAddress)}
         </div>
         <div className="bg-white rounded-xl border border-gray-100 p-6">
-          <h2 className="text-lg font-semibold mb-3">Billing Address</h2>
+          <h2 className="text-lg font-semibold mb-3">Factuur adres</h2>
           {renderAddress(order.billingAddress)}
         </div>
       </div>
 
       <div className="bg-white rounded-xl border border-gray-100 p-6 mb-6">
-        <h2 className="text-lg font-semibold mb-3">Order Total</h2>
+        <h2 className="text-lg font-semibold mb-3">Totalen</h2>
         <dl className="space-y-2 text-sm max-w-xs">
           <div className="flex justify-between">
             <dt className="text-gray-600">Subtotal</dt>
@@ -128,12 +128,12 @@ export default function OrderDetailPage() {
           </div>
           {order.taxedPrice?.totalTax && (
             <div className="flex justify-between">
-              <dt className="text-gray-600">Tax</dt>
+              <dt className="text-gray-600">BTW</dt>
               <dd className="font-medium">{formatMoney(order.taxedPrice.totalTax)}</dd>
             </div>
           )}
           <div className="flex justify-between border-t border-gray-100 pt-2 font-bold">
-            <dt>Total</dt>
+            <dt>Totaal</dt>
             <dd>{formatMoney(order.taxedPrice?.totalGross ?? order.totalPrice)}</dd>
           </div>
         </dl>
@@ -141,9 +141,9 @@ export default function OrderDetailPage() {
 
       <div className="flex gap-3">
         {order.orderState === 'Open' && (
-          <Button variant="danger" onClick={handleCancel}>Cancel Order</Button>
+          <Button variant="danger" onClick={handleCancel}>Annuleer bestelling</Button>
         )}
-        <Button variant="secondary" onClick={handleReorder}>Reorder</Button>
+        <Button variant="secondary" onClick={handleReorder}>Opnieuw bestellen</Button>
       </div>
     </div>
   );

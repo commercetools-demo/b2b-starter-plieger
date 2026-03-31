@@ -26,7 +26,7 @@ const emptyAddress: AddressForm = {
   city: '',
   state: '',
   postalCode: '',
-  country: 'US',
+  country: 'NL',
 };
 
 function AddressFields({
@@ -72,6 +72,7 @@ export default function CheckoutPage() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    debugger
     setError('');
     setLoading(true);
     try {
@@ -103,9 +104,9 @@ export default function CheckoutPage() {
   if (!cart || cart.lineItems?.length === 0) {
     return (
       <div className="mx-auto max-w-4xl px-6 py-16 text-center">
-        <h1 className="text-2xl font-bold mb-2">Nothing to check out</h1>
-        <p className="text-gray-600 mb-6">Your cart is empty.</p>
-        <Button variant="primary" href={localePath('/products')}>Browse Products</Button>
+        <h1 className="text-2xl font-bold mb-2">Niets om af te rekenen</h1>
+        <p className="text-gray-600 mb-6">Uw winkelwagen is leeg.</p>
+        <Button variant="primary" href={localePath('/products')}>Blader door Producten</Button>
       </div>
     );
   }
@@ -114,7 +115,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-10">
-      <h1 className="text-3xl font-bold mb-8">Checkout</h1>
+      <h1 className="text-3xl font-bold mb-8">Afrekenen</h1>
 
       {error && (
         <div className="mb-6 rounded-lg bg-red-50 border border-red-200 text-red-700 px-4 py-3 text-sm">
@@ -142,7 +143,7 @@ export default function CheckoutPage() {
                   onChange={(e) => setSameAsShipping(e.target.checked)}
                   className="rounded border-gray-300"
                 />
-                Same as shipping address
+                Zelfde als verzendadres
               </label>
               {!sameAsShipping && (
                 <AddressFields address={billing} onChange={updateBilling} prefix="billing" />
@@ -151,7 +152,7 @@ export default function CheckoutPage() {
 
             {/* PO Number */}
             <section className="bg-white rounded-xl border border-gray-100 p-6">
-              <h2 className="text-lg font-semibold mb-4">Purchase Order</h2>
+              <h2 className="text-lg font-semibold mb-4">Aankooporder</h2>
               <Input
                 label="PO Number (optional)"
                 name="poNumber"
@@ -165,7 +166,7 @@ export default function CheckoutPage() {
           {/* Summary Sidebar */}
           <div>
             <div className="bg-white rounded-xl border border-gray-100 p-6 sticky top-6">
-              <h2 className="text-lg font-semibold mb-4">Order Summary</h2>
+              <h2 className="text-lg font-semibold mb-4">Besteloverzicht</h2>
               <ul className="space-y-3 mb-4">
                 {cart.lineItems.map((item: any) => (
                   <li key={item.id} className="flex justify-between text-sm">

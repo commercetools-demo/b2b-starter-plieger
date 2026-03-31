@@ -72,7 +72,7 @@ export default function CartPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-10">
-      <h1 className="text-3xl font-bold mb-8">Shopping Cart ({itemCount} items)</h1>
+      <h1 className="text-3xl font-bold mb-8">Winkelwagen ({itemCount} items)</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
         {/* Items */}
@@ -93,12 +93,12 @@ export default function CartPage() {
               </div>
               {taxTotal && (
                 <div className="flex justify-between">
-                  <dt className="text-gray-600">Tax</dt>
+                  <dt className="text-gray-600">BTW</dt>
                   <dd className="font-medium">{formatMoney(taxTotal)}</dd>
                 </div>
               )}
               <div className="flex justify-between border-t border-gray-100 pt-3 text-base font-bold">
-                <dt>Total</dt>
+                <dt>Totaal</dt>
                 <dd>{formatMoney(cart.taxedPrice?.totalGross ?? subtotal)}</dd>
               </div>
             </dl>
@@ -120,7 +120,7 @@ export default function CartPage() {
                   placeholder="Discount code"
                 />
                 <Button variant="secondary" size="sm" loading={applyingDiscount} className="shrink-0 self-end">
-                  Apply
+                  Pas toe
                 </Button>
               </form>
               {cart.discountCodes && cart.discountCodes.length > 0 && (
@@ -128,7 +128,7 @@ export default function CartPage() {
                   {cart.discountCodes.map((dc: any, i: number) => (
                     <div key={i} className="text-xs text-green-600 flex items-center gap-1">
                       <span>&#10003;</span>
-                      <span>Code applied</span>
+                      <span>Code toegepast</span>
                     </div>
                   ))}
                 </div>
@@ -137,7 +137,7 @@ export default function CartPage() {
 
             <div className="mt-6 space-y-3">
               <Button variant="primary" size="lg" href={localePath('/checkout')} className="w-full">
-                Proceed to Checkout
+                Ga door naar afrekenen
               </Button>
               <Button
                 variant="secondary"
@@ -146,12 +146,12 @@ export default function CartPage() {
                 loading={requestingQuote}
                 onClick={handleRequestQuote}
               >
-                Request Quote
+                Vraag Offerte aan
               </Button>
             </div>
 
             <div className="mt-4 text-center">
-              <Button variant="ghost" size="sm" href={localePath('/products')}>Continue Shopping</Button>
+              <Button variant="ghost" size="sm" href={localePath('/products')}>Ga door met winkelen</Button>
             </div>
           </div>
         </div>

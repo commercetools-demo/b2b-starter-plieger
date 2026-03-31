@@ -13,8 +13,8 @@ import { getSession } from '@/lib/session';
 import { locales, LANGUAGE_LOCALE_MAP, DEFAULT_LOCALE } from '@/i18n/config';
 
 export const metadata: Metadata = {
-  title: 'Atlas Construction Equipment | B2B Commerce',
-  description: 'Heavy equipment procurement powered by commercetools',
+  title: 'Plieger | B2B Commerce',
+  description: 'B2B Procurement powered by commercetools',
   icons: {
     icon: '/logo.png',
   },

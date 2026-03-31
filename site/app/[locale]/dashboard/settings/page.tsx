@@ -103,12 +103,12 @@ export default function SettingsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-2">My Profile</h1>
+      <h1 className="text-2xl font-bold mb-2">Mijn profiel</h1>
 
       {/* Business Units & Roles Summary */}
       {businessUnits.length > 0 && user && (
         <div className="mb-6">
-          <p className="text-sm text-gray-500 mb-3">Your business unit memberships and roles:</p>
+          <p className="text-sm text-gray-500 mb-3">Uw bedrijfs afdelingen en de toegekende rollen</p>
           <div className="flex flex-col gap-2">
             {businessUnits.map((bu: any) => {
               const roles = getUserRoles(bu, user.id);
@@ -127,7 +127,7 @@ export default function SettingsPage() {
                       {bu.name}
                     </span>
                     {isCurrent && (
-                      <span className="text-[10px] font-semibold text-blue-500 uppercase tracking-wider">Current</span>
+                      <span className="text-[10px] font-semibold text-blue-500 uppercase tracking-wider">Huidig</span>
                     )}
                   </div>
                   <div className="flex items-center gap-1.5">
@@ -137,7 +137,7 @@ export default function SettingsPage() {
                       </Badge>
                     ))}
                     {roles.length === 0 && (
-                      <span className="text-xs text-gray-400">No role</span>
+                      <span className="text-xs text-gray-400">Geen rol</span>
                     )}
                   </div>
                 </div>
@@ -149,20 +149,20 @@ export default function SettingsPage() {
 
       {/* Profile */}
       <section className="bg-white rounded-xl border border-gray-100 p-6 mb-6">
-        <h2 className="text-lg font-semibold mb-4">Profile</h2>
+        <h2 className="text-lg font-semibold mb-4">Profiel</h2>
         <form onSubmit={handleProfileSave} className="space-y-4 max-w-md">
           <div className="grid grid-cols-2 gap-4">
-            <Input label="First Name" name="firstName" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-            <Input label="Last Name" name="lastName" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+            <Input label="Voornaam" name="firstName" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+            <Input label="Achternaam" name="lastName" value={lastName} onChange={(e) => setLastName(e.target.value)} />
           </div>
           <Input label="Email" name="email" type="email" value={email} onChange={() => {}} disabled />
-          <Button variant="primary" loading={profileSaving}>Save Changes</Button>
+          <Button variant="primary" loading={profileSaving}>Sla op</Button>
         </form>
       </section>
 
       {/* Password */}
       <section className="bg-white rounded-xl border border-gray-100 p-6 mb-6">
-        <h2 className="text-lg font-semibold mb-4">Change Password</h2>
+        <h2 className="text-lg font-semibold mb-4">Wijzig wachtwoord</h2>
         {passwordError && (
           <div className="mb-4 rounded-lg bg-red-50 border border-red-200 text-red-700 px-4 py-3 text-sm">
             {passwordError}
@@ -170,34 +170,34 @@ export default function SettingsPage() {
         )}
         <form onSubmit={handlePasswordChange} className="space-y-4 max-w-md">
           <Input
-            label="Current Password"
+            label="Bestaand wachtwoord"
             name="currentPassword"
             type="password"
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
           />
           <Input
-            label="New Password"
+            label="Nieuw wachtwoord"
             name="newPassword"
             type="password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
           />
           <Input
-            label="Confirm New Password"
+            label="Bevestig nieuw wachtwoord"
             name="confirmPassword"
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
-          <Button variant="primary" loading={passwordSaving}>Change Password</Button>
+          <Button variant="primary" loading={passwordSaving}>Verander wachtwoord</Button>
         </form>
       </section>
 
       {/* Switch Business Unit */}
       {businessUnits.length > 1 && (
         <section className="bg-white rounded-xl border border-gray-100 p-6">
-          <h2 className="text-lg font-semibold mb-4">Switch Business Unit</h2>
+          <h2 className="text-lg font-semibold mb-4">Verander van bedrijfsonderdeel</h2>
           <div className="max-w-md">
             <Select
               label="Active Business Unit"

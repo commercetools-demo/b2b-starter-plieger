@@ -61,12 +61,12 @@ export function QuickOrder() {
   }, []);
 
   const handleSkuLookup = async () => {
-    const sku = skuInput.trim().toUpperCase();
+    const sku = skuInput.trim();
     if (!sku) return;
 
     // Check if already in list
     if (items.some((item) => item.sku === sku)) {
-      addToast('SKU already in list');
+      addToast('Artikel staat al in de lijst');
       return;
     }
 
@@ -146,12 +146,12 @@ export function QuickOrder() {
       for (const item of selectedItems) {
         await addItem(item.productId!, item.variantId!, item.quantity);
       }
-      addToast(`Added ${selectedItems.length} item(s) to cart`);
+      addToast(`${selectedItems.length} artikel(en) aan de winkelwagen toegevoegd`);
       setItems([]);
       setIsOpen(false);
       openMiniCart();
     } catch {
-      addToast('Failed to add items to cart');
+      addToast('Kan geen artikelen aan de winkelwagen toevoegen');
     } finally {
       setAdding(false);
     }
@@ -166,28 +166,28 @@ export function QuickOrder() {
         onClick={() => canManageCarts && setIsOpen(true)}
         disabled={!canManageCarts}
         className={`flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium transition-colors ${canManageCarts ? 'text-slate-600 hover:bg-slate-100' : 'text-slate-300 cursor-not-allowed'}`}
-        title={canManageCarts ? 'Quick Order' : 'Insufficient permissions to perform this task'}
+        title={canManageCarts ? 'Snel bestellen' : 'U heeft niet voldoende rechten voor deze functie'}
       >
         <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
         </svg>
-        <span className="hidden lg:inline">Quick Order</span>
+        <span className="hidden lg:inline">Snel bestellen</span>
       </button>
 
       <Modal
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
-        title="Quick Order"
+        title="Snel bestellen"
         footer={
           <>
-            <Button variant="ghost" onClick={() => setIsOpen(false)}>Cancel</Button>
+            <Button variant="ghost" onClick={() => setIsOpen(false)}>Annuleren</Button>
             <Button
               variant="primary"
               onClick={handleAddToCart}
               loading={adding}
               disabled={selectedCount === 0}
             >
-              Add {selectedCount} Item{selectedCount !== 1 ? 's' : ''} to Cart
+              Voeg {selectedCount} artikel{selectedCount !== 1 ? 'en' : ''} toe aan winkelwagen
             </Button>
           </>
         }
@@ -196,7 +196,7 @@ export function QuickOrder() {
           {/* SKU Input */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Look up by SKU
+              Zoek op artikel nummer
             </label>
             <div className="flex gap-2">
               <input
@@ -204,11 +204,11 @@ export function QuickOrder() {
                 value={skuInput}
                 onChange={(e) => setSkuInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSkuLookup()}
-                placeholder="Enter SKU..."
+                placeholder="Artikelnummer..."
                 className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
               <Button variant="secondary" onClick={handleSkuLookup} loading={lookingUp && items.length === 0}>
-                Look Up
+                Zoek
               </Button>
             </div>
           </div>
@@ -216,23 +216,24 @@ export function QuickOrder() {
           {/* CSV Upload */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Or upload CSV
+              Of via een .csv bestand
             </label>
             <p className="text-xs text-gray-500 mb-2">
-              CSV format: SKU, Quantity (one per line)
+              CSV formaat: SKU, Quantity (Een per regel)
             </p>
             <input
               ref={fileRef}
               type="file"
               accept=".csv,.tsv,.txt"
               onChange={handleCsvUpload}
+              
               className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
             />
           </div>
 
           {lookingUp && (
             <div className="text-sm text-gray-500 text-center py-2">
-              Looking up SKUs...
+              Zoeken op artikelnummer...
             </div>
           )}
 
@@ -240,12 +241,12 @@ export function QuickOrder() {
           {items.length > 0 && (
             <div className="border rounded-lg overflow-hidden">
               <div className="bg-gray-50 px-4 py-2 text-xs font-medium text-gray-500 flex items-center justify-between">
-                <span>{foundCount} found, {items.length - foundCount} not found</span>
+                <span>{foundCount} gevonden, {items.length - foundCount} niet gevonden</span>
                 <button
                   onClick={() => setItems((prev) => prev.map((i) => i.status === 'found' ? { ...i, selected: true } : i))}
                   className="text-blue-600 hover:underline"
                 >
-                  Select All
+                  Selecteer alles
                 </button>
               </div>
               <div className="max-h-64 overflow-y-auto divide-y divide-gray-100">
@@ -253,7 +254,7 @@ export function QuickOrder() {
                   <div
                     key={item.sku}
                     className={`flex items-center gap-3 px-4 py-3 ${
-                      item.status === 'not_found' ? 'bg-red-50' : ''
+                      item.status === 'not_found' ? 'bg-blue-50' : ''
                     }`}
                   >
                     {item.status === 'found' && (
@@ -275,7 +276,7 @@ export function QuickOrder() {
                       <p className="text-xs text-gray-500">
                         SKU: {item.sku}
                         {item.status === 'not_found' && (
-                          <span className="text-red-600 ml-2">Not found</span>
+                          <span className="text-red-600 ml-2">Niet gevonden</span>
                         )}
                       </p>
                     </div>
@@ -304,9 +305,9 @@ export function QuickOrder() {
                           )}
                           {typeof item.availableQuantity === 'number' && (
                             item.availableQuantity > 0 ? (
-                              <span className="text-[10px] text-green-600">{item.availableQuantity} in stock</span>
+                              <span className="text-[10px] text-green-600">{item.availableQuantity} op voorraad</span>
                             ) : (
-                              <span className="text-[10px] text-red-600 font-medium">Out of stock</span>
+                              <span className="text-[10px] text-red-600 font-medium">Niet op voorraad</span>
                             )
                           )}
                         </div>

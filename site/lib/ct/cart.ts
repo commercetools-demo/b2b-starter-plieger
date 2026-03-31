@@ -21,8 +21,8 @@ export async function createCart(
   associateId: string,
   businessUnitKey: string,
   storeKey: string,
-  currency = 'USD',
-  country = 'US'
+  currency = 'EUR',
+  country = 'NL'
 ) {
   const response = await asAssociateInStore(associateId, businessUnitKey)
     .post({

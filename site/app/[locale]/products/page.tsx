@@ -91,7 +91,7 @@ function ProductsContent() {
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-10">
-      <h1 className="text-3xl font-bold mb-8">Products</h1>
+      <h1 className="text-3xl font-bold mb-8">Producten</h1>
 
       <div className="flex gap-8">
         {/* Sidebar */}
@@ -103,7 +103,7 @@ function ProductsContent() {
                 onClick={() => updateParams({ category: '', offset: '' })}
                 className={`block w-full text-left px-3 py-2 rounded-lg text-sm ${!selectedCategory ? 'bg-primary-light text-primary font-medium' : 'hover:bg-gray-100'}`}
               >
-                All Products
+                Alle Producten
               </button>
             </li>
             {categories.filter((cat) => !cat.parent).map((cat) => (
@@ -128,10 +128,10 @@ function ProductsContent() {
                 type="search"
                 value={inputSearch}
                 onChange={(e) => setInputSearch(e.target.value)}
-                placeholder="Search products..."
+                placeholder="Zoek producten..."
               />
             </div>
-            <Button variant="primary">Search</Button>
+            <Button variant="primary">Zoeken</Button>
           </form>
 
           <ProductGrid products={products} loading={loading} />

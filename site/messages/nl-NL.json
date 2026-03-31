@@ -1,0 +1,145 @@
+{
+  "auth": {
+    "forgotPassword": {
+      "title": "Wachtwoord vergeten",
+      "description": "Voer je e-mailadres in en we sturen je een resetlink.",
+      "emailLabel": "E-mailadres",
+      "submitButton": "Resetlink verzenden",
+      "successMessage": "Als er een account met dit e-mailadres bestaat, ontvang je binnenkort een resetlink.",
+      "backToLogin": "Terug naar inloggen"
+    },
+    "resetPassword": {
+      "title": "Wachtwoord resetten",
+      "newPasswordLabel": "Nieuw wachtwoord",
+      "submitButton": "Wachtwoord resetten",
+      "successMessage": "Je wachtwoord is opnieuw ingesteld. Je kunt nu inloggen.",
+      "invalidToken": "Deze resetlink is ongeldig of verlopen."
+    }
+  },
+  "account": {
+    "title": "Mijn account",
+    "tabs": {
+      "general": "Algemeen",
+      "security": "Beveiliging",
+      "addresses": "Adressen"
+    },
+    "general": {
+      "firstName": "Voornaam",
+      "lastName": "Achternaam",
+      "email": "E-mailadres",
+      "saveButton": "Wijzigingen opslaan",
+      "successMessage": "Profiel succesvol bijgewerkt."
+    },
+    "security": {
+      "currentPassword": "Huidig wachtwoord",
+      "newPassword": "Nieuw wachtwoord",
+      "submitButton": "Wachtwoord wijzigen",
+      "successMessage": "Wachtwoord succesvol gewijzigd."
+    },
+    "addresses": {
+      "addAddress": "Adres toevoegen",
+      "noAddresses": "Nog geen adressen opgeslagen.",
+      "street": "Straat",
+      "city": "Stad",
+      "state": "Provincie",
+      "postalCode": "Postcode",
+      "country": "Land",
+      "saveButton": "Adres opslaan",
+      "deleteConfirm": "Dit adres verwijderen?"
+    }
+  },
+  "categories": {
+    "title": "Categorieën",
+    "browseAll": "Alle categorieën bekijken",
+    "noProducts": "Geen producten gevonden in deze categorie.",
+    "products": "Producten"
+  },
+  "search": {
+    "title": "Zoekresultaten",
+    "resultsFor": "Resultaten voor \"{query}\"",
+    "noResults": "Geen producten gevonden voor \"{query}\".",
+    "placeholder": "Zoek producten...",
+    "allResults": "Alle resultaten voor \"{query}\" weergeven"
+  },
+  "wishlists": {
+    "title": "Mijn verlanglijsten",
+    "createWishlist": "Verlanglijst maken",
+    "nameLabel": "Naam van de verlanglijst",
+    "noWishlists": "Nog geen verlanglijsten.",
+    "addToCart": "In winkelwagen",
+    "removeItem": "Verwijderen",
+    "emptyWishlist": "Deze verlanglijst is leeg.",
+    "deleteWishlist": "Verlanglijst verwijderen",
+    "items": "{count} items"
+  },
+  "product": {
+    "priceOnRequest": "Prijs op aanvraag",
+    "signInForPricing": "Inloggen voor prijzen",
+    "signInToSeePricing": "Inloggen om prijzen te zien",
+    "noImage": "Geen afbeelding",
+    "notFound": "Product niet gevonden",
+    "notFoundDescription": "Het gezochte product bestaat niet.",
+    "backToProducts": "Terug naar producten",
+    "sku": "Artikelnummer"
+  },
+  "cart": {
+    "noImage": "Geen afbeelding"
+  },
+  "checkoutQuote": {
+    "title": "Offerte accepteren",
+    "summary": "Overzicht offerte",
+    "acceptButton": "Accepteren & bestellen",
+    "sellerComment": "Opmerking verkoper",
+    "successMessage": "Bestelling succesvol geplaatst!",
+    "validTo": "Geldig tot",
+    "lineItems": "Regelitems",
+    "noQuoteSpecified": "Geen offerte opgegeven",
+    "quoteNotFound": "Offerte niet gevonden"
+  },
+  "footer": {
+    "poweredBy": "Powered by commercetools",
+    "deployed": "In productie"
+  },
+  "predicateBuilder": {
+    "currencyUSD": "USD ($)",
+    "currencyEUR": "EUR (€)",
+    "currencyGBP": "GBP (£)"
+  },
+  "recurringOrders": {
+    "title": "Terugkerende bestellingen",
+    "status": {
+      "Active": "Actief",
+      "Paused": "Gepauzeerd",
+      "Canceled": "Geannuleerd",
+      "Expired": "Verlopen"
+    },
+    "pause": "Pauzeren",
+    "resume": "Hervatten",
+    "cancel": "Annuleren",
+    "duplicate": "Dupliceren",
+    "schedule": "Schema",
+    "nextOrder": "Volgende bestelling",
+    "lastOrder": "Laatste bestelling",
+    "noOrders": "Geen terugkerende bestellingen gevonden.",
+    "originOrder": "Oorspronkelijke bestelling",
+    "lineItems": "Artikelregels"
+  },
+  "ratings": {
+    "title": "Klantbeoordelingen",
+    "writeReview": "Beoordeling schrijven",
+    "submitReview": "Beoordeling verzenden",
+    "ratingLabel": "Je beoordeling",
+    "commentLabel": "Je opmerking",
+    "titleLabel": "Titel van de beoordeling",
+    "noReviews": "Nog geen beoordelingen. Wees de eerste!",
+    "loginToReview": "Inloggen om een beoordeling te schrijven",
+    "averageRating": "Gemiddelde beoordeling",
+    "totalReviews": "{count} beoordelingen"
+  },
+  "language": {
+    "en": "English",
+    "de": "Deutsch",
+    "nl": "Nederlands",
+    "selectLanguage": "Taal"
+  }
+}

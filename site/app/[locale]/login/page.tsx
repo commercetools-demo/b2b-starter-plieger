@@ -10,38 +10,38 @@ import { Input } from '@/components/ui/Input';
 
 const DEMO_COMPANIES = [
   {
-    name: 'Eagle Heavy Lift Technologies Inc.',
-    store: 'US Large Customers',
-    description: 'Large enterprise — sees lower, volume-discount pricing',
+    name: 'J. Krens Installatietechniek',
+    store: 'Krens Delft',
+    description: 'Large enterprise',
     accounts: [
-      { email: 'james-smith@ehlt.com', role: 'Admin' },
-      { email: 'emma-johnson@ehlt.com', role: 'Approver' },
-      { email: 'michael-williams@ehlt.com', role: 'Buyer' },
+      { email: 'jan@krens.nl', role: 'Admin' },
+      { email: 'carola@krens.nl', role: 'Approver' },
+      { email: 'bob@krens.nl', role: 'Buyer' },
     ],
   },
   {
-    name: 'Liberty Crane Solutions LLC',
-    store: 'US Medium Customers',
+    name: 'Krens Pijnacker',
+    store: 'Krens Pijnacker Store',
     description: 'Mid-size company — sees standard pricing for same products',
     accounts: [
-      { email: 'olivia-newton@lcs.com', role: 'Admin' },
-      { email: 'william-davis@lcs.com', role: 'Approver' },
-      { email: 'ava-brown@lcs.com', role: 'Buyer' },
+      { email: 'jan@krens.nl', role: 'Admin' },
+      { email: 'carola@krens.nl', role: 'Approver' },
+      { email: 'bob@krens.nl', role: 'Buyer' },
     ],
   },
   {
-    name: 'LiftTech Solutions Ltd',
-    store: 'Germany, France & UK',
+    name: 'Krens Bleiswijk',
+    store: 'Krens Bleiswijk Store',
     description: 'European company — sees EUR/GBP pricing and regional catalog',
     accounts: [
-      { email: 'oliver-smith@ltsl.com', role: 'Admin' },
-      { email: 'amelia-jones@ltsl.com', role: 'Approver' },
-      { email: 'william-taylor@ltsl.com', role: 'Buyer' },
+      { email: 'jan@krens.nl', role: 'Admin' },
+      { email: 'carola@krens.nl', role: 'Approver' },
+      { email: 'bob@krens.nl', role: 'Buyer' },
     ],
   },
 ];
 
-const PASSWORD = '123';
+const PASSWORD = 'Password123!';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -132,7 +132,7 @@ export default function LoginPage() {
                 className="rounded-xl border border-slate-200 bg-white p-4"
               >
                 <h3 className="text-sm font-semibold text-slate-900 leading-tight">{company.name}</h3>
-                <p className="text-xs text-red-600 font-medium mt-0.5">{company.store}</p>
+                <p className="text-xs text-primary font-medium mt-0.5">{company.store}</p>
                 <p className="text-xs text-slate-500 mt-1 mb-3">{company.description}</p>
                 <div className="space-y-1.5">
                   {company.accounts.map((account) => (

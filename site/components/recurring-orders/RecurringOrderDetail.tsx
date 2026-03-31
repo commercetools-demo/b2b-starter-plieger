@@ -42,35 +42,35 @@ export function RecurringOrderDetail({ order }: RecurringOrderDetailProps) {
         </div>
         <div className="flex gap-2">
           {order.state === 'Active' && (
-            <Button variant="secondary" size="sm" onClick={() => doAction('pause')}>Pause</Button>
+            <Button variant="secondary" size="sm" onClick={() => doAction('pause')}>Pauze</Button>
           )}
           {order.state === 'Paused' && (
-            <Button variant="secondary" size="sm" onClick={() => doAction('resume')}>Resume</Button>
+            <Button variant="secondary" size="sm" onClick={() => doAction('resume')}>Hervatten</Button>
           )}
           {(order.state === 'Active' || order.state === 'Paused') && (
-            <Button variant="secondary" size="sm" onClick={() => doAction('cancel')}>Cancel</Button>
+            <Button variant="secondary" size="sm" onClick={() => doAction('cancel')}>Annuleren</Button>
           )}
-          <Button variant="secondary" size="sm" onClick={() => doAction('duplicate')}>Duplicate</Button>
+          <Button variant="secondary" size="sm" onClick={() => doAction('duplicate')}>Kopieren</Button>
         </div>
       </div>
 
       {/* Schedule info */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <div className="rounded-lg bg-slate-50 p-3">
-          <p className="text-xs text-slate-500 mb-1">Schedule</p>
-          <p className="text-sm font-medium">Every {order.schedule.value} {order.schedule.intervalUnit}</p>
+          <p className="text-xs text-slate-500 mb-1">Schema</p>
+          <p className="text-sm font-medium">Iedere {order.schedule.value} {order.schedule.intervalUnit}</p>
         </div>
         <div className="rounded-lg bg-slate-50 p-3">
-          <p className="text-xs text-slate-500 mb-1">Next Order</p>
+          <p className="text-xs text-slate-500 mb-1">Volgende bestellingr</p>
           <p className="text-sm font-medium">{order.nextOrderAt ? formatDate(order.nextOrderAt) : '—'}</p>
         </div>
         <div className="rounded-lg bg-slate-50 p-3">
-          <p className="text-xs text-slate-500 mb-1">Last Order</p>
+          <p className="text-xs text-slate-500 mb-1">Laatste bestelling</p>
           <p className="text-sm font-medium">{order.lastOrderAt ? formatDate(order.lastOrderAt) : '—'}</p>
         </div>
         {order.resumesAt && (
           <div className="rounded-lg bg-yellow-50 p-3">
-            <p className="text-xs text-yellow-600 mb-1">Resumes</p>
+            <p className="text-xs text-yellow-600 mb-1">Hervat</p>
             <p className="text-sm font-medium text-yellow-700">{formatDate(order.resumesAt)}</p>
           </div>
         )}
@@ -78,7 +78,7 @@ export function RecurringOrderDetail({ order }: RecurringOrderDetailProps) {
 
       {/* Origin order snapshot */}
       <div className="rounded-xl border border-slate-200 bg-white p-5">
-        <h3 className="text-sm font-semibold text-slate-700 mb-3">Order Items</h3>
+        <h3 className="text-sm font-semibold text-slate-700 mb-3">Artikelen</h3>
         <div className="space-y-2 mb-4">
           {(order.orderSnapshot?.lineItems ?? []).map((item, i) => (
             <div key={i} className="flex justify-between items-center text-sm py-2 border-b border-slate-100 last:border-0">
@@ -89,7 +89,7 @@ export function RecurringOrderDetail({ order }: RecurringOrderDetailProps) {
         </div>
         {order.orderSnapshot?.totalPrice && (
           <div className="flex justify-between items-center border-t border-slate-200 pt-3">
-            <span className="font-medium text-slate-700">Total</span>
+            <span className="font-medium text-slate-700">Totaal</span>
             <span className="font-bold">{formatMoney(order.orderSnapshot.totalPrice)}</span>
           </div>
         )}

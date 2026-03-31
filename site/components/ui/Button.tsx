@@ -4,7 +4,7 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
 const variantStyles = {
   primary:
-    'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
+    'bg-primary text-white hover:bg-primary-dark focus:ring-primary',
   secondary:
     'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 focus:ring-slate-400',
   danger:

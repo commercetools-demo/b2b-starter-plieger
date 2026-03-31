@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     }
 
     const { currency } = await request.json().catch(() => ({}))
-
+    console.log(`cart route:: ${currency}`)
     const cart = await createCart(
       session.customerId,
       session.customerId,

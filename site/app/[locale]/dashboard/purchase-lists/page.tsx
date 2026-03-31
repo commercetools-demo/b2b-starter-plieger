@@ -58,9 +58,9 @@ export default function PurchaseListsPage() {
     setDeletingId(id);
     try {
       await deleteList(id, list.version);
-      addToast('Purchase list deleted');
+      addToast('Projectlijst verwijderd');
     } catch {
-      addToast('Failed to delete list');
+      addToast('Projectlijst kan niet worden verwijderd');
     } finally {
       setDeletingId(null);
     }
@@ -87,7 +87,7 @@ export default function PurchaseListsPage() {
   const columns = [
     {
       key: 'name',
-      header: 'Name',
+      header: 'Naam',
       render: (row: any) => {
         const name = typeof row.name === 'object' ? localizedString(row.name) : row.name;
         return (
@@ -99,13 +99,13 @@ export default function PurchaseListsPage() {
     },
     {
       key: 'owner',
-      header: 'Owner',
+      header: 'Eigenaar',
       render: (row: any) => (
         <span className="text-sm text-gray-600">{getOwnerName(row)}</span>
       ),
     },
-    { key: 'items', header: 'Items', render: (row: any) => row.lineItems?.length ?? 0 },
-    { key: 'lastModifiedAt', header: 'Last Modified', render: (row: any) => formatDate(row.lastModifiedAt) },
+    { key: 'items', header: 'Artikelen', render: (row: any) => row.lineItems?.length ?? 0 },
+    { key: 'lastModifiedAt', header: 'Laatste update', render: (row: any) => formatDate(row.lastModifiedAt) },
     {
       key: 'actions',
       header: '',
@@ -117,7 +117,7 @@ export default function PurchaseListsPage() {
             loading={deletingId === row.id}
             onClick={() => handleDelete(row.id)}
           >
-            Delete
+            Verwijderen
           </Button>
         ) : null,
     },
@@ -127,21 +127,21 @@ export default function PurchaseListsPage() {
     return (
       <div>
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">Purchase Lists</h1>
+          <h1 className="text-2xl font-bold">Project Lijsten</h1>
           {canCreate ? (
-            <Button variant="primary" onClick={() => setCreateOpen(true)}>Create List</Button>
+            <Button variant="primary" onClick={() => setCreateOpen(true)}>Maak een lijst</Button>
           ) : (
             <div className="inline-flex flex-col items-center">
-              <Button variant="primary" disabled>Create List</Button>
+              <Button variant="primary" disabled>Maak een lijst</Button>
               <svg aria-label="Insufficient permissions to perform this task" role="img" className="h-4 w-4 text-red-400 mt-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
             </div>
           )}
         </div>
         <EmptyState
           icon="📋"
-          title="No purchase lists"
-          description="Create a purchase list to save your frequently ordered items."
-          actionLabel={canCreate ? 'Create List' : undefined}
+          title="Geen projectlijsten"
+          description="Maak een lijst voor een nieuw project"
+          actionLabel={canCreate ? 'Maak een lijst' : undefined}
           onAction={canCreate ? () => setCreateOpen(true) : undefined}
         />
         <CreateModal
@@ -159,7 +159,7 @@ export default function PurchaseListsPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Purchase Lists</h1>
+        <h1 className="text-2xl font-bold">Project lijsten</h1>
         {canCreate ? (
           <Button variant="primary" onClick={() => setCreateOpen(true)}>Create List</Button>
         ) : (
@@ -205,15 +205,15 @@ function CreateModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Create Purchase List"
+      title="Maak een project Lijst"
       footer={
         <>
-          <Button variant="ghost" onClick={onClose}>Cancel</Button>
-          <Button variant="primary" loading={saving} onClick={onSave}>Create</Button>
+          <Button variant="ghost" onClick={onClose}>Annuleren</Button>
+          <Button variant="primary" loading={saving} onClick={onSave}>Opslaan</Button>
         </>
       }
     >
-      <Input label="List Name" name="listName" value={name} onChange={(e) => onNameChange(e.target.value)} placeholder="e.g. Office Supplies" />
+      <Input label="Project naam" name="listName" value={name} onChange={(e) => onNameChange(e.target.value)} placeholder="bijvoorbeeld naam van de klant" />
     </Modal>
   );
 }

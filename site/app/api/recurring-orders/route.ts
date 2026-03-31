@@ -21,6 +21,6 @@ export async function GET(request: NextRequest) {
     const result = await getRecurringOrders(session.customerId, session.businessUnitKey, { limit, offset, states });
     return NextResponse.json(result);
   } catch (err: any) {
-    return NextResponse.json({ error: err?.message ?? 'Failed to fetch recurring orders' }, { status: 500 });
+    return NextResponse.json({ error: err?.message ?? 'Kan geen herhaal bestellingenn vinden' }, { status: 500 });
   }
 }

@@ -5,6 +5,8 @@ import { useAuth } from '@/context/AuthContext';
 import { useFormatters } from '@/hooks/useFormatters';
 import { useTranslations } from 'next-intl';
 import type { Product } from '@/lib/types';
+import { useLocale } from '@/context/LocaleContext';
+import { localizedString } from '@/lib/utils';
 
 export interface ProductCardProps {
   product: Product;
@@ -12,9 +14,10 @@ export interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const { isLoggedIn } = useAuth();
-  const { formatMoney, localizedString } = useFormatters();
+  const { locale, localePath } = useLocale();
+  const { formatMoney} = useFormatters();
   const t = useTranslations('product');
-  const name = localizedString(product.name);
+  const name = localizedString(product.name, locale);
   const image = product.masterVariant.images?.[0];
   const price = product.masterVariant.price?.value
     ?? product.masterVariant.prices?.[0]?.value;
@@ -42,7 +45,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
       {/* Info */}
       <div className="flex flex-1 flex-col p-4">
-        <h3 className="text-sm font-medium text-slate-900 group-hover:text-red-600">
+        <h3 className="text-sm font-medium text-slate-900 group-hover:text-primary">
           {name}
         </h3>
         {sku && (

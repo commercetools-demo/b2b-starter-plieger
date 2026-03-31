@@ -28,9 +28,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return (
       <div className="mx-auto max-w-md px-6 py-16">
         <div className="bg-white rounded-xl border border-gray-100 p-8 text-center">
-          <h2 className="text-xl font-bold mb-2">Select a Business Unit</h2>
+          <h2 className="text-xl font-bold mb-2">Selecteer een bedrijfsonderdeel</h2>
           <p className="text-gray-600 text-sm mb-6">
-            Choose which business unit you want to work with.
+            Selecteer het bedrijfsonderdeel waar u mee wilt werken
           </p>
           <Select
             label="Business Unit"

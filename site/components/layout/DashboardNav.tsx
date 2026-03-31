@@ -13,19 +13,19 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: 'Overview', href: '/dashboard' },
-  { label: 'Orders', href: '/dashboard/orders', requiredPermissions: ['ViewMyOrders', 'ViewOthersOrders'] },
-  { label: 'Quotes', href: '/dashboard/quotes', requiredPermissions: ['ViewMyQuotes', 'ViewOthersQuotes'] },
-  { label: 'Approval Flows', href: '/dashboard/approval-flows', requiredPermissions: ['UpdateApprovalFlowStatuses'] },
-  { label: 'Approval Rules', href: '/dashboard/approval-rules', requiredPermissions: ['CreateApprovalRules', 'UpdateApprovalRules'] },
-  { label: 'Purchase Lists', href: '/dashboard/purchase-lists', requiredPermissions: ['ViewMyShoppingLists', 'ViewOthersShoppingLists'] },
-  { label: 'Recurring Orders', href: '/dashboard/recurring-orders' },
-  { label: 'Company Admin', href: '/dashboard/company', requiredPermissions: ['UpdateBusinessUnitDetails'] },
-  { label: 'Associates', href: '/dashboard/company/associates', requiredPermissions: ['UpdateAssociates'] },
-  { label: 'Addresses', href: '/dashboard/company/addresses' },
-  { label: 'My Addresses', href: '/dashboard/addresses' },
-  { label: 'My Profile', href: '/dashboard/settings' },
-  { label: 'Account', href: '/account' },
+  { label: 'Overzicht', href: '/dashboard' },
+  { label: 'Bestellingen', href: '/dashboard/orders', requiredPermissions: ['ViewMyOrders', 'ViewOthersOrders'] },
+  { label: 'Offertes', href: '/dashboard/quotes', requiredPermissions: ['ViewMyQuotes', 'ViewOthersQuotes'] },
+  { label: 'Goedkeuringen', href: '/dashboard/approval-flows', requiredPermissions: ['UpdateApprovalFlowStatuses'] },
+  { label: 'Goedkeuringsregels', href: '/dashboard/approval-rules', requiredPermissions: ['CreateApprovalRules', 'UpdateApprovalRules'] },
+  { label: 'Project lijsten', href: '/dashboard/purchase-lists', requiredPermissions: ['ViewMyShoppingLists', 'ViewOthersShoppingLists'] },
+  { label: 'Herhaal bestellingen', href: '/dashboard/recurring-orders' },
+  { label: 'Bedrijfs gegevens', href: '/dashboard/company', requiredPermissions: ['UpdateBusinessUnitDetails'] },
+  { label: 'Medewerkers', href: '/dashboard/company/associates', requiredPermissions: ['UpdateAssociates'] },
+  { label: 'Adressen', href: '/dashboard/company/addresses' },
+  { label: 'Mijn adres', href: '/dashboard/addresses' },
+  { label: 'Mijn Profiel', href: '/dashboard/settings' },
+  { label: 'Gegevens', href: '/account' },
 ];
 
 export function DashboardNav() {

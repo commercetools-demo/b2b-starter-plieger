@@ -27,7 +27,7 @@ export function RecurringOrdersTable({
   const { formatMoney, formatDate } = useFormatters();
 
   if (orders.length === 0) {
-    return <p className="text-sm text-slate-500 py-8 text-center">No recurring orders found.</p>;
+    return <p className="text-sm text-slate-500 py-8 text-center">Geen herhaal bestellingen gevonden</p>;
   }
 
   return (
@@ -36,11 +36,11 @@ export function RecurringOrdersTable({
         <thead>
           <tr className="border-b border-slate-200">
             <th className="text-left py-3 px-4 font-medium text-slate-500">Status</th>
-            <th className="text-left py-3 px-4 font-medium text-slate-500">Order</th>
-            <th className="text-left py-3 px-4 font-medium text-slate-500">Schedule</th>
-            <th className="text-left py-3 px-4 font-medium text-slate-500">Next Order</th>
-            <th className="text-left py-3 px-4 font-medium text-slate-500">Total</th>
-            <th className="text-right py-3 px-4 font-medium text-slate-500">Actions</th>
+            <th className="text-left py-3 px-4 font-medium text-slate-500">Bestelling</th>
+            <th className="text-left py-3 px-4 font-medium text-slate-500">Schema</th>
+            <th className="text-left py-3 px-4 font-medium text-slate-500">Volgende bestelling</th>
+            <th className="text-left py-3 px-4 font-medium text-slate-500">Totaal</th>
+            <th className="text-right py-3 px-4 font-medium text-slate-500">Acties</th>
           </tr>
         </thead>
         <tbody>

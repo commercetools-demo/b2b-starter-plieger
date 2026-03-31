@@ -7,10 +7,10 @@ import { Button } from '@/components/ui/Button';
 import { ProductGrid } from '@/components/product/ProductGrid';
 
 const features = [
-  { icon: '🏗️', title: 'Business Units', description: 'Manage your divisions, regions, and job sites with hierarchical business units.' },
-  { icon: '📝', title: 'Quotes', description: 'Request volume pricing and negotiate quotes with your sales rep for fleet orders.' },
-  { icon: '✅', title: 'Approval Workflows', description: 'Build approval rules with a visual predicate builder — set spending limits, line item thresholds, and multi-tier approval chains.' },
-  { icon: '📋', title: 'Purchase Lists', description: 'Save frequently ordered parts and equipment for fast reordering across projects.' },
+  { icon: '🏗️', title: 'Bedrijfsonderdelen', description: 'Beheer uw divisies, regio\'s en projectlocaties met hiërarchische bedrijfsonderdelen.' },
+  { icon: '📝', title: 'Offertes', description: 'Vraag volumeprijzen aan en onderhandel offertes met uw verkoopvertegenwoordiger voor vlootbestellingen.' },
+  { icon: '✅', title: 'Goedkeuringswerkstroom', description: 'Bouw goedkeuringsregels met een visuele predicaatbouwer — stel uitgavenlimietenen regelitemdrempels in en multi-tier goedkeuringsketen.' },
+  { icon: '📋', title: 'Inkooplijsten', description: 'Sla regelmatig bestelde onderdelen en apparatuur op voor snel hertellen in projecten.' },
 ];
 
 export default function HomePage() {
@@ -33,28 +33,27 @@ export default function HomePage() {
   return (
     <div>
       {/* Hero */}
-      <section className="bg-slate-900 text-white py-20 px-6 relative overflow-hidden">
+      <section className="bg-white text-black py-20 px-6 relative overflow-hidden">
         <div className="mx-auto max-w-6xl relative">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <h1 className="text-5xl md:text-6xl font-bold tracking-tight leading-tight">
-                <span className="text-amber-400">Atlas</span> Construction<br />Equipment
+                <span className="text-primary">Plieger</span> Sanitair<br />en installatie materiaal
               </h1>
               <p className="mt-6 text-lg text-slate-400 max-w-lg">
-                Heavy machinery and equipment procurement — powered by commercetools.
-                Manage your fleet orders with business units, quotes, and approval workflows.
+                Plieger levert, een digitaal platform voor efficiënt voorraadbeheer en geautomatiseerd bestellen
               </p>
               <div className="mt-8 flex items-center gap-4">
                 {!isLoggedIn ? (
                   <>
-                    <Button variant="secondary" size="lg" href={localePath('/login')}>Sign In</Button>
+                    <Button variant="secondary" size="lg" href={localePath('/login')}>Log In</Button>
                     <Button variant="ghost" size="lg" href={localePath('/register')} className="text-white border-slate-500 hover:bg-white/10">
                       Create Account
                     </Button>
                   </>
                 ) : (
                   <>
-                    <Button variant="secondary" size="lg" href={localePath('/products')}>Browse Products</Button>
+                    <Button variant="secondary" size="lg" href={localePath('/products')}>Producten</Button>
                     <Button variant="ghost" size="lg" href={localePath('/dashboard')} className="text-white border-slate-500 hover:bg-white/10">
                       Go to Dashboard
                     </Button>
@@ -63,9 +62,9 @@ export default function HomePage() {
               </div>
             </div>
             <div className="hidden lg:grid grid-cols-2 gap-4">
-              <img src="/hero-excavator.webp" alt="Excavator" className="rounded-xl shadow-lg w-full h-48 object-cover" />
-              <img src="/hero-crane.webp" alt="Crane" className="rounded-xl shadow-lg w-full h-48 object-cover" />
-              <img src="/hero-bg.webp" alt="Bulldozer" className="rounded-xl shadow-lg w-full h-48 object-cover col-span-2" />
+              <img src="/warmtepompen.png" alt="Warmtepomp" className="rounded-xl shadow-lg w-full h-48 object-cover" />
+              <img src="/Maart-deals-4.png" alt="Crane" className="rounded-xl shadow-lg w-full h-48 object-cover" />
+              <img src="/Online-only-2.png" alt="Bulldozer" className="rounded-xl shadow-lg w-full h-64 object-cover col-span-2" />
             </div>
           </div>
         </div>
@@ -74,7 +73,7 @@ export default function HomePage() {
       {/* Features */}
       <section className="py-16 px-6">
         <div className="mx-auto max-w-6xl">
-          <h2 className="text-3xl font-bold text-center mb-12">Built for B2B</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">Gemaakt for B2B</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((f) => (
               <div key={f.title} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover-lift">
@@ -92,8 +91,8 @@ export default function HomePage() {
         <section className="py-16 px-6 bg-surface-dark">
           <div className="mx-auto max-w-6xl">
             <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-bold">Featured Products</h2>
-              <Button variant="ghost" href={localePath('/products')}>View All</Button>
+              <h2 className="text-2xl font-bold">Producten</h2>
+              <Button variant="ghost" href={localePath('/products')}>Bekijk alle</Button>
             </div>
             <ProductGrid products={products} loading={loading} />
           </div>
@@ -105,10 +104,10 @@ export default function HomePage() {
         <section className="py-16 px-6">
           <div className="mx-auto max-w-4xl grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { label: 'Orders', href: '/dashboard/orders' },
-              { label: 'Quotes', href: '/dashboard/quotes' },
-              { label: 'Purchase Lists', href: '/dashboard/purchase-lists' },
-              { label: 'Company', href: '/dashboard/company' },
+              { label: 'Bestellingen', href: '/dashboard/orders' },
+              { label: 'Offertes', href: '/dashboard/quotes' },
+              { label: 'Project lijsten', href: '/dashboard/purchase-lists' },
+              { label: 'Uw bedrijf', href: '/dashboard/company' },
             ].map((link) => (
               <Button key={link.href} variant="secondary" href={link.href} className="w-full">
                 {link.label}

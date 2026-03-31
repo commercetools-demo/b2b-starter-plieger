@@ -145,8 +145,8 @@ export default function ProductDetailPage() {
   const recurringPrices = product.masterVariant?.recurrencePrices?.filter((p: any) => p.recurrencePolicy);
   const allPrices = product.masterVariant?.prices.concat(recurringPrices);
   const showSubscribeAndSave = isLoggedIn && recurringPrices?.length > 0 && recurrencePolicies?.length > 0;
-  const name = localizedString(product.name);
-  const description = localizedString(product.description);
+  const name = localizedString(product.name, locale);
+  const description = localizedString(product.description, locale);
   const sku = product.masterVariant?.sku;
 
   return (

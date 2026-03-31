@@ -12,11 +12,11 @@ import { formatMoney, formatDateTime } from '@/lib/utils';
 const LIMIT = 20;
 
 const STATUS_OPTIONS = [
-  { value: '', label: 'All Statuses' },
+  { value: '', label: 'Alle Statussen' },
   { value: 'Open', label: 'Open' },
-  { value: 'Confirmed', label: 'Confirmed' },
-  { value: 'Complete', label: 'Complete' },
-  { value: 'Cancelled', label: 'Cancelled' },
+  { value: 'Confirmed', label: 'Bevestigd' },
+  { value: 'Complete', label: 'Compleeet' },
+  { value: 'Cancelled', label: 'Geannuleerd' },
 ];
 
 export default function OrdersPage() {
@@ -37,12 +37,12 @@ export default function OrdersPage() {
   const columns = [
     {
       key: 'orderNumber',
-      header: 'Order #',
+      header: 'Bestelling #',
       render: (row: any) => row.orderNumber ?? row.id.slice(0, 8),
     },
     {
       key: 'createdAt',
-      header: 'Date',
+      header: 'Datum',
       render: (row: any) => formatDateTime(row.createdAt),
     },
     {
@@ -52,12 +52,12 @@ export default function OrdersPage() {
     },
     {
       key: 'totalPrice',
-      header: 'Total',
+      header: 'Totaal',
       render: (row: any) => formatMoney(row.taxedPrice?.totalGross ?? row.totalPrice),
     },
     {
       key: 'lineItems',
-      header: 'Items',
+      header: 'Artikelen',
       render: (row: any) => row.lineItems?.length ?? 0,
     },
   ];
@@ -65,7 +65,7 @@ export default function OrdersPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Orders</h1>
+        <h1 className="text-2xl font-bold">Bestellingen</h1>
         <select
           value={statusFilter}
           onChange={(e) => handleStatusChange(e.target.value)}

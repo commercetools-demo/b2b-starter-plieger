@@ -6,6 +6,7 @@ import { useLocale } from '@/context/LocaleContext';
 const LOCALE_LABELS: Record<string, string> = {
   'en-US': 'EN',
   'de-DE': 'DE',
+  'nl-NL': 'NL',
 };
 
 export function LanguageSelector() {
@@ -21,7 +22,7 @@ export function LanguageSelector() {
           onClick={() => setLanguage(locale)}
           className={`text-xs px-2 py-1 rounded font-medium transition-colors ${
             language === locale
-              ? 'bg-red-600 text-white'
+              ? 'bg-primary text-white'
               : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100'
           }`}
         >

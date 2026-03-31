@@ -15,6 +15,7 @@ export async function createOrderFromCart(
   associateId: string,
   businessUnitKey: string,
 ) {
+
   const orderNumber = generateOrderNumber();
   const asAssociate = apiRoot
     .asAssociate()

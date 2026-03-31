@@ -1,5 +1,6 @@
 export interface ThemeTokens {
   colorPrimary: string;
+  colorPrimaryLight: string;
   colorPrimaryHover: string;
   colorBackground: string;
   colorSurface: string;
@@ -12,12 +13,13 @@ export interface ThemeTokens {
 }
 
 export const defaultTokens: ThemeTokens = {
-  colorPrimary: '#dc2626',
+  colorPrimary: '#0037ff',
+  colorPrimaryLight: '#f0f4ff',
   colorPrimaryHover: '#b91c1c',
-  colorBackground: '#f8fafc',
-  colorSurface: '#ffffff',
-  colorText: '#111827',
-  colorTextMuted: '#6b7280',
+  colorBackground: '#000000',
+  colorSurface: '#fff',
+  colorText: '#1c1c1c',
+  colorTextMuted: '#606060',
   colorBorder: '#e2e8f0',
   colorDestructive: '#dc2626',
   borderRadius: '0.5rem',
@@ -28,6 +30,7 @@ export function tokensToCSSVars(tokens: ThemeTokens): string {
   return [
     `--color-primary: ${tokens.colorPrimary}`,
     `--color-primary-hover: ${tokens.colorPrimaryHover}`,
+    `--color-primary-light: ${tokens.colorPrimaryLight}`,
     `--color-background: ${tokens.colorBackground}`,
     `--color-surface: ${tokens.colorSurface}`,
     `--color-text: ${tokens.colorText}`,

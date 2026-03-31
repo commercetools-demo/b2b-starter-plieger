@@ -95,7 +95,7 @@ export function Header() {
         {/* Context bar — show BU and store when logged in */}
         {isLoggedIn && currentBusinessUnit && (
           <div className="border-b border-red-100 bg-gradient-to-r from-red-50/50 to-slate-50">
-            <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-1.5 text-xs sm:px-6 lg:px-8">
+            <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-1.5 text-xs sm:px-6 lg:px-8 ">
               {/* Business Unit: dropdown if multiple, label if single */}
               <div className="flex items-center gap-1.5">
                 <svg className="h-3.5 w-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -195,7 +195,7 @@ export function Header() {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
           {/* Logo */}
           <Link href="/" className="flex items-center">
-            <span className="text-xl font-bold text-slate-900">Atlas Construction Equipment</span>
+            <span className="text-xl font-bold text-primary">PLIEGER</span>
           </Link>
 
           {/* Search - hidden on mobile */}
@@ -209,7 +209,7 @@ export function Header() {
                 value={search}
                 onChange={handleSearchChange}
                 onFocus={() => setShowSuggestions(true)}
-                placeholder="Search products..."
+                placeholder="Zoek producten..."
                 className="w-full rounded-md border border-slate-300 py-2 pl-3 pr-10 text-sm text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
               <button
@@ -314,7 +314,7 @@ export function Header() {
                         }}
                         className="block w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50"
                       >
-                        Log out
+                        Uitloggen
                       </button>
                     </div>
                   )}
@@ -323,7 +323,7 @@ export function Header() {
             ) : (
               <Link
                 href={localePath('/login')}
-                className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+                className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-secodary"
               >
                 Log in
               </Link>
@@ -351,14 +351,14 @@ export function Header() {
           <div className="mx-auto flex max-w-7xl items-center gap-6 px-4 sm:px-6 lg:px-8">
             <Link
               href={localePath('/products')}
-              className="border-b-2 border-transparent py-3 text-sm font-medium text-slate-600 hover:border-red-600 hover:text-red-600"
+              className="border-b-2 border-transparent py-3 text-sm font-medium text-slate-600 hover:border-primary hover:text-primary"
             >
-              Products
+              Producten
             </Link>
             {isLoggedIn && (
               <Link
                 href={localePath('/dashboard')}
-                className="border-b-2 border-transparent py-3 text-sm font-medium text-slate-600 hover:border-red-600 hover:text-red-600"
+                className="border-b-2 border-transparent py-3 text-sm font-medium text-slate-600 hover:border-primary hover:text-primary"
               >
                 Dashboard
               </Link>
@@ -376,7 +376,7 @@ export function Header() {
                   type="text"
                   value={search}
                   onChange={handleSearchChange}
-                  placeholder="Search products..."
+                  placeholder="Zoek producten..."
                   className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
                 />
               </form>
@@ -386,7 +386,7 @@ export function Header() {
                 onClick={() => setMobileMenuOpen(false)}
                 className="block rounded-md px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
               >
-                Products
+                Producten
               </Link>
               {isLoggedIn && (
                 <>
@@ -414,7 +414,7 @@ export function Header() {
                           className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-slate-700 hover:bg-slate-100"
                         >
                           {bu.id === currentBusinessUnit?.id && (
-                            <span className="text-red-600">&#10003;</span>
+                            <span className="text-primary">&#10003;</span>
                           )}
                           {bu.name}
                         </button>
@@ -438,7 +438,7 @@ export function Header() {
                           className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-slate-700 hover:bg-slate-100"
                         >
                           {store.key === currentStore?.key && (
-                            <span className="text-red-600">&#10003;</span>
+                            <span className="text-primary">&#10003;</span>
                           )}
                           {store.name || store.key}
                         </button>
