@@ -105,9 +105,9 @@ export default function ProductDetailPage() {
           quantity: 1,
         }),
       });
-      addToast('Added to purchase list');
+      addToast('Toegevoegd aan projectlijst');
     } catch {
-      addToast('Failed to add to purchase list');
+      addToast('Kan niet toevoegen aan projectlijst');
     } finally {
       setAddingToList(false);
     }
@@ -155,7 +155,7 @@ export default function ProductDetailPage() {
       <nav className="flex items-center gap-2 text-sm text-gray-500 mb-8">
         <a href={localePath('/')} className="hover:text-primary">Home</a>
         <span>/</span>
-        <a href={localePath('/products')} className="hover:text-primary">Products</a>
+        <a href={localePath('/products')} className="hover:text-primary">Producten</a>
         <span>/</span>
         <span className="text-gray-900">{name}</span>
       </nav>
@@ -241,13 +241,13 @@ export default function ProductDetailPage() {
           {/* Add to Purchase List */}
           {purchaseLists.length > 0 && (
             <div className="border-t border-gray-100 pt-6">
-              <h3 className="text-sm font-medium text-gray-700 mb-2">Add to Purchase List</h3>
+              <h3 className="text-sm font-medium text-gray-700 mb-2">Voeg toe aan projectlijst</h3>
               <div className="flex gap-2">
                 <div className="flex-1">
                   <Select
                     label=""
                     options={[
-                      { value: '', label: 'Select a list...' },
+                      { value: '', label: 'Selecteer een lijst...' },
                       ...purchaseLists.map((pl: any) => ({ value: pl.id, label: typeof pl.name === 'object' ? localizedString(pl.name) : pl.name })),
                     ]}
                     value={selectedList}
@@ -255,7 +255,7 @@ export default function ProductDetailPage() {
                   />
                 </div>
                 <Button variant="secondary" onClick={handleAddToList} loading={addingToList} disabled={!selectedList}>
-                  Add
+                  Toevoegen
                 </Button>
               </div>
             </div>
@@ -264,7 +264,7 @@ export default function ProductDetailPage() {
           {/* Attributes */}
           {attributes.length > 0 && (
             <div className="border-t border-gray-100 pt-6 mt-6">
-              <h3 className="text-sm font-medium text-gray-700 mb-3">Product Details</h3>
+              <h3 className="text-sm font-medium text-gray-700 mb-3">Details</h3>
               <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
                 {attributes
                   .filter((attr: any) => {

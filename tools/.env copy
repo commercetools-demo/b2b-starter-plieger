@@ -1,0 +1,7 @@
+
+CTP_PROJECT_KEY=wh-plieger-demo
+CTP_CLIENT_SECRET=u8rmXcEx8nTP9I2oalskIqLmqbxltXW0
+CTP_CLIENT_ID=25K2tvIJRDiAcmHhVi_sipJe
+CTP_AUTH_URL=https://auth.europe-west1.gcp.commercetools.com
+CTP_API_URL=https://api.europe-west1.gcp.commercetools.com
+CTP_SCOPES=manage_project:wh-plieger-demo

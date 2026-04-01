@@ -40,17 +40,17 @@ export function RatingsSection({ productId }: RatingsSectionProps) {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (newRating === 0) { addToast('Please select a rating'); return; }
+    if (newRating === 0) { addToast('Selecteer een beoordeling'); return; }
     setSubmitting(true);
     try {
       await submitReview(newRating, newComment, newTitle || undefined);
-      addToast('Review submitted!');
+      addToast('Beoordeling ingediend!');
       setShowForm(false);
       setNewRating(0);
       setNewTitle('');
       setNewComment('');
     } catch (err: any) {
-      addToast(err?.message ?? 'Failed to submit review');
+      addToast(err?.message ?? 'Kon beoordeling niet indienen');
     } finally {
       setSubmitting(false);
     }
@@ -60,19 +60,19 @@ export function RatingsSection({ productId }: RatingsSectionProps) {
     <div className="border-t border-gray-100 pt-8 mt-8">
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h2 className="text-lg font-semibold mb-1">Customer Reviews</h2>
+          <h2 className="text-lg font-semibold mb-1">Klantbeoordelingen</h2>
           {summary && summary.totalReviews > 0 && (
             <div className="flex items-center gap-2">
               <RatingStars rating={summary.averageRating} size="sm" />
               <span className="text-sm text-gray-600">
-                {summary.averageRating.toFixed(1)} · {summary.totalReviews} review{summary.totalReviews !== 1 ? 's' : ''}
+                {summary.averageRating.toFixed(1)} · {summary.totalReviews} beoordelingen{summary.totalReviews !== 1 ? 's' : ''}
               </span>
             </div>
           )}
         </div>
         {isLoggedIn && !showForm && (
           <Button variant="secondary" size="sm" onClick={() => setShowForm(true)}>
-            Write a Review
+            Schrijf een beoordeling
           </Button>
         )}
       </div>
@@ -80,18 +80,18 @@ export function RatingsSection({ productId }: RatingsSectionProps) {
       {/* Review form */}
       {showForm && (
         <form onSubmit={handleSubmit} className="mb-6 p-4 rounded-xl border border-gray-200 bg-gray-50">
-          <h3 className="text-sm font-semibold mb-3">Your Review</h3>
+          <h3 className="text-sm font-semibold mb-3">Uw beoordeling</h3>
           <div className="mb-3">
-            <label className="block text-sm text-gray-600 mb-1">Rating</label>
+            <label className="block text-sm text-gray-600 mb-1">Beoordeling</label>
             <RatingStars rating={newRating} interactive onRate={setNewRating} size="lg" />
           </div>
           <div className="mb-3">
-            <label className="block text-sm text-gray-600 mb-1">Title (optional)</label>
+            <label className="block text-sm text-gray-600 mb-1">Titel (optioneel)</label>
             <input
               type="text"
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
-              placeholder="Summary of your experience"
+              placeholder="Samenvatting van uw ervaring"
               className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
             />
           </div>
@@ -101,20 +101,20 @@ export function RatingsSection({ productId }: RatingsSectionProps) {
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
               rows={3}
-              placeholder="Tell others about your experience..."
+              placeholder="Vertel anderen over uw ervaring..."
               className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary resize-none"
             />
           </div>
           <div className="flex gap-2">
-            <Button variant="primary" size="sm" loading={submitting}>Submit Review</Button>
-            <Button variant="secondary" size="sm" onClick={() => setShowForm(false)}>Cancel</Button>
+            <Button variant="primary" size="sm" loading={submitting}>Verstuur beoordeling</Button>
+            <Button variant="secondary" size="sm" onClick={() => setShowForm(false)}>Annuleren</Button>
           </div>
         </form>
       )}
 
       {!isLoggedIn && (
         <p className="text-sm text-gray-500 mb-4">
-          <Link href={localePath('/login')} className="text-primary hover:underline">Sign in</Link> to write a review.
+          <Link href={localePath('/login')} className="text-primary hover:underline">Log in</Link> om een beoordeling te schrijven.
         </p>
       )}
 
@@ -140,7 +140,7 @@ export function RatingsSection({ productId }: RatingsSectionProps) {
           {[1, 2].map((i) => <div key={i} className="h-20 bg-gray-200 rounded" />)}
         </div>
       ) : reviews.length === 0 ? (
-        <p className="text-sm text-gray-500">No reviews yet. Be the first to review this product!</p>
+        <p className="text-sm text-gray-500">Nog geen beoordelingen. Wees de eerste om dit product te beoordelen!</p>
       ) : (
         <div className="space-y-4">
           {reviews.map((review) => (
