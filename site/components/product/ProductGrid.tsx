@@ -30,7 +30,7 @@ export function ProductGrid({ products, loading = false }: ProductGridProps) {
   if (products.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-slate-300 bg-white px-6 py-16 text-center">
-        <p className="text-sm text-slate-500">No products found.</p>
+        <p className="text-sm text-slate-500">Geen producten gevonden.</p>
       </div>
     );
   }

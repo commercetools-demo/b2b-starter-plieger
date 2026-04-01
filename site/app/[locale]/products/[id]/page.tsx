@@ -234,7 +234,7 @@ export default function ProductDetailPage() {
                 />
               )
             ) : (
-              <Button variant="primary" href={localePath('/login')}>Sign In to Order</Button>
+              <Button variant="primary" href={localePath('/login')}>Log in om te bestellen</Button>
             )}
           </div>
 

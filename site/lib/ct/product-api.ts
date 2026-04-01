@@ -116,7 +116,8 @@ export class ProductApi {
       .post({ body: searchRequest as any })
       .execute();
 
-      console.log('Product search response', response)
+      console.log('searchRequest', JSON.stringify(searchRequest))
+      console.log('Product search response', JSON.stringify(response))
 
     let searchResults = response.body.results as any[];
     const productIds: string[] = searchResults.map((r: any) => r.id).filter(Boolean);

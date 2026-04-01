@@ -94,7 +94,7 @@ export function Header() {
       <header className="border-b border-slate-200 bg-white">
         {/* Context bar — show BU and store when logged in */}
         {isLoggedIn && currentBusinessUnit && (
-          <div className="border-b border-red-100 bg-gradient-to-r from-red-50/50 to-slate-50">
+          <div className="border-b border-primary bg-gradient-to-r from-primary-light to-slate-50">
             <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-1.5 text-xs sm:px-6 lg:px-8 ">
               {/* Business Unit: dropdown if multiple, label if single */}
               <div className="flex items-center gap-1.5">
