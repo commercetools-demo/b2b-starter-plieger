@@ -53,7 +53,7 @@ export function DashboardNav() {
             className={classNames(
               'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
               isActive
-                ? 'bg-red-50 text-red-700'
+                ? 'bg-primary-light text-primary'
                 : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
             )}
           >
