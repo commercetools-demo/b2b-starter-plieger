@@ -2,6 +2,7 @@
 
 import useSWR, { useSWRConfig } from 'swr';
 import { KEY_PURCHASE_LISTS, keyPurchaseList } from '@/lib/cache-keys';
+import { iProjectInfo } from '@/types/project';
 
 async function purchaseListsFetcher(): Promise<{ results: any[] }> {
   const res = await fetch('/api/purchase-lists');
@@ -13,7 +14,8 @@ async function purchaseListFetcher(key: string): Promise<any> {
   const id = key.replace('purchase-list-', '');
   const res = await fetch(`/api/purchase-lists/${id}`);
   if (!res.ok) return null;
-  const data = await res.json();
+  const data = await res.json()
+  
   return data.purchaseList ?? data;
 }
 
@@ -32,11 +34,11 @@ export function usePurchaseList(id: string | null) {
 export function usePurchaseListMutations() {
   const { mutate } = useSWRConfig();
 
-  async function createList(name: string) {
+  async function createList(name: string, description?: string, projectInfo?: iProjectInfo) {
     const res = await fetch('/api/purchase-lists', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name }),
+      body: JSON.stringify({ name, description, projectInfo }),
     });
     if (!res.ok) {
       const d = await res.json().catch(() => ({}));

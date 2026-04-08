@@ -19,6 +19,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Goedkeuringen', href: '/dashboard/approval-flows', requiredPermissions: ['UpdateApprovalFlowStatuses'] },
   { label: 'Goedkeuringsregels', href: '/dashboard/approval-rules', requiredPermissions: ['CreateApprovalRules', 'UpdateApprovalRules'] },
   { label: 'Project lijsten', href: '/dashboard/purchase-lists', requiredPermissions: ['ViewMyShoppingLists', 'ViewOthersShoppingLists'] },
+  { label: 'Projecten', href: '/dashboard/projecten', requiredPermissions: ['ViewMyShoppingLists', 'ViewOthersShoppingLists'] },
   { label: 'Herhaal bestellingen', href: '/dashboard/recurring-orders' },
   { label: 'Bedrijfs gegevens', href: '/dashboard/company', requiredPermissions: ['UpdateBusinessUnitDetails'] },
   { label: 'Medewerkers', href: '/dashboard/company/associates', requiredPermissions: ['UpdateAssociates'] },

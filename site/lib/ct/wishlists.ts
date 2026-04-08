@@ -1,5 +1,6 @@
 import { ShoppingListDraft } from '@commercetools/platform-sdk';
 import { apiRoot } from './client';
+import { iProjectInfo } from '@/types/project';
 
 function asAssociateInStore(associateId: string, businessUnitKey: string) {
   return (apiRoot
@@ -49,11 +50,20 @@ export async function createPurchaseList(
   businessUnitKey: string,
   storeKey: string,
   name: string,
+  description: string,
+  projectInfo: iProjectInfo,
   customerId: string,
   locale: string
 ) {
   const body: ShoppingListDraft = {
     name: { [locale]: name },
+    description: { [locale]: description },
+    custom: {
+      type: { typeId: 'type', key: 'plieger-project' },
+      fields: {
+        projectInfo: JSON.stringify(projectInfo),
+      }
+    },
     customer: { id: customerId, typeId: 'customer' },
     store: { typeId: 'store', key: storeKey}
   };

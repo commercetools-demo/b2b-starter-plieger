@@ -19,9 +19,8 @@ export async function searchProducts(
   query: ProductQuery,
   session?: Partial<SessionData>,
 ): Promise<ProductPaginatedResult> {
-  
+
   const s = session ?? await getSession();
-  console.log(`searchProducts', ${JSON.stringify(query)}, session: ${JSON.stringify(s)}`);
   return new ProductApi(s).query(query);
 }
 

@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { name } = await request.json()
+    const { name, description, projectInfo } = await request.json()
 
     if (!name) {
       return NextResponse.json(
@@ -74,6 +74,8 @@ export async function POST(request: NextRequest) {
       session.businessUnitKey,
       session.storeKey,
       name,
+      description,
+      projectInfo,
       session.customerId,
       locale
     )

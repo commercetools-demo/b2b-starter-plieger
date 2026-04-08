@@ -130,6 +130,14 @@ export default function DashboardPage() {
             <svg aria-label="Insufficient permissions to perform this task" role="img" className="h-4 w-4 text-red-400 mt-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
           </div>
         )}
+        {canViewPurchaseLists ? (
+          <Button variant="secondary" href={localePath('/dashboard/projecten')}>Projecten</Button>
+        ) : (
+          <div className="inline-flex flex-col items-center">
+            <Button variant="secondary" disabled>Projecten</Button>
+            <svg aria-label="Insufficient permissions to perform this task" role="img" className="h-4 w-4 text-red-400 mt-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+          </div>
+        )}
       </div>
     </div>
   );
