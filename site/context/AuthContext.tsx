@@ -7,7 +7,9 @@ import {
   useMemo,
   type ReactNode,
 } from 'react';
-import useSWR from 'swr';
+import useSWR, { useSWRConfig } from 'swr';
+import { useRouter } from 'next/navigation';
+import { useLocale } from './LocaleContext';
 import { KEY_AUTH_ME } from '@/lib/cache-keys';
 import { type AuthUser, meFetcher, loginRequest, logoutRequest, registerRequest } from '@/hooks/useAuthApi';
 
@@ -30,11 +32,15 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const router = useRouter();
+  const { localePath } = useLocale();
   const { data: user = null, isLoading, mutate } = useSWR<AuthUser | null>(
     KEY_AUTH_ME,
     meFetcher,
     { revalidateOnFocus: false },
   );
+
+  const { mutate: globalMutate } = useSWRConfig();
 
   const refresh = useCallback(async () => {
     await mutate();
@@ -50,8 +56,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(async () => {
     await logoutRequest();
+    // Clear all SWR cache
+    await globalMutate(() => true, undefined, { revalidate: false });
     await mutate(null, { revalidate: false });
-  }, [mutate]);
+    router.push(localePath('/'));
+  }, [logoutRequest, globalMutate, mutate, router, localePath]);
 
   const register = useCallback(
     async (

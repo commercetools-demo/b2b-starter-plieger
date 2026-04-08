@@ -62,12 +62,12 @@ export function BusinessUnitProvider({ children }: { children: ReactNode }) {
 
   // Reset on logout
   useEffect(() => {
-    if (!authLoading && !isLoggedIn) {
+    if (!isLoggedIn) {
       setCurrentBusinessUnit(null);
       setCurrentStore(null);
       autoSelectedRef.current = false;
     }
-  }, [isLoggedIn, authLoading]);
+  }, [isLoggedIn]);
 
   const fetchBusinessUnits = useCallback(async () => {
     await mutate();
