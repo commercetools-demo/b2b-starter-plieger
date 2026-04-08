@@ -63,10 +63,10 @@ export default function QuoteDetailPage() {
     originalTotal.centAmount > quotedTotal.centAmount;
   const discountAmount = hasDiscount
     ? {
-        centAmount: originalTotal.centAmount - quotedTotal.centAmount,
-        currencyCode: quotedTotal.currencyCode,
-        fractionDigits: quotedTotal.fractionDigits ?? 2,
-      }
+      centAmount: originalTotal.centAmount - quotedTotal.centAmount,
+      currencyCode: quotedTotal.currencyCode,
+      fractionDigits: quotedTotal.fractionDigits ?? 2,
+    }
     : null;
   const discountPercent = hasDiscount
     ? Math.round(((originalTotal.centAmount - quotedTotal.centAmount) / originalTotal.centAmount) * 100)
@@ -106,11 +106,11 @@ export default function QuoteDetailPage() {
 
   return (
     <div>
-      <Button variant="ghost" size="sm" href={localePath('/dashboard/quotes')} className="mb-4">&larr; Back to Quotes</Button>
+      <Button variant="ghost" size="sm" href={localePath('/dashboard/quotes')} className="mb-4">&larr; Terug naar offerte lijst</Button>
 
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold">Quote {quote.id.slice(0, 8)}</h1>
+          <h1 className="text-2xl font-bold">Offerte {quote.id.slice(0, 8)}</h1>
           <p className="text-gray-500 text-sm mt-1">{formatDateTime(quote.createdAt)}</p>
         </div>
         <QuoteStatus state={state} />

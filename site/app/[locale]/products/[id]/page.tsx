@@ -65,6 +65,7 @@ export default function ProductDetailPage() {
       .then((res) => res.json())
       .then((data) => {
         setProduct(data.product ?? data);
+        console.log(data);
         if (data.supplyChannelId) setSupplyChannelId(data.supplyChannelId);
       })
       .catch(() => {})

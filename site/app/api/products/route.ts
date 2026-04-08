@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     };
 
     const result = await searchProducts(productQuery, session);
-
+    console.log(result)
     return NextResponse.json({
       results: result.items,
       total: result.total,

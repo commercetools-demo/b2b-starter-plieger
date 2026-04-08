@@ -57,6 +57,7 @@ function ProductsContent() {
       const data = await res.json();
       setProducts(data.results ?? []);
       setTotal(data.total ?? 0);
+      console.log(data)
     } catch {
       setProducts([]);
     } finally {

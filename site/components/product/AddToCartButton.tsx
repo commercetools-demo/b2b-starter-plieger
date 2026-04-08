@@ -26,7 +26,8 @@ export function AddToCartButton({
   const maxQty = typeof availableQuantity === 'number' ? availableQuantity : undefined;
   const cantAdd = disabled || isOutOfStock;
 
-  const handleAdd = async () => {
+  const handleAdd = async (event: React.MouseEvent) => {
+    event.stopPropagation()
     await addItem(productId, variantId, quantity);
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
@@ -76,7 +77,7 @@ export function AddToCartButton({
           disabled={cantAdd}
           variant={added ? 'secondary' : 'primary'}
         >
-          {isOutOfStock ? 'Out of Stock' : added ? 'Added!' : 'Add to Cart'}
+          {isOutOfStock ? 'Niet op voorraad' : added ? 'Toegevoegd!' : 'Voeg toe'}
         </Button>
       </div>
 
