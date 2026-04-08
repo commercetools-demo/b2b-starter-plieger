@@ -164,7 +164,7 @@ export default function AdressenPage() {
                                 <Input
                                     className="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 transition-all font-medium"
                                     placeholder="123" type="text" value="5"
-                                    onChange={(e) => setAdressen(adressen.map((a) => a.number === e.target.value ? { ...a, number: e.target.value } : a))} />
+                                    onChange={(e) => setAdressen(adressen.map((a) => a.streetNumber === e.target.value ? { ...a, number: e.target.value } : a))} />
                             </div>
                             <div className="col-span-8">
                                 <label
@@ -172,7 +172,7 @@ export default function AdressenPage() {
                                 <Input
                                     className="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 transition-all font-medium"
                                     placeholder="Floor 2, Suite 4" type="text" value="Building A"
-                                    onChange={(e) => setAdressen(adressen.map((a) => a.addition === e.target.value ? { ...a, addition: e.target.value } : a))} />
+                                    onChange={(e) => setAdressen(adressen.map((a) => a.additionalStreetInfo === e.target.value ? { ...a, addition: e.target.value } : a))} />
                             </div>
                             <div className="col-span-5">
                                 <label
@@ -200,7 +200,7 @@ export default function AdressenPage() {
                                         { value: 'DE', label: 'Germany' },
                                         { value: 'GB', label: 'United Kingdom' },
                                     ]}
-                                    value={adressen.country}
+                                    value={adressen[0].country}
                                     onChange={(e) => setAdressen(adressen.map((a) => a.country === e.target.value ? { ...a, country: e.target.value } : a))} />
 
 
