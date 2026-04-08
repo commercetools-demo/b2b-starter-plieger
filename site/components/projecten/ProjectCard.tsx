@@ -24,9 +24,9 @@ export default function ProjectCard({ shoppingList, order, cart }: ProjectCardPr
     const description = shoppingList.description?.[locale.locale] || shoppingList.description?.['nl-NL']
 
     const skuCount = shoppingList.lineItems.length
-    const totalPrice = shoppingList.lineItems.reduce((acc, item) => acc + item?.variant?.price?.value.centAmount!, 0)
+    
     const createdAt = shoppingList.createdAt
-
+   
     return (
         <div className="group bg-white hover:bg-blue-50/30 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all border-l-4 border-transparent hover:border-primary">
             <div className="grid grid-cols-12 items-center gap-4">
@@ -47,7 +47,7 @@ export default function ProjectCard({ shoppingList, order, cart }: ProjectCardPr
                     <span className="bg-surface-container-low px-3 py-1 rounded-full text-xs font-bold">{skuCount} SKU</span>
                 </div>
                 <div className="hidden lg:block lg:col-span-2 text-right font-bold text-primary">
-                    € {totalPrice}
+                    €
                 </div>
                 <div className="col-span-6 lg:col-span-3 flex flex-col items-end">
                     <span className="text-sm font-medium">{Intl.DateTimeFormat('nl-NL', { dateStyle: 'short' }).format(new Date(createdAt))}</span>

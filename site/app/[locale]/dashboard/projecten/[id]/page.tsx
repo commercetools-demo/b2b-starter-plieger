@@ -23,8 +23,13 @@ export default function ProjectDetailPage() {
     useEffect(() => {
         if (!isLoading && list && list.custom) {
             try {
-                const info = JSON.parse(list.custom.fields.projectInfo as string) as iProjectInfo;
-                setProjectInfo(info);
+                if (list.custom.fields.projectInfo) {
+                    const info = JSON.parse(list.custom.fields.projectInfo as string) as iProjectInfo;
+                    setProjectInfo(info);
+                }
+                else {
+                    setProjectInfo(null);
+                }
             } catch (e) {
                 console.error("Failed to parse project info", e);
             }
