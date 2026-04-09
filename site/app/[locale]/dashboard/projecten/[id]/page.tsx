@@ -58,6 +58,7 @@ export default function ProjectDetailPage() {
                     )}
                     {(activeTab === 'info' || activeTab === 'collections') && (
                         <ItemCollections 
+                            list={list}
                             activeTab={activeTab} 
                             onViewAll={() => setActiveTab('collections')} 
                         />

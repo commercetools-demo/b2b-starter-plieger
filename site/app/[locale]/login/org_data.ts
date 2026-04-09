@@ -38,9 +38,7 @@ export const companies: Company[] = [
     address: "Jan van Galenstraat 89, 1056 CC Amsterdam",
     focus: "Spoedreparaties, lekkages en dakwerk.",
     people: [
-      { firstName: "Danny", lastName: "van Straalen", role: "Admin" },
-      { firstName: "Samantha", lastName: "Visser", role: "Approver" },
-      { firstName: "Mo", lastName: "El Hamdaoui", role: "Buyer" },
+      { firstName: "Danny", lastName: "van Straalen", role: "Admin" }
     ],
   },
   {

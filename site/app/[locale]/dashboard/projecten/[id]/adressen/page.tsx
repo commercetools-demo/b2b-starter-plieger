@@ -195,12 +195,12 @@ export default function AdressenPage() {
                                 <Select
                                     className="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 transition-all font-medium appearance-none"
                                     options={[
-                                        { value: 'NL', label: 'Netherlands' },
-                                        { value: 'BE', label: 'Belgium' },
-                                        { value: 'DE', label: 'Germany' },
-                                        { value: 'GB', label: 'United Kingdom' },
+                                        { value: 'NL', label: 'Nederland' },
+                                        { value: 'BE', label: 'België' },
+                                        { value: 'DE', label: 'Duitsland' },
+                                        { value: 'GB', label: 'Verenigd Koninkrijk' },
                                     ]}
-                                    value={adressen[0].country}
+                                    value="NL"
                                     onChange={(e) => setAdressen(adressen.map((a) => a.country === e.target.value ? { ...a, country: e.target.value } : a))} />
 
 

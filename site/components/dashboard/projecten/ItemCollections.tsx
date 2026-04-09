@@ -1,9 +1,20 @@
+import { PurchaseList } from "@/lib/types";
+import { useFormatters } from "@/hooks/useFormatters";
+import { Seed } from "@/lib/seed";
+
+
 interface ItemCollectionsProps {
     activeTab: 'info' | 'collections' | 'people';
+    list: PurchaseList
     onViewAll: () => void;
 }
 
-export default function ItemCollections({ activeTab, onViewAll }: ItemCollectionsProps) {
+export default function ItemCollections({ activeTab, list, onViewAll }: ItemCollectionsProps) {
+    const { localizedString } = useFormatters();
+    const levertijd = [{text: "op voorraad", color: "green"}, {text: "geleverd", color: "green"}, {text: "besteld", color: "green"}, {text: "onderweg", color: "green"}, {text: "niet leverbaar", color: "red"}]
+    const status = [{text: "verzonden", color: "green"}, {text: "geleverd", color: "green"}, {text: "besteld", color: "green"}, {text: "onderweg", color: "yellow"}, {text: "niet leverbaar", color: "red"}]
+    const leverdatum = ["12 Jun 2026", "16 Jun 2026", "18 Jun 2026", "20 Jun 2026", "22 Jun 2026"]
+    console.log(list)
     return (
         <section
             className="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm border border-outline-variant/10">
@@ -11,9 +22,9 @@ export default function ItemCollections({ activeTab, onViewAll }: ItemCollection
                 <h3 className="font-bold text-xl flex items-center gap-2"><span
                     className="material-symbols-outlined text-primary">category</span> Itemcollecties</h3>
                 <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold px-3 py-1 bg-surface-container-high rounded-full">8 Items Totaal</span>
+                    <span className="text-xs font-bold px-3 py-1 bg-surface-container-high rounded-full">{list.lineItems.length} Items Totaal</span>
                     {activeTab === 'info' && (
-                        <button 
+                        <button
                             onClick={onViewAll}
                             className="text-xs font-bold text-primary hover:underline"
                         >Bekijk alle</button>
@@ -40,29 +51,45 @@ export default function ItemCollections({ activeTab, onViewAll }: ItemCollection
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-surface-container-low">
-                            <tr className="hover:bg-surface-container-low/50 transition-colors">
-                                <td className="py-4 px-2 font-bold">2x</td>
-                                <td className="py-4 px-2">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-lg bg-surface-container overflow-hidden">
-                                            <img className="object-cover w-full h-full"
-                                                alt="Plieger Roma"
-                                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCcuFgjyV9DcCiNKAIouxjHZF9JzoA8JfDIEGAa-mUur1ty30iHvF4hYtxn6zZk3Chs9dVXmKfleMDZ-ic0adCXo1HA_NpEkwNv8Y1J5Ym8WzVQK3aWEXmLpPPnuL6FArpOVzONYASB_t71FEvax0RCtVzPzuIQUf4WOtZL-zpSNjFQ83RicKJ0RX6q0KfH3_uFlKPOIH2LZ1IlG4wn2E0jdgluX_tepADR8suBbb9fRvxKSKKTzjIsJK8tdURZ56uuXs1IG4dxMti" />
-                                        </div>
-                                        <span className="font-semibold text-xs leading-tight">Plieger Roma Washbasin Faucet Chrome</span>
-                                    </div>
-                                </td>
-                                <td className="py-4 px-2">
-                                    <span className="flex items-center gap-1 text-xs font-bold text-green-600"><span
-                                        className="w-1.5 h-1.5 rounded-full bg-green-600"></span> Op voorraad</span>
-                                </td>
-                                <td className="py-4 px-2 text-on-surface-variant text-xs">12 Oct 2024</td>
-                                <td className="py-4 px-2">
-                                    <span
-                                        className="text-[10px] uppercase font-black px-2 py-0.5 bg-primary/10 text-primary rounded">Verzonden</span>
-                                </td>
-                                <td className="py-4 px-2 text-xs font-medium">BOUW-01</td>
-                            </tr>
+                            {list.lineItems.map((lineItem) => {
+                                const seed = Seed(lineItem)
+                                const {text: lt, color: lc} = seed.pick(levertijd)
+                                const {text: st, color: sc} = seed.pick(status)
+                                const image = lineItem.variant.images?.[0];
+                                const name = localizedString(lineItem.name);
+                                return (
+                                    <tr key={lineItem.id} className="hover:bg-surface-container-low/50 transition-colors">
+                                        <td className="py-4 px-2 font-bold">{lineItem.quantity}x</td>
+                                        <td className="py-4 px-2">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-lg bg-surface-container overflow-hidden flex items-center justify-center">
+                                                    {image ? (
+                                                        <img className="object-cover w-full h-full"
+                                                            alt={name}
+                                                            src={image.url} />
+                                                    ) : (
+                                                        <span className="material-symbols-outlined text-outline-variant/30 text-xl">image</span>
+                                                    )}
+                                                </div>
+                                                <span className="font-semibold text-xs leading-tight">{name}</span>
+                                            </div>
+                                        </td>
+                                        <td className="py-4 px-2">
+                                            <span className={`flex items-center gap-1 text-xs font-bold text-${lc}-600`}>
+                                                <span className={`w-1.5 h-1.5 rounded-full bg-${lc}-600`}></span> 
+                                                {lt}
+                                            </span>
+                                        </td>
+                                        <td className="py-4 px-2 text-on-surface-variant text-xs">{seed.pick(leverdatum)}</td>
+                                        <td className="py-4 px-2">
+                                            <span className={`text-[10px] uppercase font-black px-2 py-0.5 bg-${sc}-100 text-${sc}-600 rounded`}>
+                                                {st}
+                                            </span>
+                                        </td>
+                                        <td className="py-4 px-2 text-xs font-medium">BOUW-01</td>
+                                    </tr>   
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>
